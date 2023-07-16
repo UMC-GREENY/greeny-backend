@@ -5,14 +5,14 @@ spring:
     username: greeny
     password: 1234
 
-#  flyway:
-#    enabled: false
+  flyway:
+    enabled: false
 
-  #  flyway:
-  #    locations: classpath:/db/migration
-  #    encoding: UTF-8
-  #    check-location: false
-  #    baseline-on-migration: true
+#  flyway:
+#    locations: classpath:/db/migration
+#    encoding: UTF-8
+#    check-location: false
+#    baseline-on-migration: true
 
 #  sql:
 #    init:
