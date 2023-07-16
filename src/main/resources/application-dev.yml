@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/greeny
+    username: greeny
+    password: 1234
+
+#  flyway:
+#    enabled: false
+
+  #  flyway:
+  #    locations: classpath:/db/migration
+  #    encoding: UTF-8
+  #    check-location: false
+  #    baseline-on-migration: true
+
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:sql/data.sql
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    defer-datasource-initialization: true
+
+logging:
+  level:
+    root: INFO
