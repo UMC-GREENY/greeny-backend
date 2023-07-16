@@ -66,7 +66,7 @@
 `Ex. Title`
 - 기능 개발, 오류 수정 등의 Issue 생성
 - Issue number 확인 (#1, 2, 3..)
-- 트러블 슈팅을 위해 오류에 대한 Issue를 생성하고, 해결 과정을 문서화
+- 트러블 슈팅을 위해 오류에 대한 Issue를 생성하고, 해결 과정 문서화
 
 ### Branch
 `Ex. Type/#Issue.number-Title`
@@ -98,12 +98,14 @@
 
 `test` : 테스트 코드 작성
 
-**커밋 단위는 세부 기능 기준**
+**커밋 단위는 세부 기능 기준!!**
 
 ### PR
 `Ex. [#Issue.number] Type: Title`
-**팀원들의 코드를 꼼꼼히 살펴보고 상세한 리뷰 작성**
+
+**팀원들의 코드를 꼼꼼히 살펴보고 상세한 리뷰 작성!!**
 
 ## 😁 Team
 |[미누/문민우](https://github.com/Minuooooo)|[모건/김태균](https://github.com/taegyuni)|[한/김지은](https://github.com/gol2580)|[시오/김현성](https://github.com/evgeniac10)|[준/이우성](https://github.com/dtd1614)|
 |-----|-----|-----|-----|-----|
+|![미누/문민우](https://avatars.githubusercontent.com/u/121410579?v=4)|![모건/김태균](https://avatars.githubusercontent.com/u/81752546?v=4)|![한/김지은](https://avatars.githubusercontent.com/u/86960201?v=4)|![시오/김현성](https://avatars.githubusercontent.com/u/122839143?v=4)|![준/이우성](https://avatars.githubusercontent.com/u/116648310?v=4)|
