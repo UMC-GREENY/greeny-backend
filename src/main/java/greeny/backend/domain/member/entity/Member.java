@@ -10,6 +10,7 @@ import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
 
+@Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
