@@ -131,5 +131,5 @@ public class ExceptionAdvice {
         return failure(NOT_FOUND, "파일이 비어있습니다.");
     }
 
-    
+
 }
