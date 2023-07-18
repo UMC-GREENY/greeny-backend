@@ -44,6 +44,7 @@ public class AuthService {
         return MemberGeneral.builder()
                 .member(member)
                 .password(passwordEncoder.encode(password))
+                .isAuto("0")
                 .build();
     }
     private MemberSocial toMemberSocial(Member member, Provider provider) {

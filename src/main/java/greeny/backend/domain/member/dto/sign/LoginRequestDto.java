@@ -22,4 +22,8 @@ public class LoginRequestDto {
     @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상이어야 합니다.")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
     @Schema(description = "비밀번호", defaultValue = "test1234!")
     private String password;
+
+    @NotBlank(message = "자동 로그인 여부를 입력해주세요.")
+    @Schema(description = "자동 로그인 여부", defaultValue = "0")
+    private String isAuto;
 }
