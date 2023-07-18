@@ -7,6 +7,32 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${gmail.username}
+    password: ${gmail.password}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+    mail:
+      host: smtp.naver.com
+      port: 465
+      username: ${naver.username}
+      password: ${naver.password}
+      properties:
+        mail:
+          smtp:
+            starttls:
+              enable: true
+            auth: true
+            ssl:
+              enable: true
+
 #oauth:
 #  kakao:
 #    client-id: ${kakao.client-id}
