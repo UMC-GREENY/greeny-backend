@@ -18,12 +18,12 @@ import java.util.Random;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private final String code = generateCode();
+//    private final String code = generateCode();
 
     @Value("${spring.mail.username}")
     private String username;
 
-    public String sendSimpleMessage(String to) throws MessagingException, UnsupportedEncodingException {
+    public void sendSimpleMessage(String to) throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage message = createMessage(to);
 
@@ -34,53 +34,52 @@ public class MailService {
             throw new IllegalArgumentException();
         }
 
-        return code;
+//        return code;
     }
 
-    private String generateCode() {
-        StringBuilder code = new StringBuilder();
-        Random random = new Random();
-
-        for (int i = 0; i < 8; i++) {
-
-            int index = random.nextInt(3);
-
-            switch (index) {
-                case 0:
-                    code.append((char) (random.nextInt(26) + 97));
-                    break;
-                case 1:
-                    code.append((char) (random.nextInt(26) + 65));
-                    break;
-                case 2:
-                    code.append((random.nextInt(10)));
-                    break;
-            }
-        }
-
-        return code.toString();
-    }
+//    private String generateCode() {
+//        StringBuilder code = new StringBuilder();
+//        Random random = new Random();
+//
+//        for (int i = 0; i < 8; i++) {
+//
+//            int index = random.nextInt(3);
+//
+//            switch (index) {
+//                case 0:
+//                    code.append((char) (random.nextInt(26) + 97));
+//                    break;
+//                case 1:
+//                    code.append((char) (random.nextInt(26) + 65));
+//                    break;
+//                case 2:
+//                    code.append((random.nextInt(10)));
+//                    break;
+//            }
+//        }
+//
+//        return code.toString();
+//    }
 
     private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("GREENY 이메일 인증");
+        message.setSubject("이메일 인증");
 
+        String link = "https://www.naver.com/";  // TODO GREENY url 사용
+        String buttonText = "이메일 확인하기";
         String msgg="";
+
         msgg+= "<div style='margin:20px;'>";
         msgg+= "<h1> 안녕하세요 GREENY 입니다. </h1>";
         msgg+= "<br>";
-        msgg+= "<p>아래 코드를 복사해 입력해주세요<p>";
+        msgg+= "<p>이메일 인증을 완료해주세요.<p>";
         msgg+= "<br>";
-        msgg+= "<p>감사합니다.<p>";
-        msgg+= "<br>";
-        msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg+= "<h3 style='color:blue;'>이메일 인증 코드입니다.</h3>";
+        msgg+= "<div align='center' font-family:verdana';>";
         msgg+= "<div style='font-size:130%'>";
-        msgg+= "CODE : <strong>";
-        msgg+= code+"</strong><div><br/> ";
-        msgg+= "</div>";
+        msgg += "<a href='" + link + "' style='display:inline-block; background-color:#00FF00; color:white; padding:10px 20px; text-decoration:none;'>" + buttonText + "</a>";
+        msgg += "</div></div></div>";
         message.setText(msgg, "utf-8", "html");
         message.setFrom(new InternetAddress(username,"GREENY"));
 

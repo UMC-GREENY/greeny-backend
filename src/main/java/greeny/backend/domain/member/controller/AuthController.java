@@ -31,9 +31,10 @@ public class AuthController {
 
     @Operation(summary = "Authenticate email API", description = "put your email to authenticate.")
     @ResponseStatus(OK)
-    @PostMapping("/sign-up/code")
-    public Response getEmailAuthCode(String email) throws MessagingException, UnsupportedEncodingException {
-        return success(SUCCESS_TO_GET_EMAIL_AUTH_CODE, mailService.sendSimpleMessage(email));
+    @PostMapping()
+    public Response sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
+        mailService.sendSimpleMessage(email);
+        return success(SUCCESS_TO_SEND_EMAIL);
     }
 
 
