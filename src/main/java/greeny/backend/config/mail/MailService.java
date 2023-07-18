@@ -1,6 +1,7 @@
 package greeny.backend.config.mail;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class MailService {
 
     private final JavaMailSender javaMailSender;
     private final String code = generateCode();
+
+    @Value("${spring.mail.username}")
+    private String username;
 
     public String sendSimpleMessage(String to) throws MessagingException, UnsupportedEncodingException {
 
@@ -78,7 +82,7 @@ public class MailService {
         msgg+= code+"</strong><div><br/> ";
         msgg+= "</div>";
         message.setText(msgg, "utf-8", "html");
-        message.setFrom(new InternetAddress("mmw7741@gmail.com","GREENY"));
+        message.setFrom(new InternetAddress(username,"GREENY"));
 
         return message;
     }

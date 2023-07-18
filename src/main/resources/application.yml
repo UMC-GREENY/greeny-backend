@@ -19,20 +19,6 @@ spring:
             enable: true
           auth: true
 
-    mail:
-      host: smtp.naver.com
-      port: 465
-      username: ${naver.username}
-      password: ${naver.password}
-      properties:
-        mail:
-          smtp:
-            starttls:
-              enable: true
-            auth: true
-            ssl:
-              enable: true
-
 #oauth:
 #  kakao:
 #    client-id: ${kakao.client-id}
