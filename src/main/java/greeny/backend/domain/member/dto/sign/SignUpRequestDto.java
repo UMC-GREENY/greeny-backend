@@ -1,12 +1,9 @@
 package greeny.backend.domain.member.dto.sign;
 
-import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.member.entity.MemberGeneral;
-import greeny.backend.domain.member.entity.MemberProfile;
-import greeny.backend.domain.member.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -22,7 +19,7 @@ public class SignUpRequestDto {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*]{8,}$|^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")  // 영숫자 각각 1자 이상 + 특수 문자 (!@#$%^&*) 선택 => 8자리 이상
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*]{8,}$")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
     @Schema(description = "비밀번호", defaultValue = "test1234!")
     private String password;
 
