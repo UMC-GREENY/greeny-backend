@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -37,4 +38,12 @@ public class SignUpRequestDto {
     @Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$", message = "생년월일은 하이픈(-)을 포함해야 합니다.")
     @Schema(description = "생년월일", defaultValue = "2000-01-01")
     private String birth;
+
+    @NotBlank(message = "개인 정보 수집 및 이용 동의 여부를 입력해주세요.")
+    @Schema(description = "개인 정보 수집 및 이용 동의 (선택)", defaultValue = "1")
+    private String personalInfo;
+
+    @NotBlank(message = "개인 정보 제 3자 제공 동의 여부를 입력해주세요.")
+    @Schema(description = "개인 정보 제 3자 제공 (선택)", defaultValue = "0")
+    private String thirdParty;
 }

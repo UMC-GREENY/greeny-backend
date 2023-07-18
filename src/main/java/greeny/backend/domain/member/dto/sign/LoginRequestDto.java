@@ -19,7 +19,7 @@ public class LoginRequestDto {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*]{8,}$|^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")  // 영숫자 각각 1자 이상 + 특수 문자 (!@#$%^&*) 선택 => 8자리 이상
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*]{8,}$")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
     @Schema(description = "비밀번호", defaultValue = "test1234!")
     private String password;
 }
