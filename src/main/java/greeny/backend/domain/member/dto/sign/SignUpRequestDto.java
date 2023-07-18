@@ -15,12 +15,12 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class SignUpRequestDto {
     @NotBlank(message = "이메일을 입력해주세요.")
-    @Pattern(regexp = "^[A-Za-z0-9]+@(gmail\\.com|naver\\.com)$")  // 영숫자 1자 이상인 gmail or naver
+    @Pattern(regexp = "^[A-Za-z0-9]+@(gmail\\.com|naver\\.com)$", message = "이메일은 google, naver 메일만 사용 가능합니다.")  // 영숫자 1자 이상인 gmail or naver
     @Schema(description = "이메일", defaultValue = "test@gmail.com")
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*]{8,}$")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상이어야 합니다.")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
     @Schema(description = "비밀번호", defaultValue = "test1234!")
     private String password;
 
@@ -30,12 +30,12 @@ public class SignUpRequestDto {
     private String name;
 
     @NotBlank(message = "휴대폰 번호를 입력해주세요.")
-    @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", message = "휴대폰 번호는 하이픈(-)을 포함해야 합니다.")
+    @Pattern(regexp = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", message = "휴대폰 번호가 잘못 입력되었습니다.")  // 하이픈 (-) 포함
     @Schema(description = "휴대폰 번호", defaultValue = "010-1234-5678")
     private String phone;
 
     @NotBlank(message = "생년월일을 입력해주세요.")
-    @Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$", message = "생년월일은 하이픈(-)을 포함해야 합니다.")
+    @Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$", message = "생년월일이 잘못 입력되었습니다.")  // 하이픈 (-) 포함
     @Schema(description = "생년월일", defaultValue = "2000-01-01")
     private String birth;
 
