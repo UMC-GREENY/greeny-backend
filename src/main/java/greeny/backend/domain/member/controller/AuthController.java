@@ -1,6 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 import greeny.backend.config.mail.MailService;
+import greeny.backend.domain.member.dto.sign.LoginRequestDto;
 import greeny.backend.domain.member.dto.sign.SignUpRequestDto;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.response.Response;
@@ -46,4 +47,13 @@ public class AuthController {
         authService.signUp(signUpRequestDto);
         return success(SUCCESS_TO_SIGN_UP);
     }
+
+    @Operation(summary = "General sign in API", description = "put your sign in info.")
+    @PostMapping("/sign-in/general")
+    @ResponseStatus(OK)
+    public Response signInWithGeneral(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+        return success(SUCCESS_TO_SIGN_IN, authService.signInWithGeneral(loginRequestDto));
+    }
+
+
 }
