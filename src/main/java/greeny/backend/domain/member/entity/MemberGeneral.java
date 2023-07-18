@@ -27,6 +27,9 @@ public class MemberGeneral extends AuditEntity {
     @Column(nullable = false)
     private String isAuto;
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
     public void changeIsAuto(String isAuto) {
         this.isAuto = isAuto;
     }

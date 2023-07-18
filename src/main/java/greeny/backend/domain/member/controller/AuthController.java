@@ -1,6 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 import greeny.backend.config.mail.MailService;
+import greeny.backend.domain.member.dto.sign.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.LoginRequestDto;
 import greeny.backend.domain.member.dto.sign.SignUpRequestDto;
 import greeny.backend.domain.member.service.AuthService;
@@ -49,11 +50,19 @@ public class AuthController {
     }
 
     @Operation(summary = "General sign in API", description = "put your sign in info.")
-    @PostMapping("/sign-in/general")
     @ResponseStatus(OK)
+    @PostMapping("/sign-in/general")
     public Response signInWithGeneral(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return success(SUCCESS_TO_SIGN_IN, authService.signInWithGeneral(loginRequestDto));
     }
 
+    @Operation(summary = "Find password API", description = "put your email.")
+    @ResponseStatus(OK)
+    @PatchMapping("/password")
+    public Response findPassword(@Valid @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
+        authService.findPassword(findPasswordRequestDto);
+        return success(SUCCESS_TO_FIND_PASSWORD);
+    }
 
+    
 }

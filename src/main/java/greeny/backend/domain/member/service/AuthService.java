@@ -1,10 +1,7 @@
 package greeny.backend.domain.member.service;
 
 import greeny.backend.config.jwt.JwtProvider;
-import greeny.backend.domain.member.dto.sign.LoginRequestDto;
-import greeny.backend.domain.member.dto.sign.SignUpRequestDto;
-import greeny.backend.domain.member.dto.sign.TokenDto;
-import greeny.backend.domain.member.dto.sign.TokenResponseDto;
+import greeny.backend.domain.member.dto.sign.*;
 import greeny.backend.domain.member.entity.*;
 import greeny.backend.domain.member.repository.*;
 import greeny.backend.exception.situation.EmailAlreadyExistsException;
@@ -59,6 +56,12 @@ public class AuthService {
         changeIsAutoBySignIn(loginRequestDto.getIsAuto(), foundMemberGeneral, foundIsAuto);
 
         return authorize(email, foundMember.getId().toString());
+    }
+
+    @Transactional
+    public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
+        getMemberGeneral(getMember(findPasswordRequestDto.getEmail()))
+                .changePassword(passwordEncoder.encode(findPasswordRequestDto.getPassword()));
     }
 
     private Member toMember(String email) {
