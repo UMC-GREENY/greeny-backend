@@ -2,13 +2,16 @@ package greeny.backend.domain.post.controller;
 
 import greeny.backend.domain.post.dto.CreatePostRequestDto;
 import greeny.backend.domain.post.dto.GetPostResponseDto;
+import greeny.backend.domain.post.entity.Post;
 import greeny.backend.domain.post.service.PostService;
+import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +39,7 @@ public class PostController {
                                @RequestPart(name = "files", required = false)
                                List<MultipartFile> multipartFiles) {
         postService.creatPost(createPostRequestDto, multipartFiles);
+//        postService.creatPost(createPostRequestDto, multipartFiles, memberService.getCurrentMember());
         return success(SUCCESS_TO_CREATE_POST);
     }
 
@@ -52,4 +56,13 @@ public class PostController {
     public Response getPost(@RequestParam Long postId){
         return Response.success(SUCCESS_TO_GET_POST, postService.getPost(postId));
     }
+
+    @Operation(summary = "Delete post API", description = "put post id what you want to delete")
+    @ResponseStatus(OK)
+    @DeleteMapping()
+    public Response deletePost(@RequestParam Long postId){
+        postService.deletePost(postId);
+        return Response.success(SUCCESS_TO_DELETE_POST);
+    }
+
 }

@@ -53,4 +53,16 @@ public class PostService {
     public GetPostResponseDto getPost(Long postId) {
         return GetPostResponseDto.from(postRepository.findById(postId).orElseThrow(PostNotFoundException::new));
     }
+
+    @Transactional
+    public void deletePost(Long postId) {
+        postRepository.deleteById(postId);
+    }
+
+//    private static void authorizeWriter(Post post){
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        if(!post.getWriter.getEmail().equals(email)){
+//            throw new MemberNotEqualsException();
+//        }
+//    }
 }
