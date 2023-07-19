@@ -1,9 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 import greeny.backend.config.mail.MailService;
-import greeny.backend.domain.member.dto.sign.FindPasswordRequestDto;
-import greeny.backend.domain.member.dto.sign.LoginRequestDto;
-import greeny.backend.domain.member.dto.sign.SignUpRequestDto;
+import greeny.backend.domain.member.dto.sign.*;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
@@ -66,10 +64,17 @@ public class AuthController {
         return success(SUCCESS_TO_FIND_PASSWORD);
     }
 
-    @Operation(summary = "Auto sign in API", description = "put your token info.")
+    @Operation(summary = "Auto sign in API", description = "please auto sign in.")
     @ResponseStatus(OK)
     @GetMapping("/auto/sign-in")
     public Response autoSignIn() {
         return success(SUCCESS_TO_GET_IS_AUTO, authService.autoSignIn(memberService.getCurrentMember()));
+    }
+
+    @Operation(summary = "Token reissue API", description = "put your token info")
+    @ResponseStatus(OK)
+    @PostMapping("/reissue")
+    public Response reissue(@RequestBody TokenRequestDto tokenRequestDto) {
+        return success(SUCCESS_TO_REISSUE, authService.reissue(tokenRequestDto));
     }
 }
