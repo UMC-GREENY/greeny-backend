@@ -36,4 +36,12 @@ public class Post extends AuditEntity {
         if(this.postFiles.isEmpty() || this.postFiles==null) return false;
         return true;
     }
+
+    public List<String> getFileUrls(){
+        List<String> fileUrls = new ArrayList<>();
+        for(PostFile postFile : postFiles){
+            fileUrls.add(postFile.getFileUrl());
+        }
+        return fileUrls;
+    }
 }

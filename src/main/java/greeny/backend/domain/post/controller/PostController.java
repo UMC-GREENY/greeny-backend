@@ -1,23 +1,18 @@
 package greeny.backend.domain.post.controller;
 
 import greeny.backend.domain.post.dto.CreatePostRequestDto;
+import greeny.backend.domain.post.dto.GetPostResponseDto;
 import greeny.backend.domain.post.service.PostService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.api.annotations.ParameterObject;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import static greeny.backend.domain.post.SuccessMessage.*;
@@ -46,8 +41,15 @@ public class PostController {
 
     @Operation(summary = "Search post list api", description = "put keyword and page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
-    @GetMapping()
+    @GetMapping("/search")
     public Response searchPostList(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.searchPosts(keyword, pageable));
+    }
+
+    @Operation(summary = "Get post api", description = "put post id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getPost(@RequestParam Long postId){
+        return Response.success(SUCCESS_TO_GET_POST, postService.getPost(postId));
     }
 }

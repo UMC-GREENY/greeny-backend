@@ -3,23 +3,20 @@ package greeny.backend.domain.post.service;
 import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.post.dto.CreatePostRequestDto;
 import greeny.backend.domain.post.dto.GetPostListResponseDto;
+import greeny.backend.domain.post.dto.GetPostResponseDto;
 import greeny.backend.domain.post.entity.Post;
 import greeny.backend.domain.post.entity.PostFile;
 import greeny.backend.domain.post.repository.PostFileRepository;
 import greeny.backend.domain.post.repository.PostRepository;
+import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +39,7 @@ public class PostService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<GetPostListResponseDto> searchPosts(String keyword, Pageable pageable) {
         if(keyword==null || keyword.trim().isEmpty()) {
             return postRepository.findAll(pageable)
@@ -50,5 +47,10 @@ public class PostService {
         }
         return postRepository.findByTitleContaining(keyword, pageable)
                 .map(GetPostListResponseDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public GetPostResponseDto getPost(Long postId) {
+        return GetPostResponseDto.from(postRepository.findById(postId).orElseThrow(PostNotFoundException::new));
     }
 }
