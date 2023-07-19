@@ -7,10 +7,18 @@ import greeny.backend.domain.post.service.PostService;
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,10 +42,9 @@ public class PostController {
 
     @Operation(summary = "Create post api", description = "put your post info to create. you can skip files.")
     @ResponseStatus(OK)
-    @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE}, produces = APPLICATION_JSON_VALUE)
-    public Response createPost(@Valid @RequestPart(name = "body") CreatePostRequestDto createPostRequestDto,
-                               @RequestPart(name = "files", required = false)
-                               List<MultipartFile> multipartFiles) {
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+    public Response createPost(@Valid @RequestPart(name = "body(json)") CreatePostRequestDto createPostRequestDto,
+                               @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles) {
         postService.creatPost(createPostRequestDto, multipartFiles);
 //        postService.creatPost(createPostRequestDto, multipartFiles, memberService.getCurrentMember());
         return success(SUCCESS_TO_CREATE_POST);
