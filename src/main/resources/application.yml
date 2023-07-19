@@ -7,6 +7,18 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${gmail.username}
+    password: ${gmail.password}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
 #oauth:
 #  kakao:
 #    client-id: ${kakao.client-id}

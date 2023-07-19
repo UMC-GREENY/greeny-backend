@@ -14,14 +14,14 @@ import static org.springframework.http.HttpStatus.OK;
 @JsonInclude(NON_NULL)
 @AllArgsConstructor(access = PRIVATE)
 @Schema(description = "This is response message from server")
-@JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@JsonPropertyOrder({"isSuccess", "code", "message", "data"})
 @Getter
 public class Response {
 
     private Boolean isSuccess;
     private int code;
     private String message;
-    private Object result;
+    private Object data;
 
     public static Response success(String message) {
         return new Response(true, OK.value(), message, null);
