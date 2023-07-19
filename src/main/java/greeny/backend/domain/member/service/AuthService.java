@@ -64,13 +64,16 @@ public class AuthService {
                 .changePassword(passwordEncoder.encode(findPasswordRequestDto.getPassword()));
     }
 
+    public GetIsAutoInfoResponseDto autoSignIn(Member member) {
+        return new GetIsAutoInfoResponseDto(getMemberGeneral(member).getIsAuto());
+    }
+
     private Member toMember(String email) {
         return Member.builder()
                 .email(email)
                 .role(Role.ROLE_USER)
                 .build();
     }
-
     private MemberGeneral toMemberGeneral(Member member, String password) {
         return MemberGeneral.builder()
                 .member(member)
@@ -78,14 +81,12 @@ public class AuthService {
                 .isAuto("0")
                 .build();
     }
-
     private MemberSocial toMemberSocial(Member member, Provider provider) {
         return MemberSocial.builder()
                 .member(member)
                 .provider(provider)
                 .build();
     }
-
     private MemberProfile toMemberProfile(Member member, String name, String phone, String birth) {
         return MemberProfile.builder()
                 .member(member)
@@ -94,7 +95,6 @@ public class AuthService {
                 .birth(birth)
                 .build();
     }
-
     private MemberAgreement toMemberAgreement(Member member, String personalInfo, String thirdParty) {
         return MemberAgreement.builder()
                 .member(member)
@@ -102,24 +102,20 @@ public class AuthService {
                 .thirdParty(thirdParty)
                 .build();
     }
-
     private void saveGeneralMember(SignUpRequestDto signUpRequestDto) {
         Member savedMember = memberRepository.save(toMember(signUpRequestDto.getEmail()));
         memberGeneralRepository.save(toMemberGeneral(savedMember, signUpRequestDto.getPassword()));
         memberProfileRepository.save(toMemberProfile(savedMember, signUpRequestDto.getName(), signUpRequestDto.getPhone(), signUpRequestDto.getBirth()));
         memberAgreementRepository.save(toMemberAgreement(savedMember, signUpRequestDto.getPersonalInfo(), signUpRequestDto.getThirdParty()));
     }
-
     private Member getMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
     }
-
     private MemberGeneral getMemberGeneral(Member member) {
         return memberGeneralRepository.findByMember(member)
                 .orElseThrow(MemberGeneralNotFoundException::new);
     }
-
     private void changeIsAutoBySignIn(String isAutoToCheck, MemberGeneral foundMemberGeneral, String foundIsAuto) {
         if (isAutoToCheck.equals("0")) {
             if (foundIsAuto.equals("1")) {
@@ -131,7 +127,6 @@ public class AuthService {
             }
         }
     }
-
     private TokenResponseDto authorize(String email, String memberId) {
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(new UsernamePasswordAuthenticationToken(email, memberId));
@@ -151,14 +146,12 @@ public class AuthService {
 
         return firstSignIn(authentication);
     }
-
     private RefreshToken toRefreshToken(String key, String value) {
         return RefreshToken.builder()
                 .key(key)
                 .value(value)
                 .build();
     }
-
     private TokenResponseDto firstSignIn(Authentication authentication) {
         TokenDto generatedTokenDto = jwtProvider.generateTokenDto(authentication);
         String generatedAccessToken = generatedTokenDto.getAccessToken();

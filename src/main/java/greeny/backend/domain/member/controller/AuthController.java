@@ -5,6 +5,7 @@ import greeny.backend.domain.member.dto.sign.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.LoginRequestDto;
 import greeny.backend.domain.member.dto.sign.SignUpRequestDto;
 import greeny.backend.domain.member.service.AuthService;
+import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
 import greeny.backend.response.SuccessMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ public class AuthController {
 
     private final MailService mailService;
     private final AuthService authService;
+    private final MemberService memberService;
 
     @Operation(summary = "Authenticate email API", description = "put your email to authenticate.")
     @ResponseStatus(OK)
@@ -64,5 +66,10 @@ public class AuthController {
         return success(SUCCESS_TO_FIND_PASSWORD);
     }
 
-    
+    @Operation(summary = "Auto sign in API", description = "put your token info.")
+    @ResponseStatus(OK)
+    @GetMapping("/auto/sign-in")
+    public Response autoSignIn() {
+        return success(SUCCESS_TO_GET_IS_AUTO, authService.autoSignIn(memberService.getCurrentMember()));
+    }
 }

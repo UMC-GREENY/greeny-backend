@@ -67,7 +67,7 @@ public class MailService {
         message.addRecipients(Message.RecipientType.TO, to);
         message.setSubject("이메일 인증");
 
-        String link = "https://www.naver.com/";  // TODO GREENY url 사용
+        String link = "https://www.naver.com/";  // TODO 인증된 GREENY 회원가입 url (Ex. https://greeny/sign-up/verify?token=Df2s1Gf5)
         String buttonText = "이메일 확인하기";
         String msgg="";
 
