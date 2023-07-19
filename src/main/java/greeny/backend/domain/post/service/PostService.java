@@ -2,19 +2,22 @@ package greeny.backend.domain.post.service;
 
 import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.post.dto.CreatePostRequestDto;
+import greeny.backend.domain.post.dto.GetPostListResponseDto;
 import greeny.backend.domain.post.entity.Post;
 import greeny.backend.domain.post.entity.PostFile;
 import greeny.backend.domain.post.repository.PostFileRepository;
 import greeny.backend.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +38,11 @@ public class PostService {
                 postFileRepository.save(postFile);
             }
         }
+    }
+
+    @Transactional
+    public Page<GetPostListResponseDto> getPosts(Pageable pageable) {
+        return postRepository.findAll(pageable)
+                .map(GetPostListResponseDto::from);
     }
 }

@@ -32,4 +32,8 @@ public class Post extends AuditEntity {
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     List<PostFile> postFiles = new ArrayList<>();
 
+    public Boolean checkFileExist() {
+        if(this.postFiles.isEmpty() || this.postFiles==null) return false;
+        return true;
+    }
 }
