@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,7 +57,11 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long postId) {
-        postRepository.deleteById(postId);
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        List<String> fileUrls = new ArrayList<>();
+        for(String fileUrl : post.getFileUrls()) fileUrls.add(fileUrl);
+        postRepository.delete(post);
+        for(String fileUrl : fileUrls) s3Service.deleteFile(fileUrl);
     }
 
 //    private static void authorizeWriter(Post post){
