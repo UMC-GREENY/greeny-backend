@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,8 +43,12 @@ public class PostService {
     }
 
     @Transactional
-    public Page<GetPostListResponseDto> getPosts(Pageable pageable) {
-        return postRepository.findAll(pageable)
+    public Page<GetPostListResponseDto> searchPosts(String keyword, Pageable pageable) {
+        if(keyword==null || keyword.trim().isEmpty()) {
+            return postRepository.findAll(pageable)
+                    .map(GetPostListResponseDto::from);
+        }
+        return postRepository.findByTitleContaining(keyword, pageable)
                 .map(GetPostListResponseDto::from);
     }
 }

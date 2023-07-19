@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import static greeny.backend.domain.post.SuccessMessage.*;
@@ -32,7 +34,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "Create post API", description = "put your post info to create")
+    @Operation(summary = "Create post api", description = "put your post info to create. you can skip files.")
     @ResponseStatus(OK)
     @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE}, produces = APPLICATION_JSON_VALUE)
     public Response createPost(@Valid @RequestPart(name = "body") CreatePostRequestDto createPostRequestDto,
@@ -42,11 +44,10 @@ public class PostController {
         return success(SUCCESS_TO_CREATE_POST);
     }
 
-    @Operation(summary = "Get post list api", description = "put page info what you want")
+    @Operation(summary = "Search post list api", description = "put keyword and page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
-    @GetMapping
-    public Response getPostList(@ParameterObject Pageable pageable) {
-        return Response.success(SUCCESS_TO_GET_POST_LIST, postService.getPosts(pageable));
+    @GetMapping()
+    public Response searchPostList(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.searchPosts(keyword, pageable));
     }
-
 }
