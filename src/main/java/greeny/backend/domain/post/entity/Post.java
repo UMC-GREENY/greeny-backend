@@ -30,6 +30,7 @@ public class Post extends AuditEntity {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer hits;
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
+    @Builder.Default
     List<PostFile> postFiles = new ArrayList<>();
 
     public Boolean checkFileExist() {
