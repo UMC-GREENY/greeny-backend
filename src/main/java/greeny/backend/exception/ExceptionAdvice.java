@@ -147,5 +147,13 @@ public class ExceptionAdvice {
         return failure(NOT_FOUND, "요청한 일반 로그인 회원을 찾을 수 없습니다.");
     }
 
+    // 400 응답
+    // 소셜에서 제공한 토큰 정보가 비어있음
+    @ExceptionHandler(EmptySocialTokenInfoException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public Response emptySocialTokenInfoException() {
+        return failure(BAD_REQUEST, "소셜에서 제공한 토큰 정보가 비어있습니다.");
+    }
+
 
 }
