@@ -1,16 +1,17 @@
 package greeny.backend.domain.member.controller;
 
 import greeny.backend.config.mail.MailService;
-import greeny.backend.domain.member.dto.sign.*;
+import greeny.backend.domain.member.dto.sign.common.TokenRequestDto;
+import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
+import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
+import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
-import greeny.backend.response.SuccessMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;

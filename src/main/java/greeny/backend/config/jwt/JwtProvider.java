@@ -1,6 +1,6 @@
 package greeny.backend.config.jwt;
 
-import greeny.backend.domain.member.dto.sign.TokenDto;
+import greeny.backend.domain.member.dto.sign.common.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

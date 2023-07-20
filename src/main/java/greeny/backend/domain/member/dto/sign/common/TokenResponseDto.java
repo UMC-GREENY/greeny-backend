@@ -1,4 +1,4 @@
-package greeny.backend.domain.member.dto.sign;
+package greeny.backend.domain.member.dto.sign.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

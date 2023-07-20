@@ -11,7 +11,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class MailService {
             throw new IllegalArgumentException();
         }
 
-//        return code;
+//        return code;  // TODO Url token 정보 전송
     }
 
 //    private String generateCode() {
