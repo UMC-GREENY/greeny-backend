@@ -5,4 +5,6 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_SEARCH_POST_LIST = "게시글 목록을 검색하는데 성공하였습니다.";
     public static final String SUCCESS_TO_GET_POST = "게시글 상세정보를 불러오는데 성공하였습니다.";
     public static final String SUCCESS_TO_DELETE_POST = "게시글을 삭제하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_UPDATE_POST = "게시글을 수정하는데 성공하였습니다.";
+
 }

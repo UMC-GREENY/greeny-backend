@@ -1,7 +1,7 @@
 package greeny.backend.domain.post.entity;
 
 import greeny.backend.domain.AuditEntity;
-import greeny.backend.domain.member.entity.Member;
+import greeny.backend.domain.post.dto.UpdatePostRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,7 +34,7 @@ public class Post extends AuditEntity {
     List<PostFile> postFiles = new ArrayList<>();
 
     public Boolean checkFileExist() {
-        if(this.postFiles.isEmpty() || this.postFiles==null) return false;
+        if(this.postFiles.isEmpty()) return false;
         return true;
     }
 
@@ -44,5 +44,14 @@ public class Post extends AuditEntity {
             fileUrls.add(postFile.getFileUrl());
         }
         return fileUrls;
+    }
+
+    public void updateHits(){
+        this.hits += 1;
+    }
+
+    public void update(String title, String content){
+        this.title = title;
+        this.content = content;
     }
 }
