@@ -18,7 +18,7 @@ public class MemberGeneral extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_general_id")
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
