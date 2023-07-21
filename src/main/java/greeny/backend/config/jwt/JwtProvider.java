@@ -35,18 +35,11 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(Authentication authentication, Date tokenExpiresIn) {
+    public String generateAccessToken(Authentication authentication, long now) {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, getAuthorities(authentication))
-                .setExpiration(tokenExpiresIn)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
-    }
-
-    public String generateRefreshToken(Date tokenExpiresIn) {
-        return Jwts.builder()
-                .setExpiration(tokenExpiresIn)
+                .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -58,7 +51,7 @@ public class JwtProvider {
 
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
-                .accessToken(generateAccessToken(authentication, new Date(now + ACCESS_TOKEN_EXPIRE_TIME)))
+                .accessToken(generateAccessToken(authentication, now))
                 .refreshToken(generateRefreshToken(refreshTokenExpiresIn))
                 .refreshTokenExpiresIn(refreshTokenExpiresIn.getTime())
                 .build();
@@ -95,6 +88,13 @@ public class JwtProvider {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    private String generateRefreshToken(Date tokenExpiresIn) {
+        return Jwts.builder()
+                .setExpiration(tokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     private String getAuthorities(Authentication authentication) {

@@ -23,7 +23,7 @@ public class MemberAgreement extends AuditEntity {
     private Member member;
 
     @Column(nullable = false)
-    private boolean personalInfo;
+    private String personalInfo;
     @Column(nullable = false)
-    private boolean thirdParty;
+    private String thirdParty;
 }
