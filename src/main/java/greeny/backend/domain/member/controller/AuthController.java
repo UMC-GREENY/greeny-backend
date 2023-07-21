@@ -1,10 +1,12 @@
 package greeny.backend.domain.member.controller;
 
 import greeny.backend.config.mail.MailService;
+import greeny.backend.config.oauth.OAuthService;
 import greeny.backend.domain.member.dto.sign.common.TokenRequestDto;
 import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
 import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
+import greeny.backend.domain.member.entity.Provider;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
@@ -31,13 +33,14 @@ public class AuthController {
 
     private final MailService mailService;
     private final AuthService authService;
+    private final OAuthService oAuthService;
     private final MemberService memberService;
 
     @Operation(summary = "Authenticate email API", description = "put your email to authenticate.")
     @ResponseStatus(OK)
     @PostMapping()
     public Response sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
-        authService.validateSignUpInfo(email);
+        authService.validateSignUpInfoWithGeneral(email);
         mailService.sendSimpleMessage(email);
         return success(SUCCESS_TO_SEND_EMAIL);
     }
@@ -55,6 +58,26 @@ public class AuthController {
     @PostMapping("/sign-in/general")
     public Response signInWithGeneral(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return success(SUCCESS_TO_SIGN_IN, authService.signInWithGeneral(loginRequestDto));
+    }
+
+    // 카카오 로그인 API
+    @Operation(summary = "Kakao sign in API", description = "put your kakao sign in info.")
+    @ResponseStatus(OK)
+    @PostMapping("/sign-in/kakao")
+    public Response signInWithKakao(String authorizationCode) {  // Query parameter
+        return success(
+                SUCCESS_TO_SIGN_IN,
+                authService.signInWithSocial(Provider.KAKAO, oAuthService.requestToKakao(authorizationCode).getKakaoAccount().getEmail()));
+    }
+
+    // 네이버 로그인 API
+    @Operation(summary = "Naver sign in API", description = "put your naver sign in info.")
+    @ResponseStatus(OK)
+    @PostMapping("/sign-in/naver")
+    public Response signInWithNaver(String authorizationCode, String state) {  // Query parameter
+        return success(
+                SUCCESS_TO_SIGN_IN,
+                authService.signInWithSocial(Provider.NAVER, oAuthService.requestToNaver(authorizationCode, state).getResponse().getEmail()));
     }
 
     @Operation(summary = "Find password API", description = "put your email.")

@@ -38,14 +38,14 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
 
-    public void validateSignUpInfo(String email) {
+    public void validateSignUpInfoWithGeneral(String email) {    // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
         if (memberRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistsException(email);
         }
     }
 
     public void signUp(SignUpRequestDto signUpRequestDto) {
-        validateSignUpInfo(signUpRequestDto.getEmail());
+        validateSignUpInfoWithGeneral(signUpRequestDto.getEmail());
         saveGeneralMember(signUpRequestDto);
     }
 
@@ -61,6 +61,18 @@ public class AuthService {
         changeIsAutoBySignIn(loginRequestDto.getIsAuto(), foundMemberGeneral, foundIsAuto);
 
         return authorize(email, foundMember.getId().toString());
+    }
+
+    public TokenResponseDto signInWithSocial(Provider provider, String email) {  // 소셜 제공자와 사용자 프로필 정보 중 email 을 받아 소셜 로그인
+
+        if(memberRepository.existsByEmail(email)) {  // DB에 이미 존재하는 사용자일 경우
+            validateSignUpInfoWithSocial(email);  // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
+            return authorize(email, getMember(email).getId().toString());  // 토큰 발행
+        }
+
+        // 최초 소셜 로그인을 이용하는 사용자일 경우
+        Member savedMember = saveSocialMember(provider, email);
+        return authorize(email, savedMember.getId().toString());
     }
 
     @Transactional
@@ -105,7 +117,7 @@ public class AuthService {
                 .build();
     }
 
-    private MemberSocial toMemberSocial(Member member, Provider provider) {
+    private MemberSocial toMemberSocial(Provider provider, Member member) {
         return MemberSocial.builder()
                 .member(member)
                 .provider(provider)
@@ -136,6 +148,12 @@ public class AuthService {
         memberAgreementRepository.save(toMemberAgreement(savedMember, signUpRequestDto.getPersonalInfo(), signUpRequestDto.getThirdParty()));
     }
 
+    private Member saveSocialMember(Provider provider, String email) {
+        Member savedMember = memberRepository.save(toMember(email));
+        memberSocialRepository.save(toMemberSocial(provider, savedMember));
+        return savedMember;
+    }
+
     private Member getMember(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
@@ -158,16 +176,17 @@ public class AuthService {
         }
     }
 
-    private TokenResponseDto authorize(String email, String memberId) {
+    private TokenResponseDto authorize(String email, String memberId) {  // 여러 가지 경우에 대한 토큰 발행
+        // CustomUserDetailsService 의 loadByUsername() 실행, 로그인을 시도하는 사용자의 email, memberId 와 DB에 있는 email, memberId 비교
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(new UsernamePasswordAuthenticationToken(email, memberId));
 
-        if (refreshTokenRepository.existsByKey(email)) {
+        if (refreshTokenRepository.existsByKey(email)) {  // 해당 이메일에 대한 refresh token 이 이미 존재할 경우
 
             RefreshToken foundRefreshToken = getRefreshToken(email);
             String foundRefreshTokenValue = foundRefreshToken.getValue();
 
-            if (jwtProvider.validateToken(foundRefreshTokenValue)) {
+            if (jwtProvider.validateToken(foundRefreshTokenValue)) {  // DB 에서 가져온 refresh token 이 유효한지 검증
                 return new TokenResponseDto(
                         jwtProvider.generateAccessToken(authentication, (new Date()).getTime()),
                         foundRefreshTokenValue
@@ -178,6 +197,12 @@ public class AuthService {
         }
 
         return publishToken(authentication);
+    }
+
+    private void validateSignUpInfoWithSocial(String email) {  // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
+        if(memberGeneralRepository.existsByMember(getMember(email))) {
+            throw new EmailAlreadyExistsException(email);
+        }
     }
 
     private RefreshToken getRefreshToken(String email) {
@@ -191,7 +216,7 @@ public class AuthService {
                 .build();
     }
 
-    private TokenResponseDto publishToken(Authentication authentication) {  // 로그인이 처음 or refresh token 유효하지 않을 때
+    private TokenResponseDto publishToken(Authentication authentication) {  // 로그인이 처음 or refresh token 유효하지 않을 때 토큰 발행
         TokenDto generatedTokenDto = jwtProvider.generateTokenDto(authentication);
         String generatedRefreshToken = generatedTokenDto.getRefreshToken();
         refreshTokenRepository.save(toRefreshToken(authentication.getName(), generatedRefreshToken));

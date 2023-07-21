@@ -11,6 +11,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -32,7 +34,15 @@ public class OAuthService {  // Kakao or Naver 에 토큰, 사용자 프로필 �
     @Value("${oauth.naver.secret}")
     private String naverClientSecret;
 
-    public String requestToken(String authorizationCode) {  // Kakao 에 토큰 요청
+    public KakaoMemberInfoDto requestToKakao(String authorizationCode) {  // Kakao 에 토큰 요청 + 사용자 프로필 정보 요청
+        return requestMemberInfoToKakao(requestToken(authorizationCode));
+    }
+
+    public NaverMemberInfoDto requestToNaver(String authorizationCode, String state) {  // Naver 에 토큰 요청 + 사용자 프로필 정보 요청
+        return requestMemberInfoToNaver(requestToken(authorizationCode, state));
+    }
+
+    private String requestToken(String authorizationCode) {  // Kakao 에 토큰 요청
 
         String url = "https://kauth.kakao.com/oauth/token";
 
@@ -49,7 +59,7 @@ public class OAuthService {  // Kakao or Naver 에 토큰, 사용자 프로필 �
         return socialTokenDto.getAccessToken();
     }
 
-    public String requestToken(String authorizationCode, String state) {  // Naver 에 토큰 요청
+    private String requestToken(String authorizationCode, String state) {  // Naver 에 토큰 요청
 
         String url = "https://nid.naver.com/oauth2.0/token";
 
@@ -66,12 +76,13 @@ public class OAuthService {  // Kakao or Naver 에 토큰, 사용자 프로필 �
         return socialTokenDto.getAccessToken();
     }
 
-    public KakaoMemberInfoDto requestMemberInfoToKakao(String accessToken) {  // Kakao 에 사용자 프로필 정보 요청
+    private KakaoMemberInfoDto requestMemberInfoToKakao(String accessToken) {  // Kakao 에 사용자 프로필 정보 요청
 
         String url = "https://kapi.kakao.com/v2/user/me";
 
-        Map<String, String> body = new HashMap<>();
-        body.put("property_keys", "[\"kakao_account.email\"]");
+        // RestTemplate 를 통해 요청을 보낼 때 사용되는 HttpMessageConverter 을 처리하기 위해 Map<> 이 아닌 MultiValueMap<> 사용
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("property_keys", "[\"kakao_account.email\"]");
 
         return restTemplate.postForObject(
                 url,
@@ -80,11 +91,11 @@ public class OAuthService {  // Kakao or Naver 에 토큰, 사용자 프로필 �
         );
     }
 
-    public NaverMemberInfoDto requestMemberInfoToNaver(String accessToken) {  // Naver 에 사용자 프로필 정보 요청
+    private NaverMemberInfoDto requestMemberInfoToNaver(String accessToken) {  // Naver 에 사용자 프로필 정보 요청
 
         String url = "https://openapi.naver.com/v1/nid/me";
 
-        Map<String, String> body = new HashMap<>();
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
         return restTemplate.postForObject(
                 url,
@@ -103,23 +114,23 @@ public class OAuthService {  // Kakao or Naver 에 토큰, 사용자 프로필 �
         httpHeaders.set("Authorization", "Bearer " + accessToken);
         return httpHeaders;
     }
-    private Map<String, String> makeBody(String authorizationCode) {  // Kakao 에 요청 시 url 에 담는 데이터 구성
-        Map<String, String> body = new HashMap<>();
+    private MultiValueMap<String, String> makeBody(String authorizationCode) {  // Kakao 에 요청 시 url 에 담는 데이터 구성
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
-        body.put("code", authorizationCode);
-        body.put("grant_type", GRANT_TYPE);
-        body.put("client_id", kakaoClientId);
+        body.add("code", authorizationCode);
+        body.add("grant_type", GRANT_TYPE);
+        body.add("client_id", kakaoClientId);
 
         return body;
     }
-    private Map<String, String> makeBody(String authorizationCode, String state) {  // Naver 에 요청 시 url 에 담는 데이터 구성
-        Map<String, String> body = new HashMap<>();
+    private MultiValueMap<String, String> makeBody(String authorizationCode, String state) {  // Naver 에 요청 시 url 에 담는 데이터 구성
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
-        body.put("code", authorizationCode);
-        body.put("state", state);
-        body.put("grant_type", GRANT_TYPE);
-        body.put("client_id", naverClientId);
-        body.put("client_secret", naverClientSecret);
+        body.add("code", authorizationCode);
+        body.add("state", state);
+        body.add("grant_type", GRANT_TYPE);
+        body.add("client_id", naverClientId);
+        body.add("client_secret", naverClientSecret);
 
         return body;
     }

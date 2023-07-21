@@ -12,7 +12,7 @@ public class KakaoMemberInfoDto {  // Kakao 에서 제공하는 사용자 프로
     private KakaoAccount kakaoAccount;
 
     @Getter
-    private class KakaoAccount {
+    public class KakaoAccount {
         private String email;
     }
 }

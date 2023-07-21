@@ -12,7 +12,7 @@ public class NaverMemberInfoDto {  // Naver 에서 제공하는 사용자 프로
     private Response response;
 
     @Getter
-    private class Response {
+    public class Response {
         private String email;
     }
 }
