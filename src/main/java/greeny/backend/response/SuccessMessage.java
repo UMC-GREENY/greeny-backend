@@ -14,4 +14,10 @@ public class SuccessMessage {
 
     public static final String SUCCESS_TO_GET_CURRENT_MEMBER_INFO = "현재 회원의 정보를 가져오는데 성공했습니다.";
     public static final String SUCCESS_TO_DELETE_MEMBER = "회원을 삭제하는데 성공했습니다.";
+
+    public static final String SUCCESS_TO_CREATE_POST = "게시글을 작성하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_SEARCH_POST_LIST = "게시글 목록을 검색하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_GET_POST = "게시글 상세정보를 불러오는데 성공하였습니다.";
+    public static final String SUCCESS_TO_DELETE_POST = "게시글을 삭제하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_UPDATE_POST = "게시글을 수정하는데 성공하였습니다.";
 }
