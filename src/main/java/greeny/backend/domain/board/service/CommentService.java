@@ -41,9 +41,13 @@ public class CommentService {
     @Transactional
     public void updateComment(Long commentId, CreateCommentRequestDto updateCommentRequestDto, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
-
         if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
-
         comment.update(updateCommentRequestDto.getContent());
+    }
+
+    public void deleteComment(Long commentId, Member currentMember) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+        if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
+        commentRepository.delete(comment);
     }
 }

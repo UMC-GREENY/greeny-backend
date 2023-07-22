@@ -26,7 +26,7 @@ public class CommentController {
     private final CommentService commentService;
     private final MemberService memberService;
 
-    @Operation(summary = "Create comment api", description = "put your comment info to create.")
+    @Operation(summary = "Create comment api", description = "put post id and comment info to create.")
     @ResponseStatus(OK)
     @PostMapping
     public Response createComment(@RequestParam Long postId, @Valid @RequestBody CreateCommentRequestDto createCommentRequestDto) {
@@ -41,12 +41,20 @@ public class CommentController {
         return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getComments(postId));
     }
 
-    @Operation(summary = "Update comment api", description = "put your comment info to update.")
+    @Operation(summary = "Update comment api", description = "put comment info to update.")
     @ResponseStatus(OK)
     @PutMapping
     public Response updateComment(@RequestParam Long commentId, @Valid @RequestBody CreateCommentRequestDto updateCommentRequestDto) {
         commentService.updateComment(commentId, updateCommentRequestDto, memberService.getCurrentMember());
         return success(SUCCESS_TO_UPDATE_COMMENT);
+    }
+
+    @Operation(summary = "Delete comment API", description = "put comment info to delete")
+    @ResponseStatus(OK)
+    @DeleteMapping()
+    public Response deleteComment(@RequestParam Long commentId){
+        commentService.deleteComment(commentId, memberService.getCurrentMember());
+        return Response.success(SUCCESS_TO_DELETE_COMMENT);
     }
 
 }
