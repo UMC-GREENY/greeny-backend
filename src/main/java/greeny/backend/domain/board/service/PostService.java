@@ -1,14 +1,14 @@
-package greeny.backend.domain.post.service;
+package greeny.backend.domain.board.service;
 
 import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.post.dto.CreatePostRequestDto;
-import greeny.backend.domain.post.dto.GetPostListResponseDto;
-import greeny.backend.domain.post.dto.GetPostResponseDto;
-import greeny.backend.domain.post.dto.UpdatePostRequestDto;
-import greeny.backend.domain.post.entity.Post;
-import greeny.backend.domain.post.entity.PostFile;
-import greeny.backend.domain.post.repository.PostRepository;
+import greeny.backend.domain.board.dto.CreatePostRequestDto;
+import greeny.backend.domain.board.dto.GetPostListResponseDto;
+import greeny.backend.domain.board.dto.GetPostResponseDto;
+import greeny.backend.domain.board.dto.UpdatePostRequestDto;
+import greeny.backend.domain.board.entity.Post;
+import greeny.backend.domain.board.entity.PostFile;
+import greeny.backend.domain.board.repository.PostRepository;
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;

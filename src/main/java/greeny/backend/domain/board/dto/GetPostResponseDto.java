@@ -1,7 +1,7 @@
-package greeny.backend.domain.post.dto;
+package greeny.backend.domain.board.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import greeny.backend.domain.post.entity.Post;
+import greeny.backend.domain.board.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

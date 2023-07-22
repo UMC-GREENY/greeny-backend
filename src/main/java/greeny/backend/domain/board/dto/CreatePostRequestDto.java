@@ -1,13 +1,12 @@
-package greeny.backend.domain.post.dto;
+package greeny.backend.domain.board.dto;
 
 import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.post.entity.Post;
+import greeny.backend.domain.board.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
