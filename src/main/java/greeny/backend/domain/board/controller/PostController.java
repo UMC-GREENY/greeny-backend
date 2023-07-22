@@ -1,7 +1,6 @@
 package greeny.backend.domain.board.controller;
 
 import greeny.backend.domain.member.service.MemberService;
-import greeny.backend.domain.board.dto.UpdatePostRequestDto;
 import greeny.backend.domain.board.dto.CreatePostRequestDto;
 import greeny.backend.domain.board.service.PostService;
 import greeny.backend.response.Response;
@@ -67,9 +66,8 @@ public class PostController {
     @ResponseStatus(OK)
     @PutMapping(path = "/posts", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public Response updatePost(@RequestParam Long postId,
-                               @Valid @RequestPart(name = "body(json)") UpdatePostRequestDto updatePostRequestDto,
+                               @Valid @RequestPart(name = "body(json)") CreatePostRequestDto updatePostRequestDto,
                                @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles){
-        memberService.getCurrentMember();
         postService.updatePost(postId, updatePostRequestDto, multipartFiles, memberService.getCurrentMember());
         return Response.success(SUCCESS_TO_UPDATE_POST);
     }

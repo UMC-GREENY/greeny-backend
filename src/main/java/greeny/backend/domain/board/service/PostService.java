@@ -5,7 +5,6 @@ import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.board.dto.CreatePostRequestDto;
 import greeny.backend.domain.board.dto.GetPostListResponseDto;
 import greeny.backend.domain.board.dto.GetPostResponseDto;
-import greeny.backend.domain.board.dto.UpdatePostRequestDto;
 import greeny.backend.domain.board.entity.Post;
 import greeny.backend.domain.board.entity.PostFile;
 import greeny.backend.domain.board.repository.PostRepository;
@@ -75,7 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, UpdatePostRequestDto updatePostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
+    public void updatePost(Long postId, CreatePostRequestDto updatePostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
