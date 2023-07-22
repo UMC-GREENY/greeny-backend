@@ -153,4 +153,12 @@ public class ExceptionAdvice {
     public Response postNotFoundException() {
         return failure(NOT_FOUND, "요청한 게시글을 찾을 수 없습니다.");
     }
+
+    // 404 응답
+    // 요청한 댓글을 찾을 수 없음
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response commentNotFoundException() {
+        return failure(NOT_FOUND, "요청한 댓글을 찾을 수 없습니다.");
+    }
 }

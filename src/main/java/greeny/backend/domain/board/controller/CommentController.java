@@ -1,32 +1,20 @@
 package greeny.backend.domain.board.controller;
 
 import greeny.backend.domain.board.dto.CreateCommentRequestDto;
-import greeny.backend.domain.board.dto.CreatePostRequestDto;
-import greeny.backend.domain.board.dto.UpdatePostRequestDto;
 import greeny.backend.domain.board.service.CommentService;
-import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 import static greeny.backend.response.Response.success;
 import static greeny.backend.response.SuccessMessage.*;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -51,6 +39,14 @@ public class CommentController {
     @GetMapping
     public Response getCommentList(@RequestParam Long postId){
         return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getComments(postId));
+    }
+
+    @Operation(summary = "Update comment api", description = "put your comment info to update.")
+    @ResponseStatus(OK)
+    @PutMapping
+    public Response updateComment(@RequestParam Long commentId, @Valid @RequestBody CreateCommentRequestDto updateCommentRequestDto) {
+        commentService.updateComment(commentId, updateCommentRequestDto, memberService.getCurrentMember());
+        return success(SUCCESS_TO_UPDATE_COMMENT);
     }
 
 }

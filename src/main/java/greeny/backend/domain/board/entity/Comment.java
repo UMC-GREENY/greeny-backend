@@ -24,4 +24,8 @@ public class Comment extends AuditEntity {
     private Member writer;
     @Column(nullable = false)
     private String content;
+
+    public void update(String content) {
+        this.content = content;
+    }
 }
