@@ -18,6 +18,7 @@ public class GetPostResponseDto {
     private Long id;
     private String writeEmail;
     private String createdAt;
+    private String updatedAt;
     private String title;
     private String content;
     private List<String> fileUrls;
@@ -28,6 +29,7 @@ public class GetPostResponseDto {
                 .writeEmail(post.getWriter().getEmail())
                 .title(post.getTitle())
                 .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
                 .content(post.getContent())
                 .fileUrls(post.getFileUrls())
                 .build();

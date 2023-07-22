@@ -16,6 +16,7 @@ public class GetPostListResponseDto {
 
     private Long id;
     private String createdAt;
+    private String updatedAt;
     private String writerEmail;
     private String title;
     private Boolean existsFile;
@@ -25,6 +26,7 @@ public class GetPostListResponseDto {
                 .id(post.getId())
                 .writerEmail(post.getWriter().getEmail())
                 .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
                 .title(post.getTitle())
                 .existsFile(post.checkFileExist())
                 .build();
