@@ -7,6 +7,7 @@ import greeny.backend.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +36,11 @@ public class SecurityConfig {
             "/api/auth/reissue"
     };
 
+    private static final String[] AUTH_WHITELIST_WITH_GET_METHOD = {
+            "/api/posts/**",
+            "/api/comments/**"
+    };
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -59,6 +65,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(AUTH_WHITELIST)
+                        .permitAll()
+                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_GET_METHOD)
                         .permitAll()
                         .anyRequest()
                         .authenticated()

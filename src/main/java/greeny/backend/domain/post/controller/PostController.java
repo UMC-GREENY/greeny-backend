@@ -6,6 +6,7 @@ import greeny.backend.domain.post.dto.CreatePostRequestDto;
 import greeny.backend.domain.post.service.PostService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.api.annotations.ParameterObject;
@@ -25,6 +26,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Post", description = "Post API Document")
 @RequestMapping(value = "/api")
 public class PostController {
 
@@ -42,34 +44,41 @@ public class PostController {
 
     @Operation(summary = "Search post list api", description = "put keyword and page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
-    @GetMapping("posts/search")
+    @GetMapping("/posts/search")
     public Response searchPostList(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.searchPosts(keyword, pageable));
     }
 
     @Operation(summary = "Get post api", description = "put post id what you want to see.")
     @ResponseStatus(OK)
-    @GetMapping("posts")
+    @GetMapping("/posts")
     public Response getPost(@RequestParam Long postId){
         return Response.success(SUCCESS_TO_GET_POST, postService.getPost(postId));
     }
 
     @Operation(summary = "Delete post API", description = "put post id what you want to delete")
     @ResponseStatus(OK)
-    @DeleteMapping("posts")
+    @DeleteMapping("/posts")
     public Response deletePost(@RequestParam Long postId){
         postService.deletePost(postId, memberService.getCurrentMember());
         return Response.success(SUCCESS_TO_DELETE_POST);
     }
     @Operation(summary = "Update post api", description = "put post info what you want to update.")
     @ResponseStatus(OK)
-    @PutMapping(path = "posts", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/posts", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public Response updatePost(@RequestParam Long postId,
                                @Valid @RequestPart(name = "body(json)") UpdatePostRequestDto updatePostRequestDto,
                                @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles){
         memberService.getCurrentMember();
         postService.updatePost(postId, updatePostRequestDto, multipartFiles, memberService.getCurrentMember());
         return Response.success(SUCCESS_TO_UPDATE_POST);
+    }
+
+    @Operation(summary = "Get my post list api", description = "put page info what you want. you can skip parameters.")
+    @ResponseStatus(OK)
+    @GetMapping("/members/posts")
+    public Response getMyPostList(@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.getMemberPosts(pageable, memberService.getCurrentMember()));
     }
 
 }

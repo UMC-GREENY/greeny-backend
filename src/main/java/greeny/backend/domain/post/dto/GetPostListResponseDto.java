@@ -23,6 +23,7 @@ public class GetPostListResponseDto {
     public static GetPostListResponseDto from(Post post){
         return GetPostListResponseDto.builder()
                 .id(post.getId())
+                .writerEmail(post.getWriter().getEmail())
                 .createdAt(post.getCreatedAt())
                 .title(post.getTitle())
                 .existsFile(post.checkFileExist())

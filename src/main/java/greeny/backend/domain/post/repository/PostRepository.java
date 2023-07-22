@@ -16,4 +16,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"postFiles"})
     @NotNull
     Optional<Post> findById(@NotNull Long id);
+    Page<Post> findByWriterId(Long writerId, Pageable pageable);
 }

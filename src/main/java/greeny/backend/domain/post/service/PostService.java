@@ -113,10 +113,9 @@ public class PostService {
         }
     }
 
-//    private static void authorizeWriter(Post post){
-//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-//        if(!post.getWriter.getEmail().equals(email)){
-//            throw new MemberNotEqualsException();
-//        }
-//    }
+    @Transactional
+    public Page<GetPostListResponseDto> getMemberPosts(Pageable pageable, Member currentMember) {
+        return postRepository.findByWriterId(currentMember.getId(), pageable)
+                .map(GetPostListResponseDto::from);
+    }
 }
