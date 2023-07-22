@@ -22,6 +22,6 @@ public class Comment extends AuditEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id", nullable = false)
     private Member writer;
-    @Column(length = 500, nullable = false)
+    @Column(nullable = false)
     private String content;
 }

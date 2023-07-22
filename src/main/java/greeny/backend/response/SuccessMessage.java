@@ -20,4 +20,10 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_GET_POST = "게시글 상세정보를 불러오는데 성공하였습니다.";
     public static final String SUCCESS_TO_DELETE_POST = "게시글을 삭제하는데 성공하였습니다.";
     public static final String SUCCESS_TO_UPDATE_POST = "게시글을 수정하는데 성공하였습니다.";
+
+    public static final String SUCCESS_TO_CREATE_COMMENT = "댓글을 작성하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_GET_COMMENT_LIST = "댓글 목록을 불러오는데 성공하였습니다.";
+    public static final String SUCCESS_TO_DELETE_COMMENT = "댓글을 삭제하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_UPDATE_COMMENT = "댓글을 수정하는데 성공하였습니다.";
+
 }
