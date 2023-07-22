@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +16,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetPostResponseDto {
     private Long id;
-//    private String writeEmail;
+    private String writeEmail;
     private String createdAt;
     private String title;
     private String content;
@@ -26,6 +25,7 @@ public class GetPostResponseDto {
     public static GetPostResponseDto from(Post post){
         return GetPostResponseDto.builder()
                 .id(post.getId())
+                .writeEmail(post.getWriter().getEmail())
                 .title(post.getTitle())
                 .createdAt(post.getCreatedAt())
                 .content(post.getContent())

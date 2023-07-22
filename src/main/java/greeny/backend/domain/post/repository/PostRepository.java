@@ -10,9 +10,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<Post> findAll(Pageable pageable);
-
+    @NotNull
+    Page<Post> findAll(@NotNull Pageable pageable);
     Page<Post> findByTitleContaining(String keyword, Pageable pageable);
     @EntityGraph(attributePaths = {"postFiles"})
-    Optional<Post> findById(Long id);
+    @NotNull
+    Optional<Post> findById(@NotNull Long id);
 }

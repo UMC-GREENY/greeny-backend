@@ -5,8 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.ALL;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
