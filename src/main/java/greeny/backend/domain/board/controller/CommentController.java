@@ -46,4 +46,11 @@ public class CommentController {
         return success(SUCCESS_TO_CREATE_COMMENT);
     }
 
+    @Operation(summary = "Get comment list api", description = "put post id to get comment list.")
+    @ResponseStatus(OK)
+    @GetMapping
+    public Response getCommentList(@RequestParam Long postId){
+        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getComments(postId));
+    }
+
 }
