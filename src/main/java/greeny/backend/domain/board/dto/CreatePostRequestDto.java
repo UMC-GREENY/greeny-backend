@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class CreatePostRequestDto {
     @NotBlank(message = "제목을 입력해주세요.")
-    @Size(max = 250, message = "255자 이하로 입력해주세요.")
+    @Size(max = 255, message = "255자 이하로 입력해주세요.")
     @Schema(description = "글 제목", defaultValue = "요즘 날씨 너무 덥네요.")
     private String title;
     @NotBlank(message = "내용을 입력해주세요.")
