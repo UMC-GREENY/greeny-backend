@@ -29,7 +29,7 @@ public class SecurityConfig {
             "/api-docs/**",
             "/api",
             "/api/auth",
-            "/api/auth/sign-up",
+            "/api/auth/sign-up/**",
             "/api/auth/sign-in/**",
             "/api/auth/password",
             "/api/auth/reissue"

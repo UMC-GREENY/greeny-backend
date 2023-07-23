@@ -60,7 +60,7 @@ public class MailService {
 //        return code.toString();
 //    }
 
-    private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
+    private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {  // TODO url 파라미터로 받기
         MimeMessage message = javaMailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);

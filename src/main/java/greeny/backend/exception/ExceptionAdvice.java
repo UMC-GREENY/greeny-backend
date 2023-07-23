@@ -59,7 +59,7 @@ public class ExceptionAdvice {
     }
 
     // 401 응답
-    // 아이디 혹은 비밀번호 오류시 발생
+    // 이메일 혹은 비밀번호가 일치하지 않음
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(UNAUTHORIZED)
     public Response loginFailureException() {
@@ -67,7 +67,7 @@ public class ExceptionAdvice {
     }
 
     // 401 응답
-    // 요청자와 요청한 유저의 정보가 일치하지 않을시에 발생
+    // 요청자와 요청한 유저의 정보가 일치하지 않음
     @ExceptionHandler(MemberNotEqualsException.class)
     @ResponseStatus(UNAUTHORIZED)
     public Response memberNotEqualsException() {

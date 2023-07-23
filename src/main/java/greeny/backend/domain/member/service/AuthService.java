@@ -1,19 +1,13 @@
 package greeny.backend.domain.member.service;
 
 import greeny.backend.config.jwt.JwtProvider;
-import greeny.backend.domain.member.dto.sign.common.TokenDto;
-import greeny.backend.domain.member.dto.sign.common.TokenRequestDto;
-import greeny.backend.domain.member.dto.sign.common.TokenResponseDto;
+import greeny.backend.domain.member.dto.sign.common.*;
 import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.general.GetIsAutoInfoResponseDto;
 import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
-import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
 import greeny.backend.domain.member.entity.*;
 import greeny.backend.domain.member.repository.*;
-import greeny.backend.exception.situation.EmailAlreadyExistsException;
-import greeny.backend.exception.situation.MemberGeneralNotFoundException;
-import greeny.backend.exception.situation.MemberNotFoundException;
-import greeny.backend.exception.situation.RefreshTokenNotFoundException;
+import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,19 +32,29 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
 
-    public void validateSignUpInfoWithGeneral(String email) {    // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
+    public void validateSignUpInfoWithGeneral(String email) {  // 이미 가입된 이메일인지 검증
         if (memberRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistsException(email);
         }
     }
 
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        validateSignUpInfoWithGeneral(signUpRequestDto.getEmail());
+    private Member validateSignUpInfoWithSocial(String email) {  // DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
+        Member foundMember = getMember(email);
+
+        if(memberGeneralRepository.existsByMember(foundMember)) {
+            throw new EmailAlreadyExistsException(email);
+        }
+
+        return foundMember;
+    }
+
+    public void signUp(SignUpRequestDto signUpRequestDto) {  // 일반 회원가입
+        validateSignUpInfoWithGeneral(signUpRequestDto.getEmail());  // 이미 가입된 이메일인지 검증
         saveGeneralMember(signUpRequestDto);
     }
 
     @Transactional
-    public TokenResponseDto signInWithGeneral(LoginRequestDto loginRequestDto) {
+    public TokenResponseDto signInWithGeneral(LoginRequestDto loginRequestDto) {  // 일반 로그인
 
         String email = loginRequestDto.getEmail();
         Member foundMember = getMember(email);
@@ -63,16 +67,31 @@ public class AuthService {
         return authorize(email, foundMember.getId().toString());
     }
 
-    public TokenResponseDto signInWithSocial(Provider provider, String email) {  // 소셜 제공자와 사용자 프로필 정보 중 email 을 받아 소셜 로그인
+    public TokenResponseDto signInWithSocial(String email, Provider provider) {  // 소셜 제공자와 사용자 프로필 정보 중 email 을 받아 소셜 로그인
 
-        if(memberRepository.existsByEmail(email)) {  // DB에 이미 존재하는 사용자일 경우
-            validateSignUpInfoWithSocial(email);  // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
-            return authorize(email, getMember(email).getId().toString());  // 토큰 발행
+        if(memberRepository.existsByEmail(email)) {  // 소셜 로그인 이용이 최초가 아닌 경우
+
+            Member validatedMember = validateSignUpInfoWithSocial(email);// DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
+            TokenResponseDto authorizedToken = authorize(email, validatedMember.getId().toString());  // 토큰 발행
+
+            return TokenResponseDto.from(authorizedToken.getAccessToken(), authorizedToken.getRefreshToken());
         }
 
-        // 최초 소셜 로그인을 이용하는 사용자일 경우
-        Member savedMember = saveSocialMember(provider, email);
-        return authorize(email, savedMember.getId().toString());
+        saveSocialMemberExceptAgreement(email, provider);  // DB에 소셜 회원 저장
+        return TokenResponseDto.excludeTokenInDto(email);
+    }
+
+    public TokenResponseDto agreementInSignUp(AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 이후 동의 항목 여부를 DB에 저장
+
+        String email = agreementRequestDto.getEmail();
+        Member foundMember = getMember(email);
+
+        if(!memberRepository.existsByEmail(email)) {  // DB에 이메일이 없는 경우
+            throw new MemberNotFoundException();
+        }
+
+        saveMemberAgreement(foundMember, agreementRequestDto);  // DB에 Member 동의 여부 저장
+        return authorize(email, foundMember.getId().toString());
     }
 
     @Transactional
@@ -87,29 +106,58 @@ public class AuthService {
 
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
 
+        String refreshToken = tokenRequestDto.getRefreshToken();
         Authentication authentication = jwtProvider.getAuthentication(tokenRequestDto.getAccessToken());
         String email = authentication.getName();
 
-        if (!jwtProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+        if (!jwtProvider.validateToken(refreshToken)) {
             refreshTokenRepository.delete(getRefreshToken(email));
             return publishToken(authentication);
         } else {
-            validateRefreshTokenOwner(email, tokenRequestDto.getRefreshToken());
-            return new TokenResponseDto(
+            validateRefreshTokenOwner(email, refreshToken);
+            return TokenResponseDto.excludeEmailInDto(
                     jwtProvider.generateAccessToken(authentication, (new Date()).getTime()),
-                    tokenRequestDto.getRefreshToken()
+                    refreshToken
             );
         }
     }
 
-    private Member toMember(String email) {
+    private void saveGeneralMember(SignUpRequestDto signUpRequestDto) {  // 일반 회원 DB에 저장
+        Member savedMember = memberRepository.save(toMember(signUpRequestDto.getEmail()));
+        memberGeneralRepository.save(toMemberGeneral(savedMember, signUpRequestDto.getPassword(), passwordEncoder));
+        memberProfileRepository.save(
+                toMemberProfile(
+                        savedMember,
+                        signUpRequestDto.getName(),
+                        signUpRequestDto.getPhone(),
+                        signUpRequestDto.getBirth()
+                )
+        );
+    }
+
+    private void saveSocialMemberExceptAgreement(String email, Provider provider) {  // 소셜 회원 DB에 저장
+        Member savedMember = memberRepository.save(toMember(email));
+        memberSocialRepository.save(toMemberSocial(provider, savedMember));
+    }
+
+    private void saveMemberAgreement(Member member, AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 시 동의 항목 여부 DB에 저장
+        memberAgreementRepository.save(
+                agreementRequestDto.toMemberAgreement(
+                        member,
+                        agreementRequestDto.getPersonalInfo(),
+                        agreementRequestDto.getThirdParty()
+                )
+        );
+    }
+
+    private Member toMember(String email) {  // Member 객체로 변환
         return Member.builder()
                 .email(email)
                 .role(Role.ROLE_USER)
                 .build();
     }
 
-    private MemberGeneral toMemberGeneral(Member member, String password) {
+    private MemberGeneral toMemberGeneral(Member member, String password, PasswordEncoder passwordEncoder) {  // MemberGeneral 객체로 변환
         return MemberGeneral.builder()
                 .member(member)
                 .password(passwordEncoder.encode(password))
@@ -117,41 +165,20 @@ public class AuthService {
                 .build();
     }
 
-    private MemberSocial toMemberSocial(Provider provider, Member member) {
+    private MemberSocial toMemberSocial(Provider provider, Member member) {  // MemberSocial 객체로 변환
         return MemberSocial.builder()
                 .member(member)
                 .provider(provider)
                 .build();
     }
 
-    private MemberProfile toMemberProfile(Member member, String name, String phone, String birth) {
+    private MemberProfile toMemberProfile(Member member, String name, String phone, String birth) {  // MemberProfile 객체로 변환
         return MemberProfile.builder()
                 .member(member)
                 .name(name)
                 .phone(phone)
                 .birth(birth)
                 .build();
-    }
-
-    private MemberAgreement toMemberAgreement(Member member, String personalInfo, String thirdParty) {
-        return MemberAgreement.builder()
-                .member(member)
-                .personalInfo(personalInfo)
-                .thirdParty(thirdParty)
-                .build();
-    }
-
-    private void saveGeneralMember(SignUpRequestDto signUpRequestDto) {
-        Member savedMember = memberRepository.save(toMember(signUpRequestDto.getEmail()));
-        memberGeneralRepository.save(toMemberGeneral(savedMember, signUpRequestDto.getPassword()));
-        memberProfileRepository.save(toMemberProfile(savedMember, signUpRequestDto.getName(), signUpRequestDto.getPhone(), signUpRequestDto.getBirth()));
-        memberAgreementRepository.save(toMemberAgreement(savedMember, signUpRequestDto.getPersonalInfo(), signUpRequestDto.getThirdParty()));
-    }
-
-    private Member saveSocialMember(Provider provider, String email) {
-        Member savedMember = memberRepository.save(toMember(email));
-        memberSocialRepository.save(toMemberSocial(provider, savedMember));
-        return savedMember;
     }
 
     private Member getMember(String email) {
@@ -187,7 +214,7 @@ public class AuthService {
             String foundRefreshTokenValue = foundRefreshToken.getValue();
 
             if (jwtProvider.validateToken(foundRefreshTokenValue)) {  // DB 에서 가져온 refresh token 이 유효한지 검증
-                return new TokenResponseDto(
+                return TokenResponseDto.excludeEmailInDto(
                         jwtProvider.generateAccessToken(authentication, (new Date()).getTime()),
                         foundRefreshTokenValue
                 );
@@ -199,14 +226,9 @@ public class AuthService {
         return publishToken(authentication);
     }
 
-    private void validateSignUpInfoWithSocial(String email) {  // 소셜 로그인에 사용한 이메일이 이미 일반 회원가입된 이메일인지 검증
-        if(memberGeneralRepository.existsByMember(getMember(email))) {
-            throw new EmailAlreadyExistsException(email);
-        }
-    }
-
     private RefreshToken getRefreshToken(String email) {
-        return refreshTokenRepository.findByKey(email).orElseThrow(RefreshTokenNotFoundException::new);
+        return refreshTokenRepository.findByKey(email)
+                .orElseThrow(RefreshTokenNotFoundException::new);
     }
 
     private RefreshToken toRefreshToken(String key, String value) {
@@ -221,7 +243,7 @@ public class AuthService {
         String generatedRefreshToken = generatedTokenDto.getRefreshToken();
         refreshTokenRepository.save(toRefreshToken(authentication.getName(), generatedRefreshToken));
 
-        return new TokenResponseDto(generatedTokenDto.getAccessToken(), generatedRefreshToken);
+        return TokenResponseDto.excludeEmailInDto(generatedTokenDto.getAccessToken(), generatedRefreshToken);
     }
 
     private void validateRefreshTokenOwner(String email, String refreshToken) {

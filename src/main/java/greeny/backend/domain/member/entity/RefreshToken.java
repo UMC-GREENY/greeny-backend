@@ -20,9 +20,4 @@ public class RefreshToken {
     private String key;
     @Column(name = "rt_value")
     private String value;
-
-    public RefreshToken updateValue(String refreshToken) {
-        this.value = refreshToken;
-        return this;
-    }
 }

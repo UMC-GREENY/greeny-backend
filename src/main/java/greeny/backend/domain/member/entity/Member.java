@@ -32,6 +32,7 @@ public class Member extends AuditEntity {
 
     @Column(nullable = false)
     private String email;
+    @Enumerated(EnumType.STRING)  // DB에 이름 (문자열)으로 저장
     @Column(nullable = false)
     private Role role;
 }

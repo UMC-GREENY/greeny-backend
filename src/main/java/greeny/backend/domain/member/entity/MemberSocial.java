@@ -22,6 +22,7 @@ public class MemberSocial extends AuditEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Provider provider;
 }
