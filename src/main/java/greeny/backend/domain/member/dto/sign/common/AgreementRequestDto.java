@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -20,15 +22,15 @@ public class AgreementRequestDto {  // 사용자에 대한 정보 제공 동의 
     @Schema(description = "이메일", defaultValue = "test@gmail.com")
     private String email;  // 일반 회원가입 or 최초 소셜 로그인 이메일 계정 -> DB 에서 이메일을 통해 Member 객체를 찾고 해당 Member 의 동의 여부를 DB에 저장할 수 있음
 
-    @NotBlank(message = "개인 정보 수집 및 이용 동의 여부를 입력해주세요.")
-    @Schema(description = "개인 정보 수집 및 이용 동의 (선택)", defaultValue = "1")
-    private String personalInfo;
+    @NotNull(message = "개인 정보 수집 및 이용 동의 여부를 입력해주세요.")
+    @Schema(description = "개인 정보 수집 및 이용 동의 (선택)", defaultValue = "true")
+    private Boolean personalInfo;
 
-    @NotBlank(message = "개인 정보 제 3자 제공 동의 여부를 입력해주세요.")
-    @Schema(description = "개인 정보 제 3자 제공 (선택)", defaultValue = "0")
-    private String thirdParty;
+    @NotNull(message = "개인 정보 제 3자 제공 동의 여부를 입력해주세요.")
+    @Schema(description = "개인 정보 제 3자 제공 (선택)", defaultValue = "false")
+    private Boolean thirdParty;
 
-    public MemberAgreement toMemberAgreement(Member member, String personalInfo, String thirdParty) {  // MemberAgreement 객체로 변환
+    public MemberAgreement toMemberAgreement(Member member, boolean personalInfo, boolean thirdParty) {  // MemberAgreement 객체로 변환
         return MemberAgreement.builder()
                 .member(member)
                 .personalInfo(personalInfo)

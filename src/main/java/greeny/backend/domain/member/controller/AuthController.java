@@ -58,7 +58,7 @@ public class AuthController {
     @Operation(summary = "Social sign up agreement API", description = "put your social sign up agreement info.")
     @ResponseStatus(CREATED)
     @PostMapping("/sign-up/agreement")
-    public Response agreementInSocialSignUp(@Valid @RequestBody AgreementRequestDto agreementRequestDto) {
+    public Response agreementInSignUp(@Valid @RequestBody AgreementRequestDto agreementRequestDto) {
         return success(SUCCESS_TO_SIGN_UP_AGREEMENT, authService.agreementInSignUp(agreementRequestDto));
     }
 
@@ -108,8 +108,8 @@ public class AuthController {
     @Operation(summary = "Auto sign in API", description = "please auto sign in.")
     @ResponseStatus(OK)
     @GetMapping("/auto/sign-in")
-    public Response autoSignIn() {
-        return success(SUCCESS_TO_GET_IS_AUTO, authService.autoSignIn(memberService.getCurrentMember()));
+    public Response getIsAutoInfo() {
+        return success(SUCCESS_TO_GET_IS_AUTO, authService.getIsAutoInfo(memberService.getCurrentMember()));
     }
 
     @Operation(summary = "Token reissue API", description = "put your token info")

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -24,7 +25,7 @@ public class LoginRequestDto {
     @Schema(description = "비밀번호", defaultValue = "test1234!")
     private String password;
 
-    @NotBlank(message = "자동 로그인 여부를 입력해주세요.")
-    @Schema(description = "자동 로그인 여부", defaultValue = "0")
-    private String isAuto;
+    @NotNull(message = "자동 로그인 여부를 입력해주세요.")
+    @Schema(description = "자동 로그인 여부", defaultValue = "false")
+    private Boolean isAuto;
 }

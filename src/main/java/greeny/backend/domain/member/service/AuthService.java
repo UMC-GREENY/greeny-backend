@@ -60,9 +60,9 @@ public class AuthService {
         Member foundMember = getMember(email);
 
         MemberGeneral foundMemberGeneral = getMemberGeneral(foundMember);
-        String foundIsAuto = foundMemberGeneral.getIsAuto();
+        boolean foundIsAuto = foundMemberGeneral.isAuto();
 
-        changeIsAutoBySignIn(loginRequestDto.getIsAuto(), foundMemberGeneral, foundIsAuto);
+        changeIsAutoByGeneralSignIn(loginRequestDto.getIsAuto(), foundMemberGeneral, foundIsAuto);
 
         return authorize(email, foundMember.getId().toString());
     }
@@ -109,8 +109,8 @@ public class AuthService {
                 .changePassword(passwordEncoder.encode(findPasswordRequestDto.getPassword()));
     }
 
-    public GetIsAutoInfoResponseDto autoSignIn(Member member) {
-        return new GetIsAutoInfoResponseDto(getMemberGeneral(member).getIsAuto());
+    public GetIsAutoInfoResponseDto getIsAutoInfo(Member member) {
+        return new GetIsAutoInfoResponseDto(getMemberGeneral(member).isAuto());
     }
 
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
@@ -170,7 +170,7 @@ public class AuthService {
         return MemberGeneral.builder()
                 .member(member)
                 .password(passwordEncoder.encode(password))
-                .isAuto("0")
+                .isAuto(false)
                 .build();
     }
 
@@ -200,14 +200,14 @@ public class AuthService {
                 .orElseThrow(MemberGeneralNotFoundException::new);
     }
 
-    private void changeIsAutoBySignIn(String isAutoToCheck, MemberGeneral foundMemberGeneral, String foundIsAuto) {
-        if (isAutoToCheck.equals("0")) {
-            if (foundIsAuto.equals("1")) {
-                foundMemberGeneral.changeIsAuto("0");
+    private void changeIsAutoByGeneralSignIn(boolean isAutoToCheck, MemberGeneral foundMemberGeneral, boolean foundIsAuto) {
+        if (!isAutoToCheck) {
+            if (foundIsAuto) {
+                foundMemberGeneral.changeIsAuto(false);
             }
         } else {
-            if (foundIsAuto.equals("0")) {
-                foundMemberGeneral.changeIsAuto("1");
+            if (!foundIsAuto) {
+                foundMemberGeneral.changeIsAuto(true);
             }
         }
     }

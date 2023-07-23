@@ -25,12 +25,12 @@ public class MemberGeneral extends AuditEntity {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String isAuto;
+    private boolean isAuto;
 
     public void changePassword(String password) {
         this.password = password;
     }
-    public void changeIsAuto(String isAuto) {
+    public void changeIsAuto(boolean isAuto) {
         this.isAuto = isAuto;
     }
 }
