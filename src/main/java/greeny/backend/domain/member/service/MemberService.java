@@ -2,6 +2,7 @@ package greeny.backend.domain.member.service;
 
 
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
+import greeny.backend.domain.member.dto.member.GetMemberInfoResponseDto;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.member.repository.MemberRepository;
 import greeny.backend.domain.member.repository.RefreshTokenRepository;
@@ -40,5 +41,12 @@ public class MemberService {
 
     }
 
+    public GetMemberInfoResponseDto getCurrentMemberInfo() {
+        return GetMemberInfoResponseDto.toDto(getCurrentMember());
+    }
+
+    public Member getCurrentMember(){
+        return memberRepository.findByEmail()// 입력받은 이메일이 맞는 회원을 db에서 찾아서 멤버 객체를 반환해주기
+    }
 
 }

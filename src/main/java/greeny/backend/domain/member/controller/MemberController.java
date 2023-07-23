@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import static greeny.backend.response.Response.success;
 import static greeny.backend.response.SuccessMessage.SUCCESS_TO_EDIT_MEMBER_PASSWORD;
+import static greeny.backend.response.SuccessMessage.SUCCESS_TO_GET_CURRENT_MEMBER_INFO;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
@@ -33,5 +34,13 @@ public class MemberController {
         memberService.editMemberInfo(editMemberRequestDto);
         //변경이 완료 되었다면 메세지를 반환합니다.
         return success(SUCCESS_TO_EDIT_MEMBER_PASSWORD);
+    }
+
+    @Operation(summary = "Get current member info API")
+    @ResponseStatus(OK)
+    @GetMapping("")
+    public Response getCurrentMemberInfo() {
+        //회원 정보를 조회 할 수 있게 입력 받은 회원의 정보를 주는 컨트롤러
+        return success(SUCCESS_TO_GET_CURRENT_MEMBER_INFO, memberService.getCurrentMemberInfo());
     }
 }
