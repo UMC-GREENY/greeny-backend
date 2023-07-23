@@ -27,6 +27,18 @@ public class MemberService {
                 .orElseThrow(MemberNotFoundException::new);
     }
 
+    public GetMemberInfoResponseDto getCurrentMemberInfo() {
+        return GetMemberInfoResponseDto.toDto(getCurrentMember());
+    }
+
+    public void deleteMember() {
+        Member currentMember = getCurrentMember();
+        // 우리 회원이 맞는지 DB에 확인을 하고 경우에 따라서 예외 처리하기
+
+
+        memberRepository.delete(currentMember);
+    }
+
     @Transactional
     public void editMemberInfo(EditMemberInfoRequestDto editMemberRequestDto) {
         //현재 비밀번호를 입력받아   서 회원 맞는지 체크 하기
@@ -41,9 +53,7 @@ public class MemberService {
 
     }
 
-    public GetMemberInfoResponseDto getCurrentMemberInfo() {
-        return GetMemberInfoResponseDto.toDto(getCurrentMember());
-    }
+
 
     public Member getCurrentMember(){
         return memberRepository.findByEmail()// 입력받은 이메일이 맞는 회원을 db에서 찾아서 멤버 객체를 반환해주기
