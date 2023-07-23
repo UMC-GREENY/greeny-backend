@@ -3,6 +3,7 @@ package greeny.backend.domain.board.dto;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.board.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CreatePostRequestDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class WritePostRequestDto {
     @NotBlank(message = "제목을 입력해주세요.")
     @Size(max = 255, message = "255자 이하로 입력해주세요.")
     @Schema(description = "글 제목", defaultValue = "요즘 날씨 너무 덥네요.")

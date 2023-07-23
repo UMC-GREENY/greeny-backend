@@ -1,6 +1,6 @@
 package greeny.backend.domain.board.service;
 
-import greeny.backend.domain.board.dto.CreateCommentRequestDto;
+import greeny.backend.domain.board.dto.WriteCommentRequestDto;
 import greeny.backend.domain.board.dto.GetCommentListResponseDto;
 import greeny.backend.domain.board.entity.Comment;
 import greeny.backend.domain.board.entity.Post;
@@ -25,13 +25,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public void creatComment(Long postId, CreateCommentRequestDto createCommentRequestDto, Member writer) {
+    public void writeComment(Long postId, WriteCommentRequestDto writeCommentRequestDto, Member writer) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-        commentRepository.save(createCommentRequestDto.toEntity(post ,writer));
+        commentRepository.save(writeCommentRequestDto.toEntity(post ,writer));
     }
 
     @Transactional(readOnly = true)
-    public List<GetCommentListResponseDto> getComments(Long postId) {
+    public List<GetCommentListResponseDto> getCommentList(Long postId) {
         return commentRepository.findAllByPostId(postId).stream().
                 map(GetCommentListResponseDto::from).
                 collect(Collectors.toList());
@@ -39,10 +39,10 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, CreateCommentRequestDto updateCommentRequestDto, Member currentMember) {
+    public void editComment(Long commentId, WriteCommentRequestDto editCommentRequestDto, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
-        comment.update(updateCommentRequestDto.getContent());
+        comment.update(editCommentRequestDto.getContent());
     }
 
     public void deleteComment(Long commentId, Member currentMember) {

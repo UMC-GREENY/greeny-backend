@@ -2,21 +2,17 @@ package greeny.backend.domain.board.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import greeny.backend.domain.board.entity.Post;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetPostListResponseDto {
 
     private Long id;
     private String createdAt;
-    private String updatedAt;
     private String writerEmail;
     private String title;
     private Boolean existsFile;
@@ -26,7 +22,6 @@ public class GetPostListResponseDto {
                 .id(post.getId())
                 .writerEmail(post.getWriter().getEmail())
                 .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
                 .title(post.getTitle())
                 .existsFile(post.checkFileExist())
                 .build();

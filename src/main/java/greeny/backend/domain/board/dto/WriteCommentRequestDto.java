@@ -4,6 +4,7 @@ import greeny.backend.domain.board.entity.Comment;
 import greeny.backend.domain.board.entity.Post;
 import greeny.backend.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CreateCommentRequestDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class WriteCommentRequestDto {
 
     @NotBlank(message = "내용을 입력해주세요.")
     @Size(max = 255, message = "255자 이하로 입력해주세요.")

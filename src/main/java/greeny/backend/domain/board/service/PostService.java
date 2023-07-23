@@ -2,7 +2,7 @@ package greeny.backend.domain.board.service;
 
 import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.board.dto.CreatePostRequestDto;
+import greeny.backend.domain.board.dto.WritePostRequestDto;
 import greeny.backend.domain.board.dto.GetPostListResponseDto;
 import greeny.backend.domain.board.dto.GetPostResponseDto;
 import greeny.backend.domain.board.entity.Post;
@@ -29,33 +29,33 @@ public class PostService {
     private final S3Service s3Service;
 
     @Transactional
-    public void creatPost(CreatePostRequestDto createPostRequestDto, List<MultipartFile> multipartFiles, Member writer) {
+    public void writePost(WritePostRequestDto writePostRequestDto, List<MultipartFile> multipartFiles, Member writer) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
         // post를 먼저 저장
-        Post post = postRepository.save(createPostRequestDto.toEntity(writer));
+        Post post = postRepository.save(writePostRequestDto.toEntity(writer));
         //파일을 첨부한 경우
         if(multipartFiles != null){
             // s3에 첨부파일을 저장하고, db에도 post_file을 저장
-            uploadPostFiles(multipartFiles, post);
+            uploadPostFileList(multipartFiles, post);
         }
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> getPosts(Pageable pageable) {
+    public Page<GetPostListResponseDto> getPostList(Pageable pageable) {
         return postRepository.findAll(pageable)
                 .map(GetPostListResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> searchPosts(String keyword, Pageable pageable) {
-        if(StringUtils.hasText(keyword)) return getPosts(pageable);
-        return postRepository.findByTitleContaining(keyword, pageable)
+    public Page<GetPostListResponseDto> searchPostList(String keyword, Pageable pageable) {
+        if(!StringUtils.hasText(keyword)) return getPostList(pageable);
+        return postRepository.findAllByTitleContaining(keyword, pageable)
                 .map(GetPostListResponseDto::from);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public GetPostResponseDto getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
@@ -75,7 +75,7 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, CreatePostRequestDto updatePostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
+    public void editPost(Long postId, WritePostRequestDto editPostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
@@ -84,7 +84,7 @@ public class PostService {
         if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         //게시글의 제목과 내용 업데이트
-        post.update(updatePostRequestDto.getTitle(), updatePostRequestDto.getContent());
+        post.update(editPostRequestDto.getTitle(), editPostRequestDto.getContent());
 
         List<String> fileUrls = post.getFileUrls();
 
@@ -92,7 +92,7 @@ public class PostService {
         //파일을 첨부한 경우
         if(multipartFiles != null){
             // 2. s3에 파일을 저장하고, db에도 post_file을 저장
-            uploadPostFiles(multipartFiles, post);
+            uploadPostFileList(multipartFiles, post);
         }
         // 3. 1번에서 db에서 삭제했던 post_file에 해당하는 s3의 파일을 모두 삭제
         //    (s3는 트랜잭션 롤백이 안되기 때문에 삭제는 무조건 마지막에 해야함)
@@ -100,7 +100,7 @@ public class PostService {
     }
 
     @Transactional
-    protected void uploadPostFiles(List<MultipartFile> multipartFiles, Post post) {
+    protected void uploadPostFileList(List<MultipartFile> multipartFiles, Post post) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
@@ -114,8 +114,8 @@ public class PostService {
     }
 
     @Transactional
-    public Page<GetPostListResponseDto> getMemberPosts(Pageable pageable, Member currentMember) {
-        return postRepository.findByWriterId(currentMember.getId(), pageable)
+    public Page<GetPostListResponseDto> getMemberPostList(Pageable pageable, Member currentMember) {
+        return postRepository.findAllByWriterId(currentMember.getId(), pageable)
                 .map(GetPostListResponseDto::from);
     }
 }

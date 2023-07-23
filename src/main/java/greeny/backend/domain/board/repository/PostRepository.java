@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     @NotNull
     Page<Post> findAll(@NotNull Pageable pageable);
-    Page<Post> findByTitleContaining(String keyword, Pageable pageable);
+    Page<Post> findAllByTitleContaining(String keyword, Pageable pageable);
     @EntityGraph(attributePaths = {"postFiles"})
     @NotNull
     Optional<Post> findById(@NotNull Long id);
-    Page<Post> findByWriterId(Long writerId, Pageable pageable);
+    Page<Post> findAllByWriterId(Long writerId, Pageable pageable);
 }

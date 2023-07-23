@@ -1,6 +1,6 @@
 package greeny.backend.domain.board.controller;
 
-import greeny.backend.domain.board.dto.CreateCommentRequestDto;
+import greeny.backend.domain.board.dto.WriteCommentRequestDto;
 import greeny.backend.domain.board.service.CommentService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
@@ -26,27 +26,27 @@ public class CommentController {
     private final CommentService commentService;
     private final MemberService memberService;
 
-    @Operation(summary = "Create comment api", description = "put post id and comment info to create.")
+    @Operation(summary = "Write comment api", description = "put post id and comment info to write.")
     @ResponseStatus(OK)
     @PostMapping
-    public Response createComment(@RequestParam Long postId, @Valid @RequestBody CreateCommentRequestDto createCommentRequestDto) {
-        commentService.creatComment(postId, createCommentRequestDto, memberService.getCurrentMember());
-        return success(SUCCESS_TO_CREATE_COMMENT);
+    public Response writeComment(Long postId, @Valid @RequestBody WriteCommentRequestDto writeCommentRequestDto) {
+        commentService.writeComment(postId, writeCommentRequestDto, memberService.getCurrentMember());
+        return success(SUCCESS_TO_WRITE_COMMENT);
     }
 
     @Operation(summary = "Get comment list api", description = "put post id to get comment list.")
     @ResponseStatus(OK)
     @GetMapping
-    public Response getCommentList(@RequestParam Long postId){
-        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getComments(postId));
+    public Response getCommentList(Long postId){
+        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getCommentList(postId));
     }
 
-    @Operation(summary = "Update comment api", description = "put comment info to update.")
+    @Operation(summary = "Edit comment api", description = "put comment info to edit.")
     @ResponseStatus(OK)
     @PutMapping
-    public Response updateComment(@RequestParam Long commentId, @Valid @RequestBody CreateCommentRequestDto updateCommentRequestDto) {
-        commentService.updateComment(commentId, updateCommentRequestDto, memberService.getCurrentMember());
-        return success(SUCCESS_TO_UPDATE_COMMENT);
+    public Response editComment(Long commentId, @Valid @RequestBody WriteCommentRequestDto editCommentRequestDto) {
+        commentService.editComment(commentId, editCommentRequestDto, memberService.getCurrentMember());
+        return success(SUCCESS_TO_EDIT_COMMENT);
     }
 
     @Operation(summary = "Delete comment API", description = "put comment info to delete")
