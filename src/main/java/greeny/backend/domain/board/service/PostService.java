@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<GetPostListResponseDto> searchPosts(String keyword, Pageable pageable) {
-        if(keyword==null || keyword.trim().isEmpty()) return getPosts(pageable);
+        if(StringUtils.hasText(keyword)) return getPosts(pageable);
         return postRepository.findByTitleContaining(keyword, pageable)
                 .map(GetPostListResponseDto::from);
     }
