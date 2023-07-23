@@ -94,6 +94,15 @@ public class AuthService {
         return authorize(email, foundMember.getId().toString());
     }
 
+    public GetTokenStatusInfoResponseDto getTokenStatusInfo(String token) {  // 토큰의 유효성 검증
+
+        if(!jwtProvider.validateToken(token)) {  // 토큰이 유효하지 않을 경우
+            return new GetTokenStatusInfoResponseDto("invalid");
+        }
+
+        return new GetTokenStatusInfoResponseDto("valid");
+    }
+
     @Transactional
     public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
         getMemberGeneral(getMember(findPasswordRequestDto.getEmail()))

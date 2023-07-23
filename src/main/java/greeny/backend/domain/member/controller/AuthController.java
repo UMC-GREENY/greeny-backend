@@ -89,6 +89,14 @@ public class AuthController {
                 authService.signInWithSocial(oAuthService.requestToNaver(authorizationCode, state).getResponse().getEmail(), Provider.NAVER));
     }
 
+    // 토큰 유효성 검증 API
+    @Operation(summary = "Valid token API", description = "put your token info to validate")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getTokenStatusInfo(String token) {
+        return success(SUCCESS_TO_VALIDATE_TOKEN, authService.getTokenStatusInfo(token));
+    }
+
     @Operation(summary = "Find password API", description = "put your email.")
     @ResponseStatus(OK)
     @PatchMapping("/password")
