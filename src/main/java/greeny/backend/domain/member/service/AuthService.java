@@ -88,9 +88,14 @@ public class AuthService {
 
         if(!memberRepository.existsByEmail(email)) {  // DB에 이메일이 없는 경우
             throw new MemberNotFoundException();
+        } else {
+            if(memberGeneralRepository.existsByMember(foundMember)) {  // 일반 로그인 사용자일 경우
+                saveMemberAgreement(foundMember, agreementRequestDto);  // DB에 Member 동의 여부 저장
+                return TokenResponseDto.excludeEmailInDto("nothing", "nothing");  // 토큰을 제공하지 않음
+            }
         }
 
-        saveMemberAgreement(foundMember, agreementRequestDto);  // DB에 Member 동의 여부 저장
+        saveMemberAgreement(foundMember, agreementRequestDto);
         return authorize(email, foundMember.getId().toString());
     }
 
