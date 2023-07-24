@@ -240,8 +240,8 @@ public class AuthService {
         return publishToken(authentication);
     }
 
-    private RefreshToken getRefreshToken(String email) {
-        return refreshTokenRepository.findByKey(email)
+    private RefreshToken getRefreshToken(String key) {
+        return refreshTokenRepository.findByKey(key)
                 .orElseThrow(RefreshTokenNotFoundException::new);
     }
 
