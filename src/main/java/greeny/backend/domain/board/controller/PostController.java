@@ -31,7 +31,7 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @Operation(summary = "write post api", description = "put your post info to write. you can skip files.")
+    @Operation(summary = "Write post api", description = "put your post info to write. you can skip files.")
     @ResponseStatus(OK)
     @PostMapping(path = "/posts", consumes = MULTIPART_FORM_DATA_VALUE)
     public Response writePost(@Valid @RequestPart(name = "body(json)") WritePostRequestDto writePostRequestDto,
