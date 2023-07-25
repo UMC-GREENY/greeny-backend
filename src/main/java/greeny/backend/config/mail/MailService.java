@@ -11,7 +11,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class MailService {
             throw new IllegalArgumentException();
         }
 
-//        return code;
+//        return code;  // TODO Url token 정보 전송
     }
 
 //    private String generateCode() {
@@ -61,7 +60,7 @@ public class MailService {
 //        return code.toString();
 //    }
 
-    private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
+    private MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {  // TODO url 파라미터로 받기
         MimeMessage message = javaMailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);

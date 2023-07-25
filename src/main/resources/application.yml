@@ -19,18 +19,12 @@ spring:
             enable: true
           auth: true
 
-#oauth:
-#  kakao:
-#    client-id: ${kakao.client-id}
-#    url:
-#      auth: https://kauth.kakao.com
-#      api: https://kapi.kakao.com
-#  naver:
-#    secret: ${naver.client-secret}
-#    client-id: ${naver.client-id}
-#    url:
-#      auth: https://nid.naver.com
-#      api: https://openapi.naver.com
+oauth:
+  kakao:
+    client-id: ${kakao.client-id}  # Kakao 로그인 API 사용을 위한 client-id
+  naver:
+    client-id: ${naver.client-id}  # Naver 로그인 API 사용을 위한 client-id
+    secret: ${naver.client-secret}  # Naver 로그인 API 사용을 위한 client-secret
 
 cloud:
   aws:

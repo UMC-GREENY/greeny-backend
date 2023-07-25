@@ -18,12 +18,12 @@ public class MemberAgreement extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_agreement_id")
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(nullable = false)
-    private String personalInfo;
+    private boolean personalInfo;
     @Column(nullable = false)
-    private String thirdParty;
+    private boolean thirdParty;
 }

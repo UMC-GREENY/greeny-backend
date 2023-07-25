@@ -18,19 +18,19 @@ public class MemberGeneral extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_general_id")
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String isAuto;
+    private boolean isAuto;
 
     public void changePassword(String password) {
         this.password = password;
     }
-    public void changeIsAuto(String isAuto) {
+    public void changeIsAuto(boolean isAuto) {
         this.isAuto = isAuto;
     }
 }

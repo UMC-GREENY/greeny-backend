@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface MemberGeneralRepository extends JpaRepository<MemberGeneral, Long> {
     Optional<MemberGeneral> findByMember(Member member);
+    boolean existsByMember(Member member);
 }

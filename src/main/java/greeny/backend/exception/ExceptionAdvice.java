@@ -59,7 +59,7 @@ public class ExceptionAdvice {
     }
 
     // 401 응답
-    // 아이디 혹은 비밀번호 오류시 발생
+    // 이메일 혹은 비밀번호가 일치하지 않음
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(UNAUTHORIZED)
     public Response loginFailureException() {
@@ -67,7 +67,7 @@ public class ExceptionAdvice {
     }
 
     // 401 응답
-    // 요청자와 요청한 유저의 정보가 일치하지 않을시에 발생
+    // 요청자와 요청한 유저의 정보가 일치하지 않음
     @ExceptionHandler(MemberNotEqualsException.class)
     @ResponseStatus(UNAUTHORIZED)
     public Response memberNotEqualsException() {
@@ -144,6 +144,22 @@ public class ExceptionAdvice {
     @ResponseStatus(NOT_FOUND)
     public Response memberGeneralNotFoundException() {
         return failure(NOT_FOUND, "요청한 일반 로그인 회원을 찾을 수 없습니다.");
+    }
+
+    // 400 응답
+    // 소셜에서 제공한 토큰 정보가 비어있음
+    @ExceptionHandler(EmptySocialTokenInfoException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public Response emptySocialTokenInfoException() {
+        return failure(BAD_REQUEST, "소셜에서 제공한 토큰 정보가 비어있습니다.");
+    }
+
+    // 404 응답
+    // 요청한 게시글을 찾을 수 없음
+    @ExceptionHandler(PostNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response postNotFoundException() {
+        return failure(NOT_FOUND, "요청한 게시글을 찾을 수 없습니다.");
     }
 
     // 404 응답

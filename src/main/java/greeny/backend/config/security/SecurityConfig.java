@@ -25,18 +25,18 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private static final String[] AUTH_WHITELIST = {
+    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {
             "/swagger-ui/**",
             "/api-docs/**",
             "/api",
             "/api/auth",
-            "/api/auth/sign-up",
+            "/api/auth/sign-up/**",
             "/api/auth/sign-in/**",
             "/api/auth/password",
             "/api/auth/reissue"
     };
 
-    private static final String[] AUTH_WHITELIST_WITH_GET_METHOD = {
+    private static final String[] AUTH_WHITELIST_WITH_BOARD = {
             "/api/posts/**",
             "/api/comments/**"
     };
@@ -64,9 +64,9 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers(AUTH_WHITELIST)
+                        .antMatchers(AUTH_WHITELIST_WITH_MEMBER_AUTH)
                         .permitAll()
-                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_GET_METHOD)
+                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_BOARD)
                         .permitAll()
                         .anyRequest()
                         .authenticated()
