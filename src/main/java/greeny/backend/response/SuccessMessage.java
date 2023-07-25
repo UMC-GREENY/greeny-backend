@@ -15,7 +15,5 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_GET_CURRENT_MEMBER_INFO = "현재 회원의 정보를 가져오는데 성공했습니다.";
     public static final String SUCCESS_TO_DELETE_MEMBER = "회원을 삭제하는데 성공했습니다.";
 
-    public static final String SUCCESS_TO_GET_CURRENT_MEMBER_INFO = "현재 회원의 정보를 가져오는데 성공했습니다.";
     public static final String SUCCESS_TO_EDIT_MEMBER_PASSWORD = "회원 비밀번호를 변경하는데 성공했습니다.";
-    public static final String SUCCESS_TO_DELETE_MEMBER = "회원을 삭제하는데 성공했습니다.";
 }
