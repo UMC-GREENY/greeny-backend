@@ -32,6 +32,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<GetCommentListResponseDto> getCommentList(Long postId) {
+        postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         return commentRepository.findAllByPostId(postId).stream().
                 map(GetCommentListResponseDto::from).
                 collect(Collectors.toList());
