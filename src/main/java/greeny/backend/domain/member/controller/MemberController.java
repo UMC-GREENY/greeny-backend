@@ -2,6 +2,7 @@ package greeny.backend.domain.member.controller;
 
 
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
+import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,15 +20,16 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/members/password")
+@RequestMapping(value = "/api/members")
 @Tag(name = "Member", description = "Member API Document")
 public class MemberController {
 
+    private final AuthService authService;
     private final MemberService memberService;
 
-    @Operation(summary = "Edit member API", description = "put info what you want to change")
+    @Operation(summary = "Edit member info API", description = "put info what you want to change")
     @ResponseStatus(OK)
-    @PatchMapping("")
+    @PatchMapping()
     public Response editMemberInfo(@Valid @RequestBody EditMemberInfoRequestDto editMemberRequestDto) {
         //입력 받은 dto를 edit메서드로 db에 변경된 비밀번호를 저장합니다.
         memberService.editMemberInfo(editMemberRequestDto);
@@ -35,17 +37,17 @@ public class MemberController {
         return success(SUCCESS_TO_EDIT_MEMBER_PASSWORD);
     }
 
-    @Operation(summary = "Get current member info API")
+    @Operation(summary = "Get member info API")
     @ResponseStatus(OK)
-    @GetMapping("")
-    public Response getCurrentMemberInfo() {
+    @GetMapping()
+    public Response getMemberInfo() {
         //회원 정보를 조회 할 수 있게 입력 받은 회원의 정보를 주는 컨트롤러
-        return success(SUCCESS_TO_GET_CURRENT_MEMBER_INFO, memberService.getCurrentMemberInfo());
+        return success(SUCCESS_TO_GET_MEMBER_INFO, memberService.getMemberInfo());
     }
 
     @Operation(summary = "Delete member API", description = "this is to delete member")
     @ResponseStatus(OK)
-    @DeleteMapping("")
+    @DeleteMapping()
     public Response deleteMember() {
         //회원 탈퇴를 실행해주는 컨트롤러
         memberService.deleteMember();

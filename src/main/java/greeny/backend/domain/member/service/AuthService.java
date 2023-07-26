@@ -200,7 +200,7 @@ public class AuthService {
                 .orElseThrow(MemberNotFoundException::new);
     }
 
-    private MemberGeneral getMemberGeneral(Member member) {
+    public MemberGeneral getMemberGeneral(Member member) {
         return memberGeneralRepository.findByMember(member)
                 .orElseThrow(MemberGeneralNotFoundException::new);
     }

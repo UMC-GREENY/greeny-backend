@@ -14,19 +14,25 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetMemberInfoResponseDto {
 
-    private Long id;
+    private String loginType;
     private String email;
     private String name;
     private String phone;
     private String birth;
 
-    public static GetMemberInfoResponseDto toDto(Member member) {
+    public static GetMemberInfoResponseDto toGeneralMemberDto(String email, String name, String phone, String birth) {
         return GetMemberInfoResponseDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .name(member.getMemberProfile().getName())
-                .phone(member.getMemberProfile().getPhone())
-                .birth(member.getMemberProfile().getBirth())
+                .loginType("General")
+                .email(email)
+                .name(name)
+                .phone(phone)
+                .birth(birth)
+                .build();
+    }
+
+    public static GetMemberInfoResponseDto toSocialMemberDto(String loginType) {
+        return GetMemberInfoResponseDto.builder()
+                .loginType(loginType)
                 .build();
     }
 
