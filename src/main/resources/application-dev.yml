@@ -27,6 +27,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 100  # Collection fetch join 시 100개씩 순차적으로 리스트를 불러옴 (DB 과부하 방지)
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database: mysql

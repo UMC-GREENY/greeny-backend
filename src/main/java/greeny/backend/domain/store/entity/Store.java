@@ -9,10 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -32,7 +35,7 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
     private List<StoreReview> storeReviews = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
-    private List<StoreBookmark> storeBookmarks = new ArrayList<>();
+    private Set<StoreBookmark> storeBookmarks = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

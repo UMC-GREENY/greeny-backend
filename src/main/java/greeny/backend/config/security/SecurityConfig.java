@@ -36,7 +36,8 @@ public class SecurityConfig {
             "/api/auth/reissue"
     };
 
-    private static final String[] AUTH_WHITELIST_WITH_BOARD = {
+    private static final String[] AUTH_WHITELIST_WITH_GET_METHOD = {
+            "/api/stores/**",
             "/api/posts/**",
             "/api/comments/**"
     };
@@ -66,7 +67,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(AUTH_WHITELIST_WITH_MEMBER_AUTH)
                         .permitAll()
-                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_BOARD)
+                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_GET_METHOD)  // 인증 없이 조회 가능한 API 목록
                         .permitAll()
                         .anyRequest()
                         .authenticated()
