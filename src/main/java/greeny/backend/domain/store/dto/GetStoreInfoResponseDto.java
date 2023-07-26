@@ -18,7 +18,7 @@ public class GetStoreInfoResponseDto {  // 스토어 상세 정보
     private String imageUrl;
     private String location;
     private String phone;
-    private boolean isBookmarked;
+    private boolean isBookmarked;  // 현재 사용자가 찜을 했는지 여부
 
     public static GetStoreInfoResponseDto from(Store store, boolean isBookmarked) {
         return GetStoreInfoResponseDto.builder()
