@@ -163,6 +163,22 @@ public class ExceptionAdvice {
     }
 
     // 404 응답
+    // 요청한 제품을 찾을 수 없음
+    @ExceptionHandler(ProductNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response productNotFoundException() {
+        return failure(NOT_FOUND, "요청한 제품을 찾을 수 없습니다.");
+    }
+
+    // 400 응답
+    // 타입이 존재하지 않음
+    @ExceptionHandler(TypeDoesntExistsException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public Response typeDoesntExistsException() {
+        return failure(BAD_REQUEST, "타입이 존재하지 않습니다.");
+    }
+
+    // 404 응답
     // 요청한 게시글을 찾을 수 없음
     @ExceptionHandler(PostNotFoundException.class)
     @ResponseStatus(NOT_FOUND)
