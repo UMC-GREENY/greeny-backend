@@ -27,7 +27,7 @@ public class StoreService {
 
     public List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos() {
         return storeRepository.findAll().stream()
-                .map(store -> GetSimpleStoreInfosResponseDto.from(store, store.getStoreBookmarks().size(), store.getStoreReviews().size()))
+                .map(store -> GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size()))
                 .collect(Collectors.toList());
     }
 
