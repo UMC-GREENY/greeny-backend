@@ -31,6 +31,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final MemberService memberService;
 
+    @Operation(summary = "write review api", description="put review type & content and object type you want to write")
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public Response writeReview(@RequestParam String type,
                                 @RequestParam Long id,
@@ -59,19 +60,19 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_PRODUCT_REVIEW);
     }
 
-    @Operation(summary = "delete review api", description = "put review type and id you want to delete")
+    @Operation(summary = "delete review api", description = "put review type and object id you want to delete")
     @DeleteMapping()
     public Response deleteReview(@RequestParam String type,
                                  @RequestParam Long id) {
 
-        if(type=="s") {
+        if(type.equals("s")) {
             reviewService.deleteStoreReview(id);
-            return success(SUCCESS_TO_WRITE_STORE_REVIEW);
+            return success(SUCCESS_TO_DELETE_STORE_REVIEW);
         }
-        else {
+        else if(type.equals("p")) {
             reviewService.deleteProductReview(id);
-            return success(SUCCESS_TO_WRITE_PRODUCT_REVIEW);
-        }
+            return success(SUCCESS_TO_DELETE_PRODUCT_REVIEW);
+        } else throw new WrongTypeException();
     }
 
 }

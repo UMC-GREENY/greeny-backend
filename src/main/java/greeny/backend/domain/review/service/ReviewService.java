@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -65,22 +66,30 @@ public class ReviewService {
         }
     }
 
-
+    @Transactional
     public void deleteStoreReview(Long reviewId) {
-
-
-
-        //image 삭제
-        List<Long> files=storeReviewImageRepository.findByStoreReview_Id(reviewId);
-        for(Long imgId:files) {storeReviewImageRepository.deleteById(imgId);}
-        //리뷰 삭제
+        //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
+        List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReview_Id(reviewId);
+        if(reviewImages!=null) {
+            List<String> urls = new ArrayList<>();
+            for(StoreReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
+            for(String url: urls) {s3Service.deleteFile(url);}
+            storeReviewImageRepository.deleteAll(reviewImages);
+        }
+        //review 삭제 : StoreReview 삭제
         storeReviewRepository.deleteById(reviewId);
     }
+    @Transactional
     public void deleteProductReview(Long reviewId) {
-        //img 삭제
-        List<Long> files=productReviewImageRepository.findByProductReview_Id(reviewId);
-        for(Long imgId:files) {productReviewImageRepository.deleteById(imgId);}
-        //리뷰 삭제
+        //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
+        List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReview_Id(reviewId);
+        if(reviewImages!=null) {
+            List<String> urls = new ArrayList<>();
+            for(ProductReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
+            for(String url: urls) {s3Service.deleteFile(url);}
+            productReviewImageRepository.deleteAll(reviewImages);
+        }
+        //review 삭제 : ProductReview 삭제
         productReviewRepository.deleteById(reviewId);
     }
 
