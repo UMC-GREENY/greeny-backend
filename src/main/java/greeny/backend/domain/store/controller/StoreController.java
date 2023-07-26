@@ -1,5 +1,7 @@
 package greeny.backend.domain.store.controller;
 
+import greeny.backend.domain.bookmark.service.BookmarkService;
+import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.domain.store.service.StoreService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static greeny.backend.response.Response.*;
-import static greeny.backend.response.SuccessMessage.*;
-import static org.springframework.http.HttpStatus.*;
+import static greeny.backend.response.Response.success;
+import static greeny.backend.response.SuccessMessage.SUCCESS_TO_GET_SIMPLE_STORE_INFOS;
+import static greeny.backend.response.SuccessMessage.SUCCESS_TO_GET_STORE_INFO;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -23,12 +26,24 @@ import static org.springframework.http.HttpStatus.*;
 public class StoreController {
 
     private final StoreService storeService;
+    private final BookmarkService bookmarkService;
+    private final MemberService memberService;
 
     @Operation(summary = "Get simple store infos API", description = "please get simple store infos.")
     @ResponseStatus(OK)
     @GetMapping("/simple")
-    public Response getSimpleStoreInfosWithReview() {
-        return success(SUCCESS_TO_GET_SIMPLE_STORE_INFOS, storeService.getSimpleStoreInfosWithReview());
+    public Response getSimpleStoreInfos() {
+        return success(SUCCESS_TO_GET_SIMPLE_STORE_INFOS, storeService.getSimpleStoreInfos());
+    }
+
+    @Operation(summary = "Get store info API", description = "put store id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getStoreInfo(Long storeId) {
+        return success(
+                SUCCESS_TO_GET_STORE_INFO,
+                storeService.getStoreInfo(storeId, bookmarkService.getMyStoreBookmarkInfos(memberService.getCurrentMember()))
+        );
     }
 
 

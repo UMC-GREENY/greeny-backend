@@ -155,6 +155,14 @@ public class ExceptionAdvice {
     }
 
     // 404 응답
+    // 요청한 스토어를 찾을 수 없음
+    @ExceptionHandler(StoreNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response storeNotFoundException() {
+        return failure(NOT_FOUND, "요청한 스토어를 찾을 수 없습니다.");
+    }
+
+    // 404 응답
     // 요청한 게시글을 찾을 수 없음
     @ExceptionHandler(PostNotFoundException.class)
     @ResponseStatus(NOT_FOUND)
