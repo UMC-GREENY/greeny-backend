@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    @EntityGraph(attributePaths = {"storeReviews", "storeBookmarks"})  // Collection fetch join -> DB 과부하 방지를 위해 batch size 설정
+    @EntityGraph(attributePaths = {"reviews", "bookmarks"})  // Collection fetch join -> DB 과부하 방지를 위해 batch size 설정
     @NotNull
     List<Store> findAll();
 }
