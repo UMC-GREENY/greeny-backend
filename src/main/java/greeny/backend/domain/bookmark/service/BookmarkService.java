@@ -26,6 +26,10 @@ public class BookmarkService {
         return storeBookmarkRepository.findStoreBookmarksByLiker(liker);
     }
 
+    public List<ProductBookmark> getMyProductBookmarkInfos(Member liker){
+        return productBookmarkRepository.findProductBookmarksByLiker(liker);
+    }
+
     public void addBookmark(String type, Store store, Product product, Member liker) {  // 타입에 따라 찜하기
 
         if(type.equals("s")) {  // 스토어 찜하기
