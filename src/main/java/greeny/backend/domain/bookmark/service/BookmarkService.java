@@ -30,6 +30,10 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
         return storeBookmarkRepository.findStoreBookmarksByLiker(liker);
     }
 
+    public List<ProductBookmark> getMyProductBookmarkInfos(Member liker){
+        return productBookmarkRepository.findProductBookmarksByLiker(liker);
+    }
+
     public void toggleStoreBookmark(String type, Long id, Member liker) {  // 타입에 따라 찜하기 or 취소
 
         if(type.equals("s")) {  // 스토어 찜하기

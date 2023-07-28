@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
 
@@ -33,7 +35,7 @@ public class Product extends AuditEntity {
     @OneToMany(mappedBy = "product", cascade = ALL, orphanRemoval = true)
     private List<ProductReview> reviews = new ArrayList<>();
     @OneToMany(mappedBy = "product", cascade = ALL, orphanRemoval = true)
-    private List<ProductBookmark> bookmarks = new ArrayList<>();
+    private Set<ProductBookmark> bookmarks = new HashSet<>();
 
     @Column(nullable = false)
     private String name;

@@ -22,6 +22,9 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_GET_SIMPLE_STORE_INFOS = "스토어 목록을 불러오는데 성공했습니다.";
     public static final String SUCCESS_TO_GET_STORE_INFO = "스토어 상세 정보를 불러오는데 성공했습니다.";
 
+    public static final String SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS = "제품 목록을 불러오는데 성공했습니다.";
+    public static final String SUCCESS_TO_GET_PRODUCT_INFO = "제품 상세 정보를 불러오는데 성공했습니다.";
+
     public static final String SUCCESS_TO_TOGGLE_BOOKMARK = "찜하기 or 취소에 성공했습니다.";
 
     public static final String SUCCESS_TO_WRITE_POST = "게시글을 작성하는데 성공하였습니다.";
