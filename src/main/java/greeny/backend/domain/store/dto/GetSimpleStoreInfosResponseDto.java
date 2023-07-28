@@ -31,4 +31,15 @@ public class GetSimpleStoreInfosResponseDto {  // 스토어 목록에 보여주�
                 .reviews(reviews)
                 .build();
     }
+    public static GetSimpleStoreInfosResponseDto from(Store store, int bookmarks) {
+        return GetSimpleStoreInfosResponseDto.builder()
+                .id(store.getId())
+                .category(store.getCategory().getName())
+                .name(store.getName())
+                .imageUrl(store.getImageUrl())
+                .location(store.getLocation())
+                .bookmarks(bookmarks)
+                .reviews(0)
+                .build();
+    }
 }

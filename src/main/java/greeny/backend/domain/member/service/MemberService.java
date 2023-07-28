@@ -1,6 +1,11 @@
 package greeny.backend.domain.member.service;
 
 
+import greeny.backend.domain.bookmark.entity.ProductBookmark;
+import greeny.backend.domain.bookmark.entity.StoreBookmark;
+import greeny.backend.domain.bookmark.repository.ProductBookmarkRepository;
+import greeny.backend.domain.bookmark.repository.StoreBookmarkRepository;
+import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.dto.member.GetMemberInfoResponseDto;
 import greeny.backend.domain.member.entity.*;
@@ -13,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,9 @@ public class MemberService {
     private final MemberProfileRepository memberProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final StoreBookmarkRepository storeBookmarkRepository;
+    private final ProductBookmarkRepository productBookmarkRepository;
+
 
     public Member getCurrentMember() {  // 스프링 시큐리티 컨텍스트에서 사용자 정보 가져오기
         return memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -74,6 +83,26 @@ public class MemberService {
         currentGeneralMember.changePassword(passwordEncoder.encode(editMemberRequestDto.getPasswordToChange()));  // 맞으면 변경
     }
 
+    public void cancelBookmark(String type, CancelBookmarkRequestDto cancelBookmarkRequestDto) {
+
+        List<Long> idsToDelete = cancelBookmarkRequestDto.getIdsToDelete();
+        Member currentMember = getCurrentMember();
+
+        if(type.equals("s")) {
+            cancelStoreBookmark(
+                    idsToDelete,
+                    storeBookmarkRepository.findStoreBookmarksByLiker(currentMember)
+            );
+        } else if(type.equals("p")) {
+            cancelProductBookmark(
+                    idsToDelete,
+                    productBookmarkRepository.findProductBookmarksByLiker(currentMember)
+            );
+        } else {
+            throw new TypeDoesntExistsException();
+        }
+    }
+
     private MemberProfile getMemberProfile(Member member) {
         return memberProfileRepository.findByMember(member)
                 .orElseThrow(MemberProfileNotFoundException::new);
@@ -81,5 +110,25 @@ public class MemberService {
     private MemberSocial getMemberSocial(Member member) {
         return memberSocialRepository.findByMember(member)
                 .orElseThrow(MemberSocialNotFoundException::new);
+    }
+    private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {
+        for(Long id : idsToDelete) {
+            for(StoreBookmark storeBookmark : foundStoreBookmarks) {
+                if(id.equals(storeBookmark.getStore().getId())) {
+                    storeBookmarkRepository.delete(storeBookmark);
+                    break;
+                }
+            }
+        }
+    }
+    private void cancelProductBookmark(List<Long> idsToDelete, List<ProductBookmark> foundProductBookmarks) {
+        for(Long id : idsToDelete) {
+            for(ProductBookmark productBookmark : foundProductBookmarks) {
+                if(id.equals(productBookmark.getProduct().getId())) {
+                    productBookmarkRepository.delete(productBookmark);
+                    break;
+                }
+            }
+        }
     }
 }

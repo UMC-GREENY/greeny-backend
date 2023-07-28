@@ -1,6 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 
+import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
@@ -52,5 +53,13 @@ public class MemberController {
         //회원 탈퇴를 실행해주는 컨트롤러
         memberService.deleteMember();
         return success(SUCCESS_TO_DELETE_MEMBER);
+    }
+
+    @Operation(summary = "Delete store or product bookmark API", description = "put your store or product id what you want to delete.")
+    @ResponseStatus(OK)
+    @DeleteMapping("/bookmark")
+    public Response cancelBookmark(String type, @RequestBody CancelBookmarkRequestDto cancelBookmarkRequestDto) {
+        memberService.cancelBookmark(type, cancelBookmarkRequestDto);
+        return success(SUCCESS_TO_CANCEL_BOOKMARK);
     }
 }

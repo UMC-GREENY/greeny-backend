@@ -26,7 +26,7 @@ public class StoreService {
     }
 
     public List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos() {  // Store 목록 가져오기
-        return storeRepository.findAll().stream()
+        return storeRepository.findStoresWithBookmarksAndReviews().stream()
                 .map(store -> GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size()))
                 .collect(Collectors.toList());  // List 에서 하나의 store 마다 GetSimpleStoreInfosResponseDto 객체로 변환 후 List 에 담아서 반환
     }

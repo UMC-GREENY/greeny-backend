@@ -26,8 +26,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class BookmarkController {
 
     private final MemberService memberService;
-    private final StoreService storeService;
-    private final ProductService productService;
     private final BookmarkService bookmarkService;
 
     // 스토어 or 제품 찜하기 or 취소 API
@@ -35,9 +33,7 @@ public class BookmarkController {
     @ResponseStatus(OK)
     @PostMapping()
     public Response toggleBookmark(String type, Long id) {
-        bookmarkService.toggleStoreBookmark(type, storeService.getStore(id), productService.getProduct(id), memberService.getCurrentMember());
+        bookmarkService.toggleStoreBookmark(type, id, memberService.getCurrentMember());
         return success(SUCCESS_TO_TOGGLE_BOOKMARK);
     }
-
-
 }

@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ProductBookmarkRepository extends JpaRepository<ProductBookmark, Long> {
     @EntityGraph(attributePaths = {"product"})
-    List<ProductBookmark> findProductBookmarksByLiker(Member liker);
+    List<ProductBookmark> findProductBookmarksByLiker(Member liker);  // Member 에 대한 product bookmark 리스트 가져오기
 }
