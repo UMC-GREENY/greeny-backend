@@ -4,7 +4,9 @@ import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.repository.ProductRepository;
+import greeny.backend.domain.review.dto.GetReviewListResponseDto;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
+import greeny.backend.domain.review.dto.GetReviewInfoResponseDto;
 import greeny.backend.domain.review.entity.ProductReview;
 import greeny.backend.domain.review.entity.StoreReview;
 import greeny.backend.domain.review.repository.ProductReviewRepository;
@@ -16,8 +18,12 @@ import greeny.backend.domain.reviewimage.repository.StoreReviewImageRepository;
 import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.repository.StoreRepository;
 import greeny.backend.exception.situation.ProductNotFound;
+import greeny.backend.exception.situation.ReviewNotFound;
 import greeny.backend.exception.situation.StoreNotFound;
+import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,9 +73,39 @@ public class ReviewService {
     }
 
     @Transactional
+    public Page<Object> getSimpleReviewInfos(String type,Long reviewId,Pageable pageable) {
+        if(type.equals("s")) {
+            StoreReview storeReview = storeReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
+            Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable,storeReview.getStore());
+            return pages.map(review ->
+                    GetReviewListResponseDto.builder()
+                            .id(review.getId())
+                            .createdAt(review.getCreatedAt())
+                            .writerEmail(review.getReviewer().getEmail())
+                            .star(review.getStar())
+                            .content(review.getContent())
+                            .existsFile(!review.getStoreReviewImages().isEmpty())
+                            .build());
+        } else if(type.equals("p")) {
+            ProductReview productReview = productReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
+            Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable,productReview.getProduct());
+            return pages.map(review ->
+                    GetReviewListResponseDto.builder()
+                            .id(review.getId())
+                            .createdAt(review.getCreatedAt())
+                            .writerEmail(review.getReviewer().getEmail())
+                            .star(review.getStar())
+                            .content(review.getContent())
+                            .existsFile(!review.getProductReviewImages().isEmpty())
+                            .build());
+        } else throw new TypeDoesntExistsException();
+    }
+
+
+    @Transactional
     public void deleteStoreReview(Long reviewId) {
         //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
-        List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReview_Id(reviewId);
+        List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
         if(reviewImages!=null) {
             List<String> urls = new ArrayList<>();
             for(StoreReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
@@ -82,7 +118,7 @@ public class ReviewService {
     @Transactional
     public void deleteProductReview(Long reviewId) {
         //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
-        List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReview_Id(reviewId);
+        List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
         if(reviewImages!=null) {
             List<String> urls = new ArrayList<>();
             for(ProductReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
@@ -91,6 +127,50 @@ public class ReviewService {
         }
         //review 삭제 : ProductReview 삭제
         productReviewRepository.deleteById(reviewId);
+    }
+
+    @Transactional
+    public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
+        StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
+
+        List<String> urls = new ArrayList<>();
+        List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
+        if(storeReviewImages!=null) {
+            for (StoreReviewImage image : storeReview.getStoreReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+        return buildReviewInfoResponseDto
+                (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
+                storeReview.getContent(),urls);
+
+    }
+
+    @Transactional
+    public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
+        ProductReview productReview = productReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
+
+        List<String> urls = new ArrayList<>();
+        List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
+        if(productReviewImages!=null) {
+            for(ProductReviewImage image : productReview.getProductReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+
+        return buildReviewInfoResponseDto
+                (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
+                productReview.getContent(),urls);
+    }
+
+    public GetReviewInfoResponseDto buildReviewInfoResponseDto(String email, String createdAt, Integer star, String content, List<String> urls) {
+        return GetReviewInfoResponseDto.builder()
+                .writerEmail(email)
+                .createdAt(createdAt)
+                .star(star)
+                .content(content)
+                .fileUrls(urls)
+                .build();
     }
 
 }

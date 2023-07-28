@@ -3,7 +3,7 @@ package greeny.backend.domain.review.controller;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
 import greeny.backend.domain.review.service.ReviewService;
-import greeny.backend.exception.situation.WrongTypeException;
+import greeny.backend.exception.situation.TypeDoesntExistsException;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import static greeny.backend.response.Response.success;
 import static greeny.backend.response.SuccessMessage.*;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
@@ -32,6 +33,7 @@ public class ReviewController {
     private final MemberService memberService;
 
     @Operation(summary = "write review api", description="put review type & content and object type you want to write")
+    @ResponseStatus(OK)
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public Response writeReview(@RequestParam String type,
                                 @RequestParam Long id,
@@ -45,22 +47,35 @@ public class ReviewController {
             reviewService.writeProductReview(id,writeReviewRequestDto,multipartFiles,memberService.getCurrentMember());
             return success(SUCCESS_TO_WRITE_PRODUCT_REVIEW);
         }
-        else throw new WrongTypeException();
+        else throw new TypeDoesntExistsException();
     }
 
-    @GetMapping(params={"type","pageable"})
-    public Response getReviewList(@RequestParam String type,
+    @Operation(summary = "get simple review infos", description="put review type and pageable object you want to get")
+    @ResponseStatus(OK)
+    @GetMapping("/simple")
+    public Response getSimpleReviewInfos(@RequestParam String type,
+                                  @RequestParam Long id,
                                   @ParameterObject Pageable pageable) {
-        return success(SUCCESS_TO_GET_REVIEW_LIST);
+        return success(SUCCESS_TO_GET_REVIEW_LIST,reviewService.getSimpleReviewInfos(type,id,pageable));
     }
 
-    @GetMapping(params = {"type","id"})
-    public Response getReviewDetail(@RequestParam String type,
+    @Operation(summary = "get review info", description="put review type and reviewId you want to get")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getReviewInfo(@RequestParam String type,
                                     @RequestParam Long id) {
-        return success(SUCCESS_TO_GET_PRODUCT_REVIEW);
+        if(type.equals("s")){
+            return success(SUCCESS_TO_GET_STORE_REVIEW,reviewService.getStoreReviewInfo(id));
+        }else if(type.equals("p")){
+            return success(SUCCESS_TO_GET_PRODUCT_REVIEW,reviewService.getProductReviewInfo(id));
+        }else {
+            throw new TypeDoesntExistsException();
+        }
     }
+
 
     @Operation(summary = "delete review api", description = "put review type and object id you want to delete")
+    @ResponseStatus(OK)
     @DeleteMapping()
     public Response deleteReview(@RequestParam String type,
                                  @RequestParam Long id) {
@@ -72,7 +87,7 @@ public class ReviewController {
         else if(type.equals("p")) {
             reviewService.deleteProductReview(id);
             return success(SUCCESS_TO_DELETE_PRODUCT_REVIEW);
-        } else throw new WrongTypeException();
+        } else throw new TypeDoesntExistsException();
     }
 
 }

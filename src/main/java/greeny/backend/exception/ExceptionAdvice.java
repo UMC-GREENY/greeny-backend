@@ -185,4 +185,12 @@ public class ExceptionAdvice {
     public Response commentNotFoundException() {
         return failure(NOT_FOUND, "요청한 댓글을 찾을 수 없습니다.");
     }
+
+    // 404 응답
+    // 요청한 리뷰를 찾을 수 없음
+    @ExceptionHandler(ReviewNotFound.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response reviewNotFoundException() { return failure(NOT_FOUND,"요청한 리뷰를 찾을 수 없습니다."); }
+
+
 }
