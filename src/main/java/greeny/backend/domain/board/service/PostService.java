@@ -3,8 +3,8 @@ package greeny.backend.domain.board.service;
 import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.board.dto.WritePostRequestDto;
-import greeny.backend.domain.board.dto.GetPostListResponseDto;
-import greeny.backend.domain.board.dto.GetPostResponseDto;
+import greeny.backend.domain.board.dto.GetSimplePostInfosResponseDto;
+import greeny.backend.domain.board.dto.GetPostInfoResponseDto;
 import greeny.backend.domain.board.entity.Post;
 import greeny.backend.domain.board.entity.PostFile;
 import greeny.backend.domain.board.repository.PostRepository;
@@ -44,23 +44,23 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> getPostList(Pageable pageable) {
+    public Page<GetSimplePostInfosResponseDto> getSimplePostInfos(Pageable pageable) {
         return postRepository.findAll(pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> searchPostList(String keyword, Pageable pageable) {
-        if(!StringUtils.hasText(keyword)) return getPostList(pageable);
+    public Page<GetSimplePostInfosResponseDto> searchSimplePostInfos(String keyword, Pageable pageable) {
+        if(!StringUtils.hasText(keyword)) return getSimplePostInfos(pageable);
         return postRepository.findAllByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public GetPostResponseDto getPost(Long postId) {
+    public GetPostInfoResponseDto getPostInfo(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
-        return GetPostResponseDto.from(post, isWriter(post));
+        return GetPostInfoResponseDto.from(post, isWriter(post));
     }
 
     public Boolean isWriter(Post post){ // 게시글을 조회하는 사용자가 작성자인지 확인
@@ -83,7 +83,7 @@ public class PostService {
     }
 
     @Transactional
-    public void editPost(Long postId, WritePostRequestDto editPostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
+    public void editPostInfo(Long postId, WritePostRequestDto editPostInfoRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
@@ -92,7 +92,7 @@ public class PostService {
         if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         //게시글의 제목과 내용 업데이트
-        post.update(editPostRequestDto.getTitle(), editPostRequestDto.getContent());
+        post.update(editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent());
 
         List<String> fileUrls = post.getFileUrls();
 
@@ -122,8 +122,8 @@ public class PostService {
     }
 
     @Transactional
-    public Page<GetPostListResponseDto> getMemberPostList(Pageable pageable, Member currentMember) {
+    public Page<GetSimplePostInfosResponseDto> getMySimplePostInfos(Pageable pageable, Member currentMember) {
         return postRepository.findAllByWriterId(currentMember.getId(), pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
     }
 }

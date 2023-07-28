@@ -1,7 +1,7 @@
 package greeny.backend.domain.board.service;
 
 import greeny.backend.domain.board.dto.WriteCommentRequestDto;
-import greeny.backend.domain.board.dto.GetCommentListResponseDto;
+import greeny.backend.domain.board.dto.GetSimpleCommentInfosResponseDto;
 import greeny.backend.domain.board.entity.Comment;
 import greeny.backend.domain.board.entity.Post;
 import greeny.backend.domain.board.repository.CommentRepository;
@@ -32,10 +32,10 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetCommentListResponseDto> getCommentList(Long postId) {
+    public List<GetSimpleCommentInfosResponseDto> getSimpleCommentInfos(Long postId) {
         if(!postRepository.existsById(postId)) throw new PostNotFoundException();
         return commentRepository.findAllByPostId(postId).stream().
-                map(comment -> GetCommentListResponseDto.from(comment, isWriter(comment))).
+                map(comment -> GetSimpleCommentInfosResponseDto.from(comment, isWriter(comment))).
                 collect(Collectors.toList());
 
     }
@@ -48,10 +48,10 @@ public class CommentService {
     }
 
     @Transactional
-    public void editComment(Long commentId, WriteCommentRequestDto editCommentRequestDto, Member currentMember) {
+    public void editCommentInfo(Long commentId, WriteCommentRequestDto editCommentInfoRequestDto, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
-        comment.update(editCommentRequestDto.getContent());
+        comment.update(editCommentInfoRequestDto.getContent());
     }
 
     @Transactional(readOnly = true)

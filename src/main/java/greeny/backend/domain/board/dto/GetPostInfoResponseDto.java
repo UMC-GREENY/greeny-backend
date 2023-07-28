@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GetPostResponseDto {
+public class GetPostInfoResponseDto {
     private Long id;
     private String writerEmail;
     private String createdAt;
@@ -21,8 +21,8 @@ public class GetPostResponseDto {
     private List<String> fileUrls;
     private Boolean isWriter; // 화면에 수정,삭제 버튼 띄울지 판단할 때 필요
 
-    public static GetPostResponseDto from(Post post, Boolean isWriter){
-        return GetPostResponseDto.builder()
+    public static GetPostInfoResponseDto from(Post post, Boolean isWriter){
+        return GetPostInfoResponseDto.builder()
                 .id(post.getId())
                 .writerEmail(post.getWriter().getEmail())
                 .title(post.getTitle())
