@@ -25,17 +25,13 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -54,115 +50,46 @@ public class ReviewService {
         Store store = storeRepository.findById(id).orElseThrow(()->new StoreNotFound());
         StoreReview storeReview =storeReviewRepository.save(writeReviewRequestDto.toStoreReviewEntity(member, store));
         if(multipartFiles!=null){
-            for(MultipartFile file:multipartFiles) {
-                StoreReviewImage storeReviewImage = new StoreReviewImage().
-                        getEntity(storeReview,s3Service.uploadFile(file));
-                storeReview.getStoreReviewImages().add(storeReviewImage);
-            }
+            uploadFiles(multipartFiles,storeReview);
         }
-
     }
-
     @Transactional
     public void writeProductReview(Long id, WriteReviewRequestDto writeReviewRequestDto,List<MultipartFile> multipartFiles,Member member) {
         Product product = productRepository.findById(id).orElseThrow(()->new ProductNotFound());
         ProductReview productReview = productReviewRepository.save(writeReviewRequestDto.toProductReviewEntity(member,product));
-
         if(multipartFiles!=null){
-            for(MultipartFile file:multipartFiles) {
-                ProductReviewImage productReviewImage = new ProductReviewImage().
-                        getEntity(productReview,s3Service.uploadFile(file));
-                productReview.getProductReviewImages().add(productReviewImage);
-            }
+            uploadFiles(multipartFiles,productReview);
         }
     }
+
+
 
     @Transactional
     public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
-            //List<StoreReview> storeReviews = storeReviewRepository.findAll();
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
-            return pages.map(review ->
-                    GetReviewListResponseDto.builder()
-                            .id(review.getId())
-                            .createdAt(review.getCreatedAt())
-                            .writerEmail(review.getReviewer().getEmail())
-                            .star(review.getStar())
-                            .content(review.getContent())
-                            .existsFile(!review.getStoreReviewImages().isEmpty())
-                            .build());
+            return getStoreMap(pages);
         } else if(type.equals("p")) {
-            //List<ProductReview> productReviews = productReviewRepository.findAll();
             Page<ProductReview> pages = productReviewRepository.findAll(pageable);
-            return pages.map(review ->
-                    GetReviewListResponseDto.builder()
-                            .id(review.getId())
-                            .createdAt(review.getCreatedAt())
-                            .writerEmail(review.getReviewer().getEmail())
-                            .star(review.getStar())
-                            .content(review.getContent())
-                            .existsFile(!review.getProductReviewImages().isEmpty())
-                            .build());
+            return getProductMap(pages);
         } else throw new TypeDoesntExistsException();
     }
-
 
     @Transactional
     public Page<Object> getSimpleReviewInfos(String type,Long reviewId,Pageable pageable) {
         if(type.equals("s")) {
             StoreReview storeReview = storeReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
             Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable,storeReview.getStore());
-            return pages.map(review ->
-                    GetReviewListResponseDto.builder()
-                            .id(review.getId())
-                            .createdAt(review.getCreatedAt())
-                            .writerEmail(review.getReviewer().getEmail())
-                            .star(review.getStar())
-                            .content(review.getContent())
-                            .existsFile(!review.getStoreReviewImages().isEmpty())
-                            .build());
+            return getStoreMap(pages);
         } else if(type.equals("p")) {
             ProductReview productReview = productReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
             Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable,productReview.getProduct());
-            return pages.map(review ->
-                    GetReviewListResponseDto.builder()
-                            .id(review.getId())
-                            .createdAt(review.getCreatedAt())
-                            .writerEmail(review.getReviewer().getEmail())
-                            .star(review.getStar())
-                            .content(review.getContent())
-                            .existsFile(!review.getProductReviewImages().isEmpty())
-                            .build());
+            return getProductMap(pages);
         } else throw new TypeDoesntExistsException();
     }
 
 
-    @Transactional
-    public void deleteStoreReview(Long reviewId) {
-        //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
-        List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
-        if(reviewImages!=null) {
-            List<String> urls = new ArrayList<>();
-            for(StoreReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
-            for(String url: urls) {s3Service.deleteFile(url);}
-            storeReviewImageRepository.deleteAll(reviewImages);
-        }
-        //review 삭제 : StoreReview 삭제
-        storeReviewRepository.deleteById(reviewId);
-    }
-    @Transactional
-    public void deleteProductReview(Long reviewId) {
-        //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
-        List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
-        if(reviewImages!=null) {
-            List<String> urls = new ArrayList<>();
-            for(ProductReviewImage img:reviewImages) {urls.add(img.getImageUrl());}
-            for(String url: urls) {s3Service.deleteFile(url);}
-            productReviewImageRepository.deleteAll(reviewImages);
-        }
-        //review 삭제 : ProductReview 삭제
-        productReviewRepository.deleteById(reviewId);
-    }
+
 
     @Transactional
     public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
@@ -178,9 +105,7 @@ public class ReviewService {
         return buildReviewInfoResponseDto
                 (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
                 storeReview.getContent(),urls);
-
     }
-
     @Transactional
     public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
         ProductReview productReview = productReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
@@ -192,11 +117,36 @@ public class ReviewService {
                 urls.add(image.getImageUrl());
             }
         }
-
         return buildReviewInfoResponseDto
                 (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
                 productReview.getContent(),urls);
     }
+
+
+
+    @Transactional
+    public void deleteStoreReview(Long reviewId) {
+        //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
+        List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
+        if(reviewImages!=null) {
+            for(StoreReviewImage img:reviewImages) {s3Service.deleteFile(img.getImageUrl());}
+            storeReviewImageRepository.deleteAll(reviewImages);
+        }
+        //review 삭제 : StoreReview 삭제
+        storeReviewRepository.deleteById(reviewId);
+    }
+    @Transactional
+    public void deleteProductReview(Long reviewId) {
+        //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
+        List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
+        if(reviewImages!=null) {
+            for(ProductReviewImage img:reviewImages) {s3Service.deleteFile(img.getImageUrl());}
+            productReviewImageRepository.deleteAll(reviewImages);
+        }
+        //review 삭제 : ProductReview 삭제
+        productReviewRepository.deleteById(reviewId);
+    }
+
 
     public GetReviewInfoResponseDto buildReviewInfoResponseDto(String email, String createdAt, Integer star, String content, List<String> urls) {
         return GetReviewInfoResponseDto.builder()
@@ -206,6 +156,49 @@ public class ReviewService {
                 .content(content)
                 .fileUrls(urls)
                 .build();
+    }
+
+
+    public void uploadFiles(List<MultipartFile> multipartFiles,StoreReview storeReview) {
+        for(MultipartFile file:multipartFiles) {
+            StoreReviewImage storeReviewImage = new StoreReviewImage().
+                    getEntity(storeReview,s3Service.uploadFile(file));
+            storeReview.getStoreReviewImages().add(storeReviewImage);
+        }
+    }
+    public void uploadFiles(List<MultipartFile> multipartFiles,ProductReview productReview) {
+        for(MultipartFile file:multipartFiles) {
+            ProductReviewImage productReviewImage = new ProductReviewImage().
+                    getEntity(productReview,s3Service.uploadFile(file));
+            productReview.getProductReviewImages().add(productReviewImage);
+        }
+    }
+
+
+
+    @NotNull
+    private Page<Object> getProductMap(Page<ProductReview> pages) {
+        return pages.map(review ->
+                GetReviewListResponseDto.builder()
+                        .id(review.getId())
+                        .createdAt(review.getCreatedAt())
+                        .writerEmail(review.getReviewer().getEmail())
+                        .star(review.getStar())
+                        .content(review.getContent())
+                        .existsFile(!review.getProductReviewImages().isEmpty())
+                        .build());
+    }
+    @NotNull
+    private Page<Object> getStoreMap(Page<StoreReview> pages) {
+        return pages.map(review ->
+                GetReviewListResponseDto.builder()
+                        .id(review.getId())
+                        .createdAt(review.getCreatedAt())
+                        .writerEmail(review.getReviewer().getEmail())
+                        .star(review.getStar())
+                        .content(review.getContent())
+                        .existsFile(!review.getStoreReviewImages().isEmpty())
+                        .build());
     }
 
 }
