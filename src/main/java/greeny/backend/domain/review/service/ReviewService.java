@@ -22,15 +22,20 @@ import greeny.backend.exception.situation.ReviewNotFound;
 import greeny.backend.exception.situation.StoreNotFound;
 import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +76,36 @@ public class ReviewService {
             }
         }
     }
+
+    @Transactional
+    public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
+        if(type.equals("s")) {
+            //List<StoreReview> storeReviews = storeReviewRepository.findAll();
+            Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
+            return pages.map(review ->
+                    GetReviewListResponseDto.builder()
+                            .id(review.getId())
+                            .createdAt(review.getCreatedAt())
+                            .writerEmail(review.getReviewer().getEmail())
+                            .star(review.getStar())
+                            .content(review.getContent())
+                            .existsFile(!review.getStoreReviewImages().isEmpty())
+                            .build());
+        } else if(type.equals("p")) {
+            //List<ProductReview> productReviews = productReviewRepository.findAll();
+            Page<ProductReview> pages = productReviewRepository.findAll(pageable);
+            return pages.map(review ->
+                    GetReviewListResponseDto.builder()
+                            .id(review.getId())
+                            .createdAt(review.getCreatedAt())
+                            .writerEmail(review.getReviewer().getEmail())
+                            .star(review.getStar())
+                            .content(review.getContent())
+                            .existsFile(!review.getProductReviewImages().isEmpty())
+                            .build());
+        } else throw new TypeDoesntExistsException();
+    }
+
 
     @Transactional
     public Page<Object> getSimpleReviewInfos(String type,Long reviewId,Pageable pageable) {

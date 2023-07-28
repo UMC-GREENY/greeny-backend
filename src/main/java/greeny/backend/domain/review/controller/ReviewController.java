@@ -50,6 +50,14 @@ public class ReviewController {
         else throw new TypeDoesntExistsException();
     }
 
+    @Operation(summary = "get all simple review infos", description="put review type and pageable object you want to get")
+    @ResponseStatus(OK)
+    @GetMapping("/all")
+    public Response getAllSimpleReviewInfos(@RequestParam String type,
+                                         @ParameterObject Pageable pageable) {
+        return success(SUCCESS_TO_GET_REVIEW_LIST,reviewService.getAllSimpleReviewInfos(type,pageable));
+    }
+
     @Operation(summary = "get simple review infos", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/simple")

@@ -41,4 +41,6 @@ public class StoreReview extends AuditEntity {
     private int star;
     @Column(nullable = false)
     private String content;
+
+
 }
