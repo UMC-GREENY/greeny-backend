@@ -6,9 +6,14 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @EntityGraph(attributePaths = {"store", "reviews", "bookmarks"})  // Collection fetch join -> DB 과부하 방지를 위해 batch size 설정
+    @EntityGraph(attributePaths = {"store", "reviews", "bookmarks"})
     @NotNull
     List<Product> findAll();
+
+    @EntityGraph(attributePaths = {"store"})
+    @NotNull
+    Optional<Product> findProductById(Long id);
 }

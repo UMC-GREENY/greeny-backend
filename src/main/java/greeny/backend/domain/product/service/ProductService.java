@@ -1,13 +1,14 @@
 package greeny.backend.domain.product.service;
 
 import greeny.backend.domain.bookmark.entity.ProductBookmark;
+import greeny.backend.domain.product.dto.GetProductInfoResponseDto;
 import greeny.backend.domain.product.dto.GetSimpleProductInfosResponseDto;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.repository.ProductRepository;
-import greeny.backend.domain.review.entity.ProductReview;
 import greeny.backend.exception.situation.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,15 +22,31 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public Product getProduct(Long productId) {
-        return productRepository.findById(productId)
+        return productRepository.findProductById(productId)
                 .orElseThrow(ProductNotFoundException::new);
     }
 
+    // 제품 목록 가져오기
     public List<GetSimpleProductInfosResponseDto> getSimpleProductInfos(){
-
         return productRepository.findAll().stream()
                 .map(product -> GetSimpleProductInfosResponseDto.from(product,product.getStore().getName(),product.getBookmarks().size(),product.getReviews().size()))
                 .collect(Collectors.toList());
+    }
+
+    // 제품 상세목록 가져오기
+    public GetProductInfoResponseDto getProductInfo(Long productId, List<ProductBookmark> myProductBookmarks){
+
+
+
+        Product foundProduct = getProduct(productId);
+
+
+        for (ProductBookmark myProductBookmark : myProductBookmarks){
+            if (productId.equals(myProductBookmark.getProduct().getId())){
+                return GetProductInfoResponseDto.from(foundProduct,foundProduct.getStore().getName(), foundProduct.getStore().getWebUrl(),true);
+            }
+        }
+        return GetProductInfoResponseDto.from(foundProduct,foundProduct.getStore().getName(), foundProduct.getStore().getWebUrl(),false);
     }
 
 }
