@@ -11,6 +11,7 @@ import greeny.backend.exception.situation.CommentNotFoundException;
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +33,18 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<GetCommentListResponseDto> getCommentList(Long postId) {
-        postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        if(!postRepository.existsById(postId)) throw new PostNotFoundException();
         return commentRepository.findAllByPostId(postId).stream().
-                map(GetCommentListResponseDto::from).
+                map(comment -> GetCommentListResponseDto.from(comment, isWriter(comment))).
                 collect(Collectors.toList());
 
+    }
+
+    public Boolean isWriter(Comment comment){ // 댓글을 조회하는 사용자가 작성자인지 확인
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName()
+                .equals(comment.getWriter().getEmail());
     }
 
     @Transactional
@@ -46,6 +54,7 @@ public class CommentService {
         comment.update(editCommentRequestDto.getContent());
     }
 
+    @Transactional(readOnly = true)
     public void deleteComment(Long commentId, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인

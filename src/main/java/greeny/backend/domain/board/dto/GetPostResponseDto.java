@@ -13,22 +13,24 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetPostResponseDto {
     private Long id;
-    private String writeEmail;
+    private String writerEmail;
     private String createdAt;
     private String updatedAt;
     private String title;
     private String content;
     private List<String> fileUrls;
+    private Boolean isWriter; // 화면에 수정,삭제 버튼 띄울지 판단할 때 필요
 
-    public static GetPostResponseDto from(Post post){
+    public static GetPostResponseDto from(Post post, Boolean isWriter){
         return GetPostResponseDto.builder()
                 .id(post.getId())
-                .writeEmail(post.getWriter().getEmail())
+                .writerEmail(post.getWriter().getEmail())
                 .title(post.getTitle())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .content(post.getContent())
                 .fileUrls(post.getFileUrls())
+                .isWriter(isWriter)
                 .build();
     }
 

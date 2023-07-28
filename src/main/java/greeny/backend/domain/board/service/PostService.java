@@ -13,6 +13,7 @@ import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -59,7 +60,14 @@ public class PostService {
     public GetPostResponseDto getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
-        return GetPostResponseDto.from(post);
+        return GetPostResponseDto.from(post, isWriter(post));
+    }
+
+    public Boolean isWriter(Post post){ // 게시글을 조회하는 사용자가 작성자인지 확인
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName()
+                .equals(post.getWriter().getEmail());
     }
 
     @Transactional
