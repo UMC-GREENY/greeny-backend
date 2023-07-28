@@ -44,7 +44,7 @@ public class StoreController {
     public Response getStoreInfo(Long storeId) {
         return success(
                 SUCCESS_TO_GET_STORE_INFO,
-                storeService.getStoreInfo(storeId, bookmarkService.getMyStoreBookmarkInfos(memberService.getCurrentMember()))
+                storeService.getStoreInfo(storeId, bookmarkService.getStoreBookmarkInfos(memberService.getCurrentMember()))
         );
     }
 
