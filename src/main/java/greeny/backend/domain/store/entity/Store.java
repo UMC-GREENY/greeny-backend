@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -30,9 +32,9 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
-    private List<StoreReview> storeReviews = new ArrayList<>();
+    private List<StoreReview> reviews = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
-    private List<StoreBookmark> storeBookmarks = new ArrayList<>();
+    private Set<StoreBookmark> bookmarks = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

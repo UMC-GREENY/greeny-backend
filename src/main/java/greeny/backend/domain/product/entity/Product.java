@@ -31,9 +31,9 @@ public class Product extends AuditEntity {
     @JoinColumn(name = "store_id")
     private Store store;
     @OneToMany(mappedBy = "product", cascade = ALL, orphanRemoval = true)
-    private List<ProductReview> productReviews = new ArrayList<>();
+    private List<ProductReview> reviews = new ArrayList<>();
     @OneToMany(mappedBy = "product", cascade = ALL, orphanRemoval = true)
-    private List<ProductBookmark> productBookmarks = new ArrayList<>();
+    private List<ProductBookmark> bookmarks = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;

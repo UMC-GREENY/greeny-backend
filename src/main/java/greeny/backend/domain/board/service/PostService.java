@@ -51,7 +51,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<GetPostListResponseDto> searchPostList(String keyword, Pageable pageable) {
         if(!StringUtils.hasText(keyword)) return getPostList(pageable);
-        return postRepository.findAllByTitleContaining(keyword, pageable)
+        return postRepository.findAllByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable)
                 .map(GetPostListResponseDto::from);
     }
 
