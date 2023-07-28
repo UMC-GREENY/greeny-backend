@@ -42,11 +42,10 @@ public class ProductController {
     @Operation(summary = "Get product info API", description = "put product id what you want to see.")
     @ResponseStatus(OK)
     @GetMapping()
-    public Response getProdcutInfo(Long productId){
+    public Response getProductInfo(Long productId){
         return success(
                 SUCCESS_TO_GET_PRODUCT_INFO,
                 productService.getProductInfo(productId, bookmarkService.getMyProductBookmarkInfos(memberService.getCurrentMember()))
         );
     }
-
 }

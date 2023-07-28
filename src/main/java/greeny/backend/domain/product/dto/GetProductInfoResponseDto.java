@@ -17,11 +17,11 @@ public class GetProductInfoResponseDto {
     private String imgUrl;
     private String storeName;
     private String storeUrl;
-    private int price;
-    private int deliveryFee;
-    private boolean bookmarked;
+    private Integer price;
+    private Integer deliveryFee;
+    private Boolean isBookmarked;
 
-    public static GetProductInfoResponseDto from(Product product, String storeName, String storeUrl, boolean bookmarked){
+    public static GetProductInfoResponseDto from(Product product, String storeName, String storeUrl, boolean isBookmarked){
         return GetProductInfoResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -30,7 +30,7 @@ public class GetProductInfoResponseDto {
                 .storeUrl(storeUrl)
                 .price(product.getPrice())
                 .deliveryFee(product.getDeliveryFee())
-                .bookmarked(bookmarked)
+                .isBookmarked(isBookmarked)
                 .build();
     }
 }

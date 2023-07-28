@@ -8,7 +8,10 @@ import greeny.backend.domain.bookmark.repository.StoreBookmarkRepository;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.dto.member.GetMemberInfoResponseDto;
-import greeny.backend.domain.member.entity.*;
+import greeny.backend.domain.member.entity.Member;
+import greeny.backend.domain.member.entity.MemberGeneral;
+import greeny.backend.domain.member.entity.MemberProfile;
+import greeny.backend.domain.member.entity.MemberSocial;
 import greeny.backend.domain.member.repository.*;
 import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +36,7 @@ public class MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final StoreBookmarkRepository storeBookmarkRepository;
     private final ProductBookmarkRepository productBookmarkRepository;
-
+    private final AuthService authService;
 
     public Member getCurrentMember() {  // 스프링 시큐리티 컨텍스트에서 사용자 정보 가져오기
         return memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -72,8 +75,7 @@ public class MemberService {
     @Transactional
     public void editMemberInfo(EditMemberInfoRequestDto editMemberRequestDto) {  // 비밀번호 변경
 
-        MemberGeneral currentGeneralMember = memberGeneralRepository.findByMember(getCurrentMember())
-                .orElseThrow(MemberGeneralNotFoundException::new);
+        MemberGeneral currentGeneralMember = authService.getMemberGeneral(getCurrentMember());
 
         //현재 비밀번호를 입력받아서 회원 맞는지 체크 하기
         if(!passwordEncoder.matches(editMemberRequestDto.getPasswordToCheck(), currentGeneralMember.getPassword())) {
@@ -83,22 +85,22 @@ public class MemberService {
         currentGeneralMember.changePassword(passwordEncoder.encode(editMemberRequestDto.getPasswordToChange()));  // 맞으면 변경
     }
 
-    public void cancelBookmark(String type, CancelBookmarkRequestDto cancelBookmarkRequestDto) {
+    public void cancelBookmark(String type, CancelBookmarkRequestDto cancelBookmarkRequestDto) {  // 현재 사용자가 찜한 store or product 목록에서 삭제
 
         List<Long> idsToDelete = cancelBookmarkRequestDto.getIdsToDelete();
         Member currentMember = getCurrentMember();
 
-        if(type.equals("s")) {
+        if(type.equals("s")) {  // 타입이 store 일 경우
             cancelStoreBookmark(
                     idsToDelete,
                     storeBookmarkRepository.findStoreBookmarksByLiker(currentMember)
             );
-        } else if(type.equals("p")) {
+        } else if(type.equals("p")) {  // 타입이 product 일 경우
             cancelProductBookmark(
                     idsToDelete,
                     productBookmarkRepository.findProductBookmarksByLiker(currentMember)
             );
-        } else {
+        } else {  // 타입이 존재하지 않을 경우
             throw new TypeDoesntExistsException();
         }
     }
@@ -111,7 +113,7 @@ public class MemberService {
         return memberSocialRepository.findByMember(member)
                 .orElseThrow(MemberSocialNotFoundException::new);
     }
-    private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {
+    private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {  // Store 찜 목록에서 삭제
         for(Long id : idsToDelete) {
             for(StoreBookmark storeBookmark : foundStoreBookmarks) {
                 if(id.equals(storeBookmark.getStore().getId())) {
@@ -121,7 +123,7 @@ public class MemberService {
             }
         }
     }
-    private void cancelProductBookmark(List<Long> idsToDelete, List<ProductBookmark> foundProductBookmarks) {
+    private void cancelProductBookmark(List<Long> idsToDelete, List<ProductBookmark> foundProductBookmarks) {  // Product 찜 목록에서 삭제
         for(Long id : idsToDelete) {
             for(ProductBookmark productBookmark : foundProductBookmarks) {
                 if(id.equals(productBookmark.getProduct().getId())) {

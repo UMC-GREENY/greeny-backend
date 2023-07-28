@@ -15,11 +15,11 @@ public class GetSimpleProductInfosResponseDto {
     private String name;
     private String imgUrl;
     private String storeName;
-    private int price;
-    private int bookmarks;
-    private int reviews;
+    private Integer price;
+    private Integer bookmarks;
+    private Integer reviews;
 
-    public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks,int reviews){
+    public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks, int reviews){
         return GetSimpleProductInfosResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())

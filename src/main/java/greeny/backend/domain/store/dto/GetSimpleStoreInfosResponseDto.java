@@ -17,8 +17,8 @@ public class GetSimpleStoreInfosResponseDto {  // 스토어 목록에 보여주�
     private String name;
     private String imageUrl;
     private String location;
-    private int bookmarks;  // 찜한 사람들의 수
-    private int reviews;  // 리뷰 수
+    private Integer bookmarks;  // 찜한 사람들의 수
+    private Integer reviews;  // 리뷰 수
 
     public static GetSimpleStoreInfosResponseDto from(Store store, int bookmarks, int reviews) {
         return GetSimpleStoreInfosResponseDto.builder()
