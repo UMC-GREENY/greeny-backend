@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -46,6 +47,14 @@ public class AuthController {
         String email = authEmailRequestDto.getEmail();
         authService.validateSignUpInfoWithGeneral(email);
         return success(SUCCESS_TO_SEND_EMAIL, mailService.sendSimpleMessage(email, authEmailRequestDto.getAuthorizationUrl()));
+    }
+
+    // 토큰 유효성 검증 API
+    @Operation(summary = "Valid token API", description = "put your token info to what you want to validate.")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getTokenStatusInfo(@RequestHeader("Authorization") String bearerToken) {
+        return success(SUCCESS_TO_VALIDATE_TOKEN, authService.getTokenStatusInfo(bearerToken));
     }
 
     @Operation(summary = "Sign up API", description = "put your sign up info.")
@@ -89,14 +98,6 @@ public class AuthController {
         return success(
                 SUCCESS_TO_SIGN_IN,
                 authService.signInWithSocial(oAuthService.requestToNaver(authorizationCode, state).getResponse().getEmail(), Provider.NAVER));
-    }
-
-    // 토큰 유효성 검증 API
-    @Operation(summary = "Valid token API", description = "put your token info to validate")
-    @ResponseStatus(OK)
-    @GetMapping()
-    public Response getTokenStatusInfo(String token) {
-        return success(SUCCESS_TO_VALIDATE_TOKEN, authService.getTokenStatusInfo(token));
     }
 
     @Operation(summary = "Find password API", description = "put your email.")

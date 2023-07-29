@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
@@ -47,6 +48,17 @@ public class AuthService {
         }
 
         return foundMember;
+    }
+
+    public GetTokenStatusInfoResponseDto getTokenStatusInfo(String bearerToken) {  // 토큰의 유효성 검증
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            if(jwtProvider.validateToken(bearerToken.substring(7))) {
+                return new GetTokenStatusInfoResponseDto(true);
+            }
+        }
+
+        return new GetTokenStatusInfoResponseDto(false);
     }
 
     public void signUp(SignUpRequestDto signUpRequestDto) {  // 일반 회원가입
@@ -98,15 +110,6 @@ public class AuthService {
 
         saveMemberAgreement(foundMember, agreementRequestDto);
         return authorize(email, foundMember.getId().toString());
-    }
-
-    public GetTokenStatusInfoResponseDto getTokenStatusInfo(String token) {  // 토큰의 유효성 검증
-
-        if(!jwtProvider.validateToken(token)) {  // 토큰이 유효하지 않을 경우
-            return new GetTokenStatusInfoResponseDto("invalid");
-        }
-
-        return new GetTokenStatusInfoResponseDto("valid");
     }
 
     @Transactional
