@@ -46,9 +46,10 @@ public class MemberService {
     public GetMemberInfoResponseDto getMemberInfo() {  //회원 정보 가져오기
 
         Member currentMember = getCurrentMember();
-        MemberProfile currentMemberInfo = getMemberProfile(currentMember);
+        Long currentMemberId = currentMember.getId();
 
-        if(memberGeneralRepository.existsByMember(currentMember)) {
+        if(memberGeneralRepository.existsByMemberId(currentMemberId)) {
+            MemberProfile currentMemberInfo = getMemberProfile(currentMemberId);
             return GetMemberInfoResponseDto.toGeneralMemberDto(
                     currentMember.getEmail(),
                     currentMemberInfo.getName(),
@@ -57,7 +58,7 @@ public class MemberService {
             );
         }
 
-        return GetMemberInfoResponseDto.toSocialMemberDto(getMemberSocial(currentMember).getProvider().getName());
+        return GetMemberInfoResponseDto.toSocialMemberDto(getMemberSocial(currentMemberId).getProvider().getName());
     }
 
     public void deleteMember() {
@@ -75,7 +76,7 @@ public class MemberService {
     @Transactional
     public void editMemberInfo(EditMemberInfoRequestDto editMemberRequestDto) {  // 비밀번호 변경
 
-        MemberGeneral currentGeneralMember = authService.getMemberGeneral(getCurrentMember());
+        MemberGeneral currentGeneralMember = authService.getMemberGeneral(getCurrentMember().getId());
 
         //현재 비밀번호를 입력받아서 회원 맞는지 체크 하기
         if(!passwordEncoder.matches(editMemberRequestDto.getPasswordToCheck(), currentGeneralMember.getPassword())) {
@@ -105,12 +106,12 @@ public class MemberService {
         }
     }
 
-    private MemberProfile getMemberProfile(Member member) {
-        return memberProfileRepository.findByMember(member)
+    private MemberProfile getMemberProfile(Long memberId) {
+        return memberProfileRepository.findByMemberId(memberId)
                 .orElseThrow(MemberProfileNotFoundException::new);
     }
-    private MemberSocial getMemberSocial(Member member) {
-        return memberSocialRepository.findByMember(member)
+    private MemberSocial getMemberSocial(Long memberId) {
+        return memberSocialRepository.findByMemberId(memberId)
                 .orElseThrow(MemberSocialNotFoundException::new);
     }
     private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {  // Store 찜 목록에서 삭제

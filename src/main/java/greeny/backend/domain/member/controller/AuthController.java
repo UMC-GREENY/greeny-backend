@@ -112,7 +112,7 @@ public class AuthController {
     @ResponseStatus(OK)
     @GetMapping("/auto/sign-in")
     public Response getIsAutoInfo() {
-        return success(SUCCESS_TO_GET_IS_AUTO, authService.getIsAutoInfo(memberService.getCurrentMember()));
+        return success(SUCCESS_TO_GET_IS_AUTO, authService.getIsAutoInfo(memberService.getCurrentMember().getId()));
     }
 
     @Operation(summary = "Token reissue API", description = "put your token info")

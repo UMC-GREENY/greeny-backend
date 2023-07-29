@@ -35,5 +35,4 @@ public class GetMemberInfoResponseDto {
                 .loginType(loginType)
                 .build();
     }
-
 }

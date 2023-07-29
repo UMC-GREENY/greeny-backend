@@ -40,14 +40,14 @@ public class AuthService {
         }
     }
 
-    private Member validateSignUpInfoWithSocial(String email) {  // DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
-        Member foundMember = getMember(email);
+    private Long validateSignUpInfoWithSocial(String email) {  // DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
+        Long foundMemberId = getMember(email).getId();
 
-        if(memberGeneralRepository.existsByMember(foundMember)) {
+        if(memberGeneralRepository.existsByMemberId(foundMemberId)) {
             throw new EmailAlreadyExistsException(email);
         }
 
-        return foundMember;
+        return foundMemberId;
     }
 
     public GetTokenStatusInfoResponseDto getTokenStatusInfo(String bearerToken) {  // 토큰의 유효성 검증
@@ -70,22 +70,22 @@ public class AuthService {
     public TokenResponseDto signInWithGeneral(LoginRequestDto loginRequestDto) {  // 일반 로그인
 
         String email = loginRequestDto.getEmail();
-        Member foundMember = getMember(email);
+        Long foundMemberId = getMember(email).getId();
 
-        MemberGeneral foundMemberGeneral = getMemberGeneral(foundMember);
+        MemberGeneral foundMemberGeneral = getMemberGeneral(foundMemberId);
         boolean foundIsAuto = foundMemberGeneral.isAuto();
 
         changeIsAutoByGeneralSignIn(loginRequestDto.getIsAuto(), foundMemberGeneral, foundIsAuto);
 
-        return authorize(email, foundMember.getId().toString());
+        return authorize(email, foundMemberId.toString());
     }
 
     public TokenResponseDto signInWithSocial(String email, Provider provider) {  // 소셜 제공자와 사용자 프로필 정보 중 email 을 받아 소셜 로그인
 
         if(memberRepository.existsByEmail(email)) {  // 소셜 로그인 이용이 최초가 아닌 경우
 
-            Member validatedMember = validateSignUpInfoWithSocial(email);// DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
-            TokenResponseDto authorizedToken = authorize(email, validatedMember.getId().toString());  // 토큰 발행
+            Long validatedMemberId = validateSignUpInfoWithSocial(email);  // DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
+            TokenResponseDto authorizedToken = authorize(email, validatedMemberId.toString());  // 토큰 발행
 
             return TokenResponseDto.from(authorizedToken.getAccessToken(), authorizedToken.getRefreshToken());
         }
@@ -97,29 +97,29 @@ public class AuthService {
     public TokenResponseDto agreementInSignUp(AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 이후 동의 항목 여부를 DB에 저장
 
         String email = agreementRequestDto.getEmail();
-        Member foundMember = getMember(email);
+        Long foundMemberId = getMember(email).getId();
 
         if(!memberRepository.existsByEmail(email)) {  // DB에 이메일이 없는 경우
             throw new MemberNotFoundException();
         } else {
-            if(memberGeneralRepository.existsByMember(foundMember)) {  // 일반 로그인 사용자일 경우
-                saveMemberAgreement(foundMember, agreementRequestDto);  // DB에 Member 동의 여부 저장
+            if(memberGeneralRepository.existsByMemberId(foundMemberId)) {  // 일반 로그인 사용자일 경우
+                saveMemberAgreement(foundMemberId, agreementRequestDto);  // DB에 Member 동의 여부 저장
                 return TokenResponseDto.excludeEmailInDto("nothing", "nothing");  // 토큰을 제공하지 않음
             }
         }
 
-        saveMemberAgreement(foundMember, agreementRequestDto);
-        return authorize(email, foundMember.getId().toString());
+        saveMemberAgreement(foundMemberId, agreementRequestDto);
+        return authorize(email, foundMemberId.toString());
     }
 
     @Transactional
     public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
-        getMemberGeneral(getMember(findPasswordRequestDto.getEmail()))
+        getMemberGeneral(getMember(findPasswordRequestDto.getEmail()).getId())
                 .changePassword(passwordEncoder.encode(findPasswordRequestDto.getPassword()));
     }
 
-    public GetIsAutoInfoResponseDto getIsAutoInfo(Member member) {
-        return new GetIsAutoInfoResponseDto(getMemberGeneral(member).isAuto());
+    public GetIsAutoInfoResponseDto getIsAutoInfo(Long memberId) {
+        return new GetIsAutoInfoResponseDto(getMemberGeneral(memberId).isAuto());
     }
 
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
@@ -129,7 +129,7 @@ public class AuthService {
         String email = authentication.getName();
 
         if (!jwtProvider.validateToken(refreshToken)) {
-            refreshTokenRepository.delete(getRefreshToken(email));
+            refreshTokenRepository.deleteById(email);
             return publishToken(authentication);
         } else {
             validateRefreshTokenOwner(email, refreshToken);
@@ -141,11 +141,11 @@ public class AuthService {
     }
 
     private void saveGeneralMember(SignUpRequestDto signUpRequestDto) {  // 일반 회원 DB에 저장
-        Member savedMember = memberRepository.save(toMember(signUpRequestDto.getEmail()));
-        memberGeneralRepository.save(toMemberGeneral(savedMember, signUpRequestDto.getPassword(), passwordEncoder));
+        Long savedMemberId = memberRepository.save(toMember(signUpRequestDto.getEmail())).getId();
+        memberGeneralRepository.save(toMemberGeneral(savedMemberId, signUpRequestDto.getPassword(), passwordEncoder));
         memberProfileRepository.save(
                 toMemberProfile(
-                        savedMember,
+                        savedMemberId,
                         signUpRequestDto.getName(),
                         signUpRequestDto.getPhone(),
                         signUpRequestDto.getBirth()
@@ -155,13 +155,13 @@ public class AuthService {
 
     private void saveSocialMemberExceptAgreement(String email, Provider provider) {  // 소셜 회원 DB에 저장
         Member savedMember = memberRepository.save(toMember(email));
-        memberSocialRepository.save(toMemberSocial(provider, savedMember));
+        memberSocialRepository.save(toMemberSocial(provider, savedMember.getId()));
     }
 
-    private void saveMemberAgreement(Member member, AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 시 동의 항목 여부 DB에 저장
+    private void saveMemberAgreement(Long memberId, AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 시 동의 항목 여부 DB에 저장
         memberAgreementRepository.save(
                 agreementRequestDto.toMemberAgreement(
-                        member,
+                        memberId,
                         agreementRequestDto.getPersonalInfo(),
                         agreementRequestDto.getThirdParty()
                 )
@@ -175,24 +175,24 @@ public class AuthService {
                 .build();
     }
 
-    private MemberGeneral toMemberGeneral(Member member, String password, PasswordEncoder passwordEncoder) {  // MemberGeneral 객체로 변환
+    private MemberGeneral toMemberGeneral(Long memberId, String password, PasswordEncoder passwordEncoder) {  // MemberGeneral 객체로 변환
         return MemberGeneral.builder()
-                .member(member)
+                .memberId(memberId)
                 .password(passwordEncoder.encode(password))
                 .isAuto(false)
                 .build();
     }
 
-    private MemberSocial toMemberSocial(Provider provider, Member member) {  // MemberSocial 객체로 변환
+    private MemberSocial toMemberSocial(Provider provider, Long memberId) {  // MemberSocial 객체로 변환
         return MemberSocial.builder()
-                .member(member)
+                .memberId(memberId)
                 .provider(provider)
                 .build();
     }
 
-    private MemberProfile toMemberProfile(Member member, String name, String phone, String birth) {  // MemberProfile 객체로 변환
+    private MemberProfile toMemberProfile(Long memberId, String name, String phone, String birth) {  // MemberProfile 객체로 변환
         return MemberProfile.builder()
-                .member(member)
+                .memberId(memberId)
                 .name(name)
                 .phone(phone)
                 .birth(birth)
@@ -204,8 +204,8 @@ public class AuthService {
                 .orElseThrow(MemberNotFoundException::new);
     }
 
-    public MemberGeneral getMemberGeneral(Member member) {
-        return memberGeneralRepository.findByMember(member)
+    public MemberGeneral getMemberGeneral(Long memberId) {
+        return memberGeneralRepository.findByMemberId(memberId)
                 .orElseThrow(MemberGeneralNotFoundException::new);
     }
 
@@ -267,7 +267,8 @@ public class AuthService {
     private void validateRefreshTokenOwner(String email, String refreshToken) {
         if (
                 !refreshTokenRepository.findById(email)
-                        .orElseThrow(RefreshTokenNotFoundException::new).getValue()
+                        .orElseThrow(RefreshTokenNotFoundException::new)
+                        .getValue()
                         .equals(refreshToken)
         ) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");

@@ -18,10 +18,7 @@ public class MemberAgreement extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_agreement_id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
+    private Long memberId;
     @Column(nullable = false)
     private boolean personalInfo;
     @Column(nullable = false)
