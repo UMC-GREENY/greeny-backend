@@ -48,7 +48,7 @@ public class ReviewService {
     @Transactional
     public void writeStoreReview(Long id, WriteReviewRequestDto writeReviewRequestDto, List<MultipartFile> multipartFiles, Member member) {
         //storeReview 저장
-        Store store = storeRepository.findById(id).orElseThrow(()->new StoreNotFound());
+        Store store = storeRepository.findById(id).orElseThrow(StoreNotFound::new);
         StoreReview storeReview =storeReviewRepository.save(writeReviewRequestDto.toStoreReviewEntity(member, store));
         if(multipartFiles!=null){
             uploadFiles(multipartFiles,storeReview);
@@ -56,14 +56,12 @@ public class ReviewService {
     }
     @Transactional
     public void writeProductReview(Long id, WriteReviewRequestDto writeReviewRequestDto,List<MultipartFile> multipartFiles,Member member) {
-        Product product = productRepository.findById(id).orElseThrow(()->new ProductNotFound());
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFound::new);
         ProductReview productReview = productReviewRepository.save(writeReviewRequestDto.toProductReviewEntity(member,product));
         if(multipartFiles!=null){
             uploadFiles(multipartFiles,productReview);
         }
     }
-
-
 
     @Transactional(readOnly=true)
     public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
@@ -79,22 +77,19 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Page<Object> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
         if(type.equals("s")) {
-            Store store = storeRepository.findById(id).orElseThrow(()->new StoreNotFound());
+            Store store = storeRepository.findById(id).orElseThrow(StoreNotFound::new);
             Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable, store);
             return getStoreMap(pages);
         } else if(type.equals("p")) {
-            Product product = productRepository.findById(id).orElseThrow(()-> new ProductNotFound());
+            Product product = productRepository.findById(id).orElseThrow(ProductNotFound::new);
             Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable, product);
             return getProductMap(pages);
         } else throw new TypeDoesntExistsException();
     }
 
-
-
-
     @Transactional(readOnly = true)
-    public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
-        StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
+    public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {  // TODO 다른 사용자의 리뷰 삭제를 방지하기 위해 현재 사용자와 리뷰 작성자 비교
+        StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
 
         List<String> urls = new ArrayList<>();
         List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
@@ -109,7 +104,7 @@ public class ReviewService {
     }
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
-        ProductReview productReview = productReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
+        ProductReview productReview = productReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
 
         List<String> urls = new ArrayList<>();
         List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
@@ -127,7 +122,7 @@ public class ReviewService {
 
     @Transactional
     public void deleteStoreReview(Long reviewId) {
-        storeReviewRepository.findById(reviewId).orElseThrow(()-> new ReviewNotFound());
+        storeReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
         //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
         List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
         if(reviewImages!=null) {
@@ -139,7 +134,7 @@ public class ReviewService {
     }
     @Transactional
     public void deleteProductReview(Long reviewId) {
-        productReviewRepository.findById(reviewId).orElseThrow(()-> new ReviewNotFound());
+        productReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
         //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
         List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
         if(reviewImages!=null) {
@@ -177,9 +172,6 @@ public class ReviewService {
             productReview.getProductReviewImages().add(productReviewImage);
         }
     }
-
-
-
     @NotNull
     private Page<Object> getProductMap(Page<ProductReview> pages) {
         return pages.map(review ->
@@ -204,5 +196,4 @@ public class ReviewService {
                         .existsFile(!review.getStoreReviewImages().isEmpty())
                         .build());
     }
-
 }
