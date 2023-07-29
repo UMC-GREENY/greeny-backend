@@ -30,6 +30,14 @@ public class ProductController {
     private final BookmarkService bookmarkService;
     private final MemberService memberService;
 
+    // 모든 사용자의 제품 목록 조회 API
+    @Operation(summary = "Get simple product infos API", description = "please get product store infos.")
+    @ResponseStatus(OK)
+    @GetMapping("/simple")
+    public Response getSimpleProductInfos(){
+        return success(SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS, productService.getSimpleProductInfos());
+    }
+
     // 인증된 사용자의 제품 목록 조회 API
     @Operation(summary = "Get simple product infos with auth member API", description = "please get product store infos.")
     @ResponseStatus(OK)

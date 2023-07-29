@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,21 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+
+    // 모든 사용자에게 제품 목록 보여주기
+    public List<GetSimpleProductInfosResponseDto> getSimpleProductInfos() {
+        return productRepository.findProductsWithStoreAndBookmarksAndReviews().stream()
+                .map(product ->
+                        GetSimpleProductInfosResponseDto.from(
+                                product,
+                                product.getStore().getName(),
+                                product.getBookmarks().size(),
+                                product.getReviews().size(),
+                                false
+                        )
+                )
+                .collect(Collectors.toList());
+    }
 
     // 인증된 사용자의 제품 목록 가져오기
     public List<GetSimpleProductInfosResponseDto> getSimpleProductInfosWithAuthMember(List<ProductBookmark> productBookmarks){
