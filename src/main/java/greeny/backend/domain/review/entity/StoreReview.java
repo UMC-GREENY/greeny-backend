@@ -34,10 +34,13 @@ public class StoreReview extends AuditEntity {
     @JoinColumn(name = "reviewer_id")
     private Member reviewer;
     @OneToMany(mappedBy = "storeReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default //생략시 builder 패턴 사용시 초기값(null)으로 설정됨
     private List<StoreReviewImage> storeReviewImages = new ArrayList<>();
 
     @Column(nullable = false)
     private int star;
     @Column(nullable = false)
     private String content;
+
+
 }

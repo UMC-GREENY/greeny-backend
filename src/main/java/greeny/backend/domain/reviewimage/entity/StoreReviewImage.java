@@ -25,4 +25,11 @@ public class StoreReviewImage extends AuditEntity {
     private StoreReview storeReview;
 
     private String imageUrl;
+
+    public StoreReviewImage getEntity(StoreReview storeReview, String url) {
+        return StoreReviewImage.builder()
+                .storeReview(storeReview)
+                .imageUrl(url)
+                .build();
+    }
 }
