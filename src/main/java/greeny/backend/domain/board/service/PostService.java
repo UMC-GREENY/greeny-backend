@@ -60,21 +60,27 @@ public class PostService {
     public GetPostInfoResponseDto getPostInfo(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
-        return GetPostInfoResponseDto.from(post, isWriter(post));
+        return GetPostInfoResponseDto.from(post, false);
     }
 
-    public Boolean isWriter(Post post){ // 게시글을 조회하는 사용자가 작성자인지 확인
-        return SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName()
-                .equals(post.getWriter().getEmail());
+    // 인증된 사용자의 게시글 상세정보 조회
+    @Transactional(readOnly = true)
+    public GetPostInfoResponseDto getPostInfoWithAuthMember(Long postId, Member currentMember) {
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        post.updateHits();
+        return GetPostInfoResponseDto.from(post, isWriter(post, currentMember));
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isWriter(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 작성자인지 확인
+        return post.getWriter().getId().equals(currentMember.getId());
     }
 
     @Transactional
     public void deletePost(Long postId, Member currentMember) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
-        if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
+        if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         List<String> fileUrls = new ArrayList<>();
         for(String fileUrl : post.getFileUrls()) fileUrls.add(fileUrl);
@@ -89,7 +95,7 @@ public class PostService {
 
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
-        if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
+        if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         //게시글의 제목과 내용 업데이트
         post.update(editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent());

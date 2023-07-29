@@ -31,7 +31,7 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @Operation(summary = "Write post api", description = "put your post info to write. you can skip files.")
+    @Operation(summary = "Write post API", description = "put your post info to write. you can skip files.")
     @ResponseStatus(OK)
     @PostMapping(path = "/posts", consumes = MULTIPART_FORM_DATA_VALUE)
     public Response writePost(@Valid @RequestPart(name = "body(json)") WritePostRequestDto writePostRequestDto,
@@ -40,18 +40,26 @@ public class PostController {
         return success(SUCCESS_TO_WRITE_POST);
     }
 
-    @Operation(summary = "Search simple post infos api", description = "put keyword and page info what you want. you can skip parameters.")
+    @Operation(summary = "Search simple post infos API", description = "put keyword and page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
     @GetMapping("/posts/search")
     public Response searchSimplePostInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.searchSimplePostInfos(keyword, pageable));
     }
 
-    @Operation(summary = "Get post info api", description = "put post id what you want to see.")
+    @Operation(summary = "Get post info API", description = "put post id what you want to see.")
     @ResponseStatus(OK)
     @GetMapping("/posts")
     public Response getPostInfo(Long postId){
         return Response.success(SUCCESS_TO_GET_POST, postService.getPostInfo(postId));
+    }
+
+    // 인증된 사용자의 게시글 상세정보 조회
+    @Operation(summary = "Get post info API with auth member", description = "put post id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth/posts")
+    public Response getPostInfoWithAuthMember(Long postId){
+        return Response.success(SUCCESS_TO_GET_POST, postService.getPostInfoWithAuthMember(postId, memberService.getCurrentMember()));
     }
 
     @Operation(summary = "Delete post API", description = "put post id what you want to delete.")
@@ -61,7 +69,7 @@ public class PostController {
         postService.deletePost(postId, memberService.getCurrentMember());
         return Response.success(SUCCESS_TO_DELETE_POST);
     }
-    @Operation(summary = "Edit post info api", description = "put post info what you want to edit.")
+    @Operation(summary = "Edit post info API", description = "put post info what you want to edit.")
     @ResponseStatus(OK)
     @PutMapping(path = "/posts", consumes = MULTIPART_FORM_DATA_VALUE)
     public Response editPostInfo(Long postId,
@@ -71,7 +79,7 @@ public class PostController {
         return Response.success(SUCCESS_TO_EDIT_POST);
     }
 
-    @Operation(summary = "Get my post simple infos api", description = "put page info what you want. you can skip parameters.")
+    @Operation(summary = "Get my post simple infos API", description = "put page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
     @GetMapping("/members/posts")
     public Response getMySimplePostInfos(@ParameterObject Pageable pageable) {
