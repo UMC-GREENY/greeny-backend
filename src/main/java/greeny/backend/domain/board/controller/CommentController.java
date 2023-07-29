@@ -41,6 +41,14 @@ public class CommentController {
         return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getSimpleCommentInfos(postId));
     }
 
+    // 인증된 사용자의 댓글 목록 조회 API
+    @Operation(summary = "Get simple comment infos with auth member API", description = "put post id to get comment list.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth")
+    public Response getSimpleCommentInfosWithAuthMember(Long postId){
+        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getSimpleCommentInfosWithAuthMember(postId, memberService.getCurrentMember()));
+    }
+
     @Operation(summary = "Edit comment info API", description = "put comment info to edit.")
     @ResponseStatus(OK)
     @PutMapping

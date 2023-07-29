@@ -35,29 +35,35 @@ public class CommentService {
     public List<GetSimpleCommentInfosResponseDto> getSimpleCommentInfos(Long postId) {
         if(!postRepository.existsById(postId)) throw new PostNotFoundException();
         return commentRepository.findAllByPostId(postId).stream().
-                map(comment -> GetSimpleCommentInfosResponseDto.from(comment, isWriter(comment))).
+                map(comment -> GetSimpleCommentInfosResponseDto.from(comment, false)).
                 collect(Collectors.toList());
 
     }
 
-    public Boolean isWriter(Comment comment){ // 댓글을 조회하는 사용자가 작성자인지 확인
-        return SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName()
-                .equals(comment.getWriter().getEmail());
+    // 인증된 사용자의 댓글 목록 조회
+    @Transactional(readOnly = true)
+    public List<GetSimpleCommentInfosResponseDto> getSimpleCommentInfosWithAuthMember(Long postId, Member currentMember) {
+        if(!postRepository.existsById(postId)) throw new PostNotFoundException();
+        return commentRepository.findAllByPostId(postId).stream().
+                map(comment -> GetSimpleCommentInfosResponseDto.from(comment, isWriter(comment, currentMember))).
+                collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public Boolean isWriter(Comment comment, Member currentMember){ // 댓글을 조회하는 사용자가 작성자인지 확인
+        return comment.getWriter().getId().equals(currentMember.getId());
     }
 
     @Transactional
     public void editCommentInfo(Long commentId, WriteCommentRequestDto editCommentInfoRequestDto, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
-        if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
+        if(!comment.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
         comment.update(editCommentInfoRequestDto.getContent());
     }
 
     @Transactional(readOnly = true)
     public void deleteComment(Long commentId, Member currentMember) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
-        if(comment.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
+        if(!comment.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException();// 작성자가 맞는지 확인
         commentRepository.delete(comment);
     }
 }
