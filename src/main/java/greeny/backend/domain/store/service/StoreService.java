@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,27 +21,47 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
 
-    public Store getStore(Long storeId) {  // Id 값을 통해 Store 객체 가져오기
-        return storeRepository.findById(storeId)
-                .orElseThrow(StoreNotFoundException::new);
-    }
-
-    public List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos() {  // Store 목록 가져오기
+    public List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos() {
         return storeRepository.findStoresWithBookmarksAndReviews().stream()
-                .map(store -> GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size()))
-                .collect(Collectors.toList());  // List 에서 하나의 store 마다 GetSimpleStoreInfosResponseDto 객체로 변환 후 List 에 담아서 반환
+                .map(store -> GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size(), false))
+                .collect(Collectors.toList());
     }
 
-    public GetStoreInfoResponseDto getStoreInfo(Long storeId, List<StoreBookmark> myStoreBookmarks) {  // Store 상세 정보 가져오기
+    public List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfosWithAuthMember(List<StoreBookmark> storeBookmarks) {  // 인증된 사용자의 Store 목록 가져오기
 
-        Store foundStore = getStore(storeId);
+        List<GetSimpleStoreInfosResponseDto> simpleStoreInfos = new ArrayList<>();
+        List<Store> foundStores = storeRepository.findStoresWithBookmarksAndReviews();
 
-        for(StoreBookmark myStoreBookmark : myStoreBookmarks) {  // 현재 사용자의 찜한 스토어 목록과 현재 스토어 id 값 비교를 통해 찜한 여부 판단
-            if(storeId.equals(myStoreBookmark.getStore().getId())) {
-                return GetStoreInfoResponseDto.from(foundStore, true);
+        for(Store store : foundStores) {
+
+            boolean isBookmarked = false;  // 사용자가 찜한 스토어인지 판단
+
+            for(StoreBookmark storeBookmark : storeBookmarks) {
+                if(storeBookmark.getStore().getId().equals(store.getId())) {  // 사용자가 찜한 스토어의 경우
+                    isBookmarked = true;  // true 로 변경
+                    simpleStoreInfos.add(
+                            GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size(), isBookmarked)
+                    );
+                    break;
+                }
+            }
+
+            if(!isBookmarked) {  // 사용자가 찜한 스토어가 아닐 경우
+                simpleStoreInfos.add(
+                        GetSimpleStoreInfosResponseDto.from(store, store.getBookmarks().size(), store.getReviews().size(), isBookmarked)
+                );
             }
         }
 
-        return GetStoreInfoResponseDto.from(foundStore, false);
+        return simpleStoreInfos;
+    }
+
+    public GetStoreInfoResponseDto getStoreInfo(Long storeId) {  // Store 상세 정보 가져오기
+        return GetStoreInfoResponseDto.from(getStore(storeId));
+    }
+
+    public Store getStore(Long storeId) {  // Id 값을 통해 Store 객체 가져오기
+        return storeRepository.findById(storeId)
+                .orElseThrow(StoreNotFoundException::new);
     }
 }
