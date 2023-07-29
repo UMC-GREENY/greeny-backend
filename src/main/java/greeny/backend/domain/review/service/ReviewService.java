@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class ReviewService {
 
 
 
-    @Transactional
+    @Transactional(readOnly=true)
     public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
@@ -75,15 +76,15 @@ public class ReviewService {
         } else throw new TypeDoesntExistsException();
     }
 
-    @Transactional
-    public Page<Object> getSimpleReviewInfos(String type,Long reviewId,Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<Object> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
         if(type.equals("s")) {
-            StoreReview storeReview = storeReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
-            Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable,storeReview.getStore());
+            Store store = storeRepository.findById(id).orElseThrow(()->new StoreNotFound());
+            Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable, store);
             return getStoreMap(pages);
         } else if(type.equals("p")) {
-            ProductReview productReview = productReviewRepository.findById(reviewId).orElseThrow(()->new ReviewNotFound());
-            Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable,productReview.getProduct());
+            Product product = productRepository.findById(id).orElseThrow(()-> new ProductNotFound());
+            Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable, product);
             return getProductMap(pages);
         } else throw new TypeDoesntExistsException();
     }
@@ -91,7 +92,7 @@ public class ReviewService {
 
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
         StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
 
@@ -106,7 +107,7 @@ public class ReviewService {
                 (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
                 storeReview.getContent(),urls);
     }
-    @Transactional
+    @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
         ProductReview productReview = productReviewRepository.findById(id).orElseThrow(()->new ReviewNotFound());
 
@@ -126,6 +127,7 @@ public class ReviewService {
 
     @Transactional
     public void deleteStoreReview(Long reviewId) {
+        storeReviewRepository.findById(reviewId).orElseThrow(()-> new ReviewNotFound());
         //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
         List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
         if(reviewImages!=null) {
@@ -137,6 +139,7 @@ public class ReviewService {
     }
     @Transactional
     public void deleteProductReview(Long reviewId) {
+        productReviewRepository.findById(reviewId).orElseThrow(()-> new ReviewNotFound());
         //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
         List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
         if(reviewImages!=null) {
@@ -158,7 +161,7 @@ public class ReviewService {
                 .build();
     }
 
-
+    @Transactional
     public void uploadFiles(List<MultipartFile> multipartFiles,StoreReview storeReview) {
         for(MultipartFile file:multipartFiles) {
             StoreReviewImage storeReviewImage = new StoreReviewImage().
@@ -166,6 +169,7 @@ public class ReviewService {
             storeReview.getStoreReviewImages().add(storeReviewImage);
         }
     }
+    @Transactional
     public void uploadFiles(List<MultipartFile> multipartFiles,ProductReview productReview) {
         for(MultipartFile file:multipartFiles) {
             ProductReviewImage productReviewImage = new ProductReviewImage().

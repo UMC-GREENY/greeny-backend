@@ -49,6 +49,7 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_GET_REVIEW_LIST="리뷰 목록을 불러오는데 성공하였습니다";
     public static final String SUCCESS_TO_GET_STORE_REVIEW="스토어 리뷰를 불러오는데 성공했습니다.";
     public static final String SUCCESS_TO_GET_PRODUCT_REVIEW="제품 리뷰를 불러오는데 성공했습니다.";
+    public static final String SUCCESS_TO_GET_ALL_REVIEW_LIST="전체 리뷰를 불러오는데 성공했습니다";
 
 }
 
