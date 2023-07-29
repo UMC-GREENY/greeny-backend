@@ -9,11 +9,10 @@ import greeny.backend.domain.store.entity.Store;
 import greeny.backend.exception.situation.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +21,53 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    // 제품 목록 가져오기
+    // 인증된 사용자의 제품 목록 가져오기
+    public List<GetSimpleProductInfosResponseDto> getSimpleProductInfosWithAuthMember(List<ProductBookmark> productBookmarks){
 
-    public List<GetSimpleProductInfosResponseDto> getSimpleProductInfos(List<ProductBookmark> myProductBookmarks){
-        return productRepository.findAll().stream()
-                .map(product -> GetSimpleProductInfosResponseDto.from(product,product.getStore().getName(),product.getBookmarks().size(),product.getReviews().size()))
-                .collect(Collectors.toList());
+        List<GetSimpleProductInfosResponseDto> simpleProductInfos = new ArrayList<>();
+        List<Product> foundProducts = productRepository.findProductsWithStoreAndBookmarksAndReviews();
+
+        for(Product product : foundProducts) {
+
+            boolean isBookmarked = false;
+
+            for(ProductBookmark productBookmark : productBookmarks) {
+                if(productBookmark.getProduct().getId().equals(product.getId())) {
+                    isBookmarked = true;
+                    simpleProductInfos.add(
+                            GetSimpleProductInfosResponseDto.from(
+                                    product,
+                                    product.getStore().getName(),
+                                    product.getBookmarks().size(),
+                                    product.getReviews().size(),
+                                    isBookmarked
+                            )
+                    );
+                    break;
+                }
+            }
+
+            if(!isBookmarked) {
+                simpleProductInfos.add(
+                        GetSimpleProductInfosResponseDto.from(
+                                product,
+                                product.getStore().getName(),
+                                product.getBookmarks().size(),
+                                product.getReviews().size(),
+                                isBookmarked
+                        )
+                );
+            }
+        }
+
+        return simpleProductInfos;
     }
 
     // 제품 상세목록 가져오기
     public GetProductInfoResponseDto getProductInfo(Long productId){
         Product foundProduct = getProduct(productId);
         Store store = foundProduct.getStore();
-        return GetProductInfoResponseDto.from(foundProduct, store.getName(), store.getImageUrl());
+        return GetProductInfoResponseDto.from(foundProduct, store.getName(), store.getWebUrl());
     }
 
     public Product getProduct(Long productId) {

@@ -1,7 +1,6 @@
 package greeny.backend.domain.product.dto;
 
 import greeny.backend.domain.product.entity.Product;
-import greeny.backend.domain.store.entity.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,17 +15,17 @@ public class GetProductInfoResponseDto {
     private String name;
     private String imageUrl;
     private String storeName;
-    private String storeUrl;
+    private String webUrl;
     private Integer price;
     private Integer deliveryFee;
 
-    public static GetProductInfoResponseDto from(Product product, String storeName, String storeUrl){
+    public static GetProductInfoResponseDto from(Product product, String storeName, String webUrl){
         return GetProductInfoResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .imageUrl(product.getImageUrl())
                 .storeName(storeName)
-                .storeUrl(storeUrl)
+                .webUrl(webUrl)
                 .price(product.getPrice())
                 .deliveryFee(product.getDeliveryFee())
                 .build();

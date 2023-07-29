@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GetSimpleProductInfosResponseDto {
     private Long id;
-    private String name;
+    private String productName;
     private String imageUrl;
     private String storeName;
     private Integer price;
@@ -23,7 +23,7 @@ public class GetSimpleProductInfosResponseDto {
     public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks, int reviews, boolean isBookmarked){
         return GetSimpleProductInfosResponseDto.builder()
                 .id(product.getId())
-                .name(product.getName())
+                .productName(product.getName())
                 .imageUrl(product.getImageUrl())
                 .storeName(storeName)
                 .price(product.getPrice())

@@ -30,7 +30,7 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
         return storeBookmarkRepository.findStoreBookmarksByLiker(liker);
     }
 
-    public List<ProductBookmark> getMyProductBookmarkInfos(Member liker){
+    public List<ProductBookmark> getProductBookmarkInfos(Member liker){
         return productBookmarkRepository.findProductBookmarksByLiker(liker);
     }
 
