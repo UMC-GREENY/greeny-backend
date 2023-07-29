@@ -38,14 +38,11 @@ public class ProductController {
         return success(SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS, productService.getSimpleProductInfos());
     }
 
-    // 제품 상세 목록 API
+    // 제품 상세 목록 조회 PI
     @Operation(summary = "Get product info API", description = "put product id what you want to see.")
     @ResponseStatus(OK)
     @GetMapping()
     public Response getProductInfo(Long productId){
-        return success(
-                SUCCESS_TO_GET_PRODUCT_INFO,
-                productService.getProductInfo(productId, bookmarkService.getMyProductBookmarkInfos(memberService.getCurrentMember()))
-        );
+        return success(SUCCESS_TO_GET_PRODUCT_INFO, productService.getProductInfo(productId));
     }
 }

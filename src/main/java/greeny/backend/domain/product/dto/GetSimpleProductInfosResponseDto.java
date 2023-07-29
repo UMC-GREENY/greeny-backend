@@ -13,21 +13,23 @@ import lombok.NoArgsConstructor;
 public class GetSimpleProductInfosResponseDto {
     private Long id;
     private String name;
-    private String imgUrl;
+    private String imageUrl;
     private String storeName;
     private Integer price;
     private Integer bookmarks;
     private Integer reviews;
+    private Boolean isBookmarked;
 
-    public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks, int reviews){
+    public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks, int reviews, boolean isBookmarked){
         return GetSimpleProductInfosResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .imgUrl(product.getImageUrl())
+                .imageUrl(product.getImageUrl())
                 .storeName(storeName)
                 .price(product.getPrice())
                 .bookmarks(bookmarks)
                 .reviews(reviews)
+                .isBookmarked(isBookmarked)
                 .build();
     }
 }

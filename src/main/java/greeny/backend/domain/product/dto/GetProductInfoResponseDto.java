@@ -14,23 +14,21 @@ import lombok.NoArgsConstructor;
 public class GetProductInfoResponseDto {
     private Long id;
     private String name;
-    private String imgUrl;
+    private String imageUrl;
     private String storeName;
     private String storeUrl;
     private Integer price;
     private Integer deliveryFee;
-    private Boolean isBookmarked;
 
-    public static GetProductInfoResponseDto from(Product product, String storeName, String storeUrl, boolean isBookmarked){
+    public static GetProductInfoResponseDto from(Product product, String storeName, String storeUrl){
         return GetProductInfoResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .imgUrl(product.getImageUrl())
+                .imageUrl(product.getImageUrl())
                 .storeName(storeName)
                 .storeUrl(storeUrl)
                 .price(product.getPrice())
                 .deliveryFee(product.getDeliveryFee())
-                .isBookmarked(isBookmarked)
                 .build();
     }
 }
