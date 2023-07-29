@@ -34,7 +34,7 @@ public class CommentController {
         return success(SUCCESS_TO_WRITE_COMMENT);
     }
 
-    @Operation(summary = "Get simple comment infos Api", description = "put post id to get comment list.")
+    @Operation(summary = "Get simple comment infos API", description = "put post id to get comment list.")
     @ResponseStatus(OK)
     @GetMapping
     public Response getSimpleCommentInfos(Long postId){

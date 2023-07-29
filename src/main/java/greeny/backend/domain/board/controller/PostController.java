@@ -55,7 +55,7 @@ public class PostController {
     }
 
     // 인증된 사용자의 게시글 상세정보 조회
-    @Operation(summary = "Get post info API with auth member", description = "put post id what you want to see.")
+    @Operation(summary = "Get post info with auth member API", description = "put post id what you want to see.")
     @ResponseStatus(OK)
     @GetMapping("/posts/auth")
     public Response getPostInfoWithAuthMember(Long postId){
