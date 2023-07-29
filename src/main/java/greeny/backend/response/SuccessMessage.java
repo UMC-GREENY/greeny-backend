@@ -38,4 +38,19 @@ public class SuccessMessage {
     public static final String SUCCESS_TO_GET_COMMENT_LIST = "댓글 목록을 불러오는데 성공하였습니다.";
     public static final String SUCCESS_TO_DELETE_COMMENT = "댓글을 삭제하는데 성공하였습니다.";
     public static final String SUCCESS_TO_EDIT_COMMENT = "댓글을 수정하는데 성공하였습니다.";
+
+
+    public static final String SUCCESS_TO_WRITE_STORE_REVIEW="스토어 리뷰를 작성하는데 성공했습니다.";
+    public static final String SUCCESS_TO_WRITE_PRODUCT_REVIEW="제품 리뷰를 작성하는데 성공했습니다.";
+    public static final String SUCCESS_TO_WRITE_STORE_REVIEW_IMG="스토어 리뷰 사진을 작성하는데 성공했습니다.";
+    public static final String SUCCESS_TO_WRITE_PRODUCT_REVIEW_IMG="제품 리뷰 사진을 작성하는데 성공했습니다.";
+    public static final String SUCCESS_TO_DELETE_STORE_REVIEW="스토어 리뷰를 삭제하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_DELETE_PRODUCT_REVIEW="제품 리뷰를 삭제하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_EDIT_STORE_REVIEW="스토어 리뷰를 수정하는데 성공하였습니다.";
+    public static final String SUCCESS_TO_GET_REVIEW_LIST="리뷰 목록을 불러오는데 성공하였습니다";
+    public static final String SUCCESS_TO_GET_STORE_REVIEW="스토어 리뷰를 불러오는데 성공했습니다.";
+    public static final String SUCCESS_TO_GET_PRODUCT_REVIEW="제품 리뷰를 불러오는데 성공했습니다.";
+    public static final String SUCCESS_TO_GET_ALL_REVIEW_LIST="전체 리뷰를 불러오는데 성공했습니다";
+
 }
+
