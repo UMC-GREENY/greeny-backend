@@ -226,7 +226,7 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(new UsernamePasswordAuthenticationToken(email, memberId));
 
-        if (refreshTokenRepository.existsByKey(email)) {  // 해당 이메일에 대한 refresh token 이 이미 존재할 경우
+        if (refreshTokenRepository.existsById(email)) {  // 해당 이메일에 대한 refresh token 이 이미 존재할 경우
 
             RefreshToken foundRefreshToken = getRefreshToken(email);
             String foundRefreshTokenValue = foundRefreshToken.getValue();
@@ -245,7 +245,7 @@ public class AuthService {
     }
 
     private RefreshToken getRefreshToken(String key) {
-        return refreshTokenRepository.findByKey(key)
+        return refreshTokenRepository.findById(key)
                 .orElseThrow(RefreshTokenNotFoundException::new);
     }
 
@@ -266,7 +266,7 @@ public class AuthService {
 
     private void validateRefreshTokenOwner(String email, String refreshToken) {
         if (
-                !refreshTokenRepository.findByKey(email)
+                !refreshTokenRepository.findById(email)
                         .orElseThrow(RefreshTokenNotFoundException::new).getValue()
                         .equals(refreshToken)
         ) {
