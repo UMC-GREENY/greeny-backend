@@ -4,9 +4,10 @@ import greeny.backend.config.mail.MailService;
 import greeny.backend.config.oauth.OAuthService;
 import greeny.backend.domain.member.dto.sign.common.AgreementRequestDto;
 import greeny.backend.domain.member.dto.sign.common.TokenRequestDto;
+import greeny.backend.domain.member.dto.sign.general.AuthEmailRequestDto;
 import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
-import greeny.backend.domain.member.dto.sign.common.SignUpRequestDto;
+import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
 import greeny.backend.domain.member.entity.Provider;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
@@ -37,13 +38,14 @@ public class AuthController {
     private final OAuthService oAuthService;
     private final MemberService memberService;
 
+    // 이메일 전송 API
     @Operation(summary = "Authenticate email API", description = "put your email to authenticate.")
     @ResponseStatus(OK)
     @PostMapping()
-    public Response sendEmail(String email) throws MessagingException, UnsupportedEncodingException {  // TODO url 파라미터로 받기
+    public Response sendEmail(@Valid @RequestBody AuthEmailRequestDto authEmailRequestDto) throws MessagingException, UnsupportedEncodingException {
+        String email = authEmailRequestDto.getEmail();
         authService.validateSignUpInfoWithGeneral(email);
-        mailService.sendSimpleMessage(email);
-        return success(SUCCESS_TO_SEND_EMAIL);
+        return success(SUCCESS_TO_SEND_EMAIL, mailService.sendSimpleMessage(email, authEmailRequestDto.getAuthorizationUrl()));
     }
 
     @Operation(summary = "Sign up API", description = "put your sign up info.")

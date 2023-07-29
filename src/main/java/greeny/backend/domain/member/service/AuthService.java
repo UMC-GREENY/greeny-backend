@@ -5,6 +5,7 @@ import greeny.backend.domain.member.dto.sign.common.*;
 import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.general.GetIsAutoInfoResponseDto;
 import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
+import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
 import greeny.backend.domain.member.entity.*;
 import greeny.backend.domain.member.repository.*;
 import greeny.backend.exception.situation.*;
