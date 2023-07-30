@@ -1,4 +1,4 @@
-package greeny.backend.domain.member.dto.sign.common;
+package greeny.backend.domain.member.dto.sign.general;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

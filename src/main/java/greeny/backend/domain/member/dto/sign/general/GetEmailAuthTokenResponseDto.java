@@ -1,6 +1,5 @@
 package greeny.backend.domain.member.dto.sign.general;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class GetIsAutoInfoResponseDto {
-    private Boolean isAuto;
+public class GetEmailAuthTokenResponseDto {  // 이메일 전송 시 생성하는 token 반환
+    private String token;
 }

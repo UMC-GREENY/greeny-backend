@@ -30,7 +30,7 @@ public class ProductController {
     private final BookmarkService bookmarkService;
     private final MemberService memberService;
 
-    // 제품 목록 API
+    // 모든 사용자의 제품 목록 조회 API
     @Operation(summary = "Get simple product infos API", description = "please get product store infos.")
     @ResponseStatus(OK)
     @GetMapping("/simple")
@@ -38,15 +38,22 @@ public class ProductController {
         return success(SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS, productService.getSimpleProductInfos());
     }
 
-    // 제품 상세 목록 API
-    @Operation(summary = "Get product info API", description = "put product id what you want to see.")
+    // 인증된 사용자의 제품 목록 조회 API
+    @Operation(summary = "Get simple product infos with auth member API", description = "please get product store infos.")
     @ResponseStatus(OK)
-    @GetMapping()
-    public Response getProdcutInfo(Long productId){
+    @GetMapping("/auth/simple")
+    public Response getSimpleProductInfosWithAuthMember(){
         return success(
-                SUCCESS_TO_GET_PRODUCT_INFO,
-                productService.getProductInfo(productId, bookmarkService.getMyProductBookmarkInfos(memberService.getCurrentMember()))
+                SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS,
+                productService.getSimpleProductInfosWithAuthMember(bookmarkService.getProductBookmarkInfos(memberService.getCurrentMember()))
         );
     }
 
+    // 제품 상세 목록 조회 PI
+    @Operation(summary = "Get product info API", description = "put product id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getProductInfo(Long productId){
+        return success(SUCCESS_TO_GET_PRODUCT_INFO, productService.getProductInfo(productId));
+    }
 }

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface MemberSocialRepository extends JpaRepository<MemberSocial, Long> {
-    Optional<MemberSocial> findByMember(Member member);
+    Optional<MemberSocial> findByMemberId(Long memberId);
 }

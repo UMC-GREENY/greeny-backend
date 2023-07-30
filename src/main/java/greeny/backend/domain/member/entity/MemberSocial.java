@@ -18,10 +18,7 @@ public class MemberSocial extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_social_id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
+    private Long memberId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Provider provider;

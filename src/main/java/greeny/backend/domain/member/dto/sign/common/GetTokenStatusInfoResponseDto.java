@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetTokenStatusInfoResponseDto {  // 토큰 유효성에 대한 정보를 제공하는 dto
-    private String isValid;  // 토큰이 유효한지 아닌지
+    private Boolean isValid;  // 토큰이 유효한지 아닌지
 }

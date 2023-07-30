@@ -32,7 +32,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final MemberService memberService;
 
-    @Operation(summary = "write review api", description="put review type & content and object type you want to write")
+    @Operation(summary = "write review API", description="put review type & content and object type you want to write")
     @ResponseStatus(OK)
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public Response writeReview(@RequestParam String type,
@@ -50,7 +50,7 @@ public class ReviewController {
         else throw new TypeDoesntExistsException();
     }
 
-    @Operation(summary = "get all simple review infos", description="put review type and pageable object you want to get")
+    @Operation(summary = "get all simple review infos API", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/all")
     public Response getAllSimpleReviewInfos(@RequestParam String type,
@@ -58,7 +58,7 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_ALL_REVIEW_LIST,reviewService.getAllSimpleReviewInfos(type,pageable));
     }
 
-    @Operation(summary = "get simple review infos", description="put review type and pageable object you want to get")
+    @Operation(summary = "get simple review infos API", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/simple")
     public Response getSimpleReviewInfos(@RequestParam String type,
@@ -67,7 +67,7 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_REVIEW_LIST,reviewService.getSimpleReviewInfos(type,id,pageable));
     }
 
-    @Operation(summary = "get review info", description="put review type and reviewId you want to get")
+    @Operation(summary = "Get review info API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping()
     public Response getReviewInfo(@RequestParam String type,
@@ -81,8 +81,7 @@ public class ReviewController {
         }
     }
 
-
-    @Operation(summary = "delete review api", description = "put review type and object id you want to delete")
+    @Operation(summary = "Delete review API", description = "put review type and object id you want to delete")
     @ResponseStatus(OK)
     @DeleteMapping()
     public Response deleteReview(@RequestParam String type,
@@ -97,5 +96,4 @@ public class ReviewController {
             return success(SUCCESS_TO_DELETE_PRODUCT_REVIEW);
         } else throw new TypeDoesntExistsException();
     }
-
 }

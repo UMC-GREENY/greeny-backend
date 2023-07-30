@@ -4,9 +4,10 @@ import greeny.backend.config.mail.MailService;
 import greeny.backend.config.oauth.OAuthService;
 import greeny.backend.domain.member.dto.sign.common.AgreementRequestDto;
 import greeny.backend.domain.member.dto.sign.common.TokenRequestDto;
+import greeny.backend.domain.member.dto.sign.general.AuthEmailRequestDto;
 import greeny.backend.domain.member.dto.sign.general.FindPasswordRequestDto;
 import greeny.backend.domain.member.dto.sign.general.LoginRequestDto;
-import greeny.backend.domain.member.dto.sign.common.SignUpRequestDto;
+import greeny.backend.domain.member.dto.sign.general.SignUpRequestDto;
 import greeny.backend.domain.member.entity.Provider;
 import greeny.backend.domain.member.service.AuthService;
 import greeny.backend.domain.member.service.MemberService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -37,13 +39,22 @@ public class AuthController {
     private final OAuthService oAuthService;
     private final MemberService memberService;
 
+    // 이메일 전송 API
     @Operation(summary = "Authenticate email API", description = "put your email to authenticate.")
     @ResponseStatus(OK)
     @PostMapping()
-    public Response sendEmail(String email) throws MessagingException, UnsupportedEncodingException {  // TODO url 파라미터로 받기
+    public Response sendEmail(@Valid @RequestBody AuthEmailRequestDto authEmailRequestDto) throws MessagingException, UnsupportedEncodingException {
+        String email = authEmailRequestDto.getEmail();
         authService.validateSignUpInfoWithGeneral(email);
-        mailService.sendSimpleMessage(email);
-        return success(SUCCESS_TO_SEND_EMAIL);
+        return success(SUCCESS_TO_SEND_EMAIL, mailService.sendSimpleMessage(email, authEmailRequestDto.getAuthorizationUrl()));
+    }
+
+    // 토큰 유효성 검증 API
+    @Operation(summary = "Valid token API", description = "put your token info to what you want to validate.")
+    @ResponseStatus(OK)
+    @GetMapping()
+    public Response getTokenStatusInfo(@RequestHeader("Authorization") String bearerToken) {
+        return success(SUCCESS_TO_VALIDATE_TOKEN, authService.getTokenStatusInfo(bearerToken));
     }
 
     @Operation(summary = "Sign up API", description = "put your sign up info.")
@@ -89,14 +100,6 @@ public class AuthController {
                 authService.signInWithSocial(oAuthService.requestToNaver(authorizationCode, state).getResponse().getEmail(), Provider.NAVER));
     }
 
-    // 토큰 유효성 검증 API
-    @Operation(summary = "Valid token API", description = "put your token info to validate")
-    @ResponseStatus(OK)
-    @GetMapping()
-    public Response getTokenStatusInfo(String token) {
-        return success(SUCCESS_TO_VALIDATE_TOKEN, authService.getTokenStatusInfo(token));
-    }
-
     @Operation(summary = "Find password API", description = "put your email.")
     @ResponseStatus(OK)
     @PatchMapping("/password")
@@ -109,7 +112,7 @@ public class AuthController {
     @ResponseStatus(OK)
     @GetMapping("/auto/sign-in")
     public Response getIsAutoInfo() {
-        return success(SUCCESS_TO_GET_IS_AUTO, authService.getIsAutoInfo(memberService.getCurrentMember()));
+        return success(SUCCESS_TO_GET_IS_AUTO, authService.getIsAutoInfo(memberService.getCurrentMember().getId()));
     }
 
     @Operation(summary = "Token reissue API", description = "put your token info")
