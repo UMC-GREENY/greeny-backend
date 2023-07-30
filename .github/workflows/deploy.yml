@@ -50,9 +50,8 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # 도커 작업
+        username: ${{ secrets.EC2_USERNAME }}
+        password: ${{ secrets.EC2_PASSWORD }}
         script: | 
             sudo docker stop ubuntu_app_1
             sudo docker rm ubuntu_app_1
