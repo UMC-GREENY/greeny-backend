@@ -30,14 +30,6 @@ public class Member extends AuditEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    @OneToOne(mappedBy = "member", fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    private MemberGeneral memberGeneral;
-    @OneToOne(mappedBy = "member", fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    private MemberSocial memberSocial;
-    @OneToOne(mappedBy = "member", fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    private MemberProfile memberProfile;
-    @OneToOne(mappedBy = "member", fetch = LAZY, cascade = ALL, orphanRemoval = true)
-    private MemberAgreement memberAgreement;
     @OneToMany(mappedBy = "reviewer", cascade = ALL, orphanRemoval = true)
     private List<StoreReview> storeReviews = new ArrayList<>();
     @OneToMany(mappedBy = "liker", cascade = ALL, orphanRemoval = true)

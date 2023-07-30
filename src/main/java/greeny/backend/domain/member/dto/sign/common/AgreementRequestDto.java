@@ -30,9 +30,9 @@ public class AgreementRequestDto {  // 사용자에 대한 정보 제공 동의 
     @Schema(description = "개인 정보 제 3자 제공 (선택)", defaultValue = "false")
     private Boolean thirdParty;
 
-    public MemberAgreement toMemberAgreement(Member member, boolean personalInfo, boolean thirdParty) {  // MemberAgreement 객체로 변환
+    public MemberAgreement toMemberAgreement(Long memberId, boolean personalInfo, boolean thirdParty) {  // MemberAgreement 객체로 변환
         return MemberAgreement.builder()
-                .member(member)
+                .memberId(memberId)
                 .personalInfo(personalInfo)
                 .thirdParty(thirdParty)
                 .build();

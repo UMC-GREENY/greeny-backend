@@ -16,11 +16,11 @@ public class EditMemberInfoRequestDto {
     @NotBlank(message = "기존 비밀번호를 입력해주세요.")
     @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상이어야 합니다.")
     @Schema(description = "기존 비밀번호", defaultValue = "test1234!")
-    String passwordToCheck;
+    private String passwordToCheck;
 
     //회원이 바꾸려는 비밀번호를 입력받습니다.
     @NotBlank(message = "새로운 비밀번호를 입력해주세요.")
     @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상이어야 합니다.")
     @Schema(description = "새로운 비밀번호", defaultValue = "test5678@")
-    String passwordToChange;
+    private String passwordToChange;
 }
