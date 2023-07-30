@@ -51,8 +51,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # 도커 작업
+        key_path: C:/Users/mmw10/ec2-key.pem
         script: | 
             sudo docker stop ubuntu_app_1
             sudo docker rm ubuntu_app_1
