@@ -51,7 +51,8 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
+        #key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: | 
             sudo docker stop ubuntu_app_1
             sudo docker rm ubuntu_app_1
