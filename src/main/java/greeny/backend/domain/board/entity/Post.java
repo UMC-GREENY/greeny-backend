@@ -28,6 +28,8 @@ public class Post extends AuditEntity {
     private List<PostFile> postFiles = new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Column(nullable = false)
     private String title;
