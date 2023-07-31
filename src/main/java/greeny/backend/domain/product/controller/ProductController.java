@@ -45,7 +45,7 @@ public class ProductController {
     public Response getSimpleProductInfosWithAuthMember(){
         return success(
                 SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS,
-                productService.getSimpleProductInfosWithAuthMember(bookmarkService.getProductBookmarkInfos(memberService.getCurrentMember()))
+                productService.getSimpleProductInfosWithAuthMember(bookmarkService.getProductBookmarks(memberService.getCurrentMember()))
         );
     }
 

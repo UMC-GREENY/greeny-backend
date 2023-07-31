@@ -26,11 +26,11 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
     private final StoreService storeService;
     private final ProductService productService;
 
-    public List<StoreBookmark> getStoreBookmarkInfos(Member liker) {  // 현재 사용자의 찜한 스토어 목록 가져오기
+    public List<StoreBookmark> getStoreBookmarks(Member liker) {  // 현재 사용자의 찜한 스토어 목록 가져오기
         return storeBookmarkRepository.findStoreBookmarksByLiker(liker);
     }
 
-    public List<ProductBookmark> getProductBookmarkInfos(Member liker){
+    public List<ProductBookmark> getProductBookmarks(Member liker){
         return productBookmarkRepository.findProductBookmarksByLiker(liker);
     }
 
