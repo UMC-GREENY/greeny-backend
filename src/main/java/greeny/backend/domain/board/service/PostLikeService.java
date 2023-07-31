@@ -32,7 +32,7 @@ public class PostLikeService {
 
     // 게시글 좋아요
     public void likePost(Long postId, Member liker){
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriter(postId).orElseThrow(PostNotFoundException::new);
         if(post.getWriter().getId().equals(liker.getId())) throw new SelfLikeNotAllowedException(); // 자기의 게시글에는 좋아요를 누를 수 없음
         postLikeRepository.save(PostLike.builder()
                 .post(post)
