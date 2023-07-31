@@ -1,4 +1,4 @@
-package greeny.backend.domain.board;
+package greeny.backend.domain.community;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

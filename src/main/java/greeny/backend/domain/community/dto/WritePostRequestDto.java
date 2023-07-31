@@ -1,7 +1,7 @@
-package greeny.backend.domain.board.dto;
+package greeny.backend.domain.community.dto;
 
 import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.board.entity.Post;
+import greeny.backend.domain.community.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

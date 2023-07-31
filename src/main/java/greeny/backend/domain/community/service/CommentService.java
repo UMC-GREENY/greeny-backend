@@ -1,11 +1,11 @@
-package greeny.backend.domain.board.service;
+package greeny.backend.domain.community.service;
 
-import greeny.backend.domain.board.dto.WriteCommentRequestDto;
-import greeny.backend.domain.board.dto.GetCommentListResponseDto;
-import greeny.backend.domain.board.entity.Comment;
-import greeny.backend.domain.board.entity.Post;
-import greeny.backend.domain.board.repository.CommentRepository;
-import greeny.backend.domain.board.repository.PostRepository;
+import greeny.backend.domain.community.dto.WriteCommentRequestDto;
+import greeny.backend.domain.community.dto.GetCommentListResponseDto;
+import greeny.backend.domain.community.entity.Comment;
+import greeny.backend.domain.community.entity.Post;
+import greeny.backend.domain.community.repository.CommentRepository;
+import greeny.backend.domain.community.repository.PostRepository;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.exception.situation.CommentNotFoundException;
 import greeny.backend.exception.situation.MemberNotEqualsException;

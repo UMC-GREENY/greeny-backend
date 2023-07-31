@@ -1,6 +1,6 @@
-package greeny.backend.domain.board.repository;
+package greeny.backend.domain.community.repository;
 
-import greeny.backend.domain.board.entity.Comment;
+import greeny.backend.domain.community.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

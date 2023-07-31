@@ -1,7 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 
-import greeny.backend.domain.board.service.PostService;
+import greeny.backend.domain.community.service.PostService;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.service.MemberService;
