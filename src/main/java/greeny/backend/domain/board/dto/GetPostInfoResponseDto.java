@@ -20,6 +20,7 @@ public class GetPostInfoResponseDto {
     private String content;
     private List<String> fileUrls;
     private Boolean isWriter; // 화면에 수정,삭제 버튼 띄울지 판단할 때 필요
+    private Integer likes; // 좋아요 수
 
     public static GetPostInfoResponseDto from(Post post, Boolean isWriter){
         return GetPostInfoResponseDto.builder()
@@ -31,6 +32,7 @@ public class GetPostInfoResponseDto {
                 .content(post.getContent())
                 .fileUrls(post.getFileUrls())
                 .isWriter(isWriter)
+                .likes(post.getPostLikes().size())
                 .build();
     }
 

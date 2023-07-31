@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"writer"})
     Page<Post> findAllByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"writer", "postFiles"})
+    @EntityGraph(attributePaths = {"writer", "postFiles", "postLikes"})
     @NotNull Optional<Post> findById(@NotNull Long id);
 
     @EntityGraph(attributePaths = {"writer"})

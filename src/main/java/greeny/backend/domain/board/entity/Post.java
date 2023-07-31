@@ -6,7 +6,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -29,7 +31,7 @@ public class Post extends AuditEntity {
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
-    private List<PostLike> postLikes = new ArrayList<>();
+    private Set<PostLike> postLikes = new HashSet<>();
 
     @Column(nullable = false)
     private String title;
