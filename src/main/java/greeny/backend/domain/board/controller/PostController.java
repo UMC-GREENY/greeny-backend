@@ -40,7 +40,10 @@ public class PostController {
         return success(SUCCESS_TO_WRITE_POST);
     }
 
-    @Operation(summary = "Search simple post infos API", description = "put keyword and page info what you want. you can skip parameters.")
+    @Operation(summary = "Search simple post infos API",
+            description = "put keyword and page info what you want. you can skip parameters. " +
+                    " sort=id,desc : 일반 게시판 (최신순). " +
+                    " sort=likes,desc&sort=hits,desc : 베스트 게시판 (좋아요순+조회수순).")
     @ResponseStatus(OK)
     @GetMapping("/search")
     public Response searchSimplePostInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
