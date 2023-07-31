@@ -9,6 +9,8 @@ import greeny.backend.exception.situation.StoreNotFoundException;
 import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,6 +42,15 @@ public class StoreService {
             throw new TypeDoesntExistsException();
     }
 
+    public Page<GetSimpleStoreInfosResponseDto> getSortedSimpleStoreInfos(String type, Pageable pageable) {  // 조건에 따라 정렬하여 store 목록 조회
+        if(type.equals("bookmark"))  // 인기순 정렬일 경우
+            return getSortedSimpleStoreInfosByBookmark(pageable);
+        else if(type.equals("review"))  // 후기순 정렬일 경우
+            return getSortedSimpleStoreInfosByReview(pageable);
+        else
+            throw new TypeDoesntExistsException();
+    }
+
     public GetStoreInfoResponseDto getStoreInfo(Long storeId) {  // Store 상세 정보 가져오기
         return GetStoreInfoResponseDto.from(getStore(storeId));
     }
@@ -64,6 +75,14 @@ public class StoreService {
     }
     private List<GetSimpleStoreInfosResponseDto> getBestSimpleStoreInfosWithAuthMember(List<StoreBookmark> storeBookmarks) {  // 현재 사용자의 찜한 여부와 함께 best store 목록 조회
         return getSimpleStoreInfosWithBookmark(storeRepository.findTop8ByOrderByBookmarksDesc(), storeBookmarks);
+    }
+    private Page<GetSimpleStoreInfosResponseDto> getSortedSimpleStoreInfosByBookmark(Pageable pageable) {  // 인기순으로 정렬한 store 목록 조회
+        return storeRepository.findStoresByOrderByBookmarksDesc(pageable)
+                .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+    }
+    private Page<GetSimpleStoreInfosResponseDto> getSortedSimpleStoreInfosByReview(Pageable pageable) {
+        return storeRepository.findStoresByOrderByReviewsDesc(pageable)
+                .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
     }
     private List<GetSimpleStoreInfosResponseDto> getSimpleStoreInfosWithBookmark(List<Store> stores, List<StoreBookmark> storeBookmarks) {  // Store 목록에서 현재 사용자의 찜 여부 찾기
         List<GetSimpleStoreInfosResponseDto> simpleStores = new ArrayList<>();
