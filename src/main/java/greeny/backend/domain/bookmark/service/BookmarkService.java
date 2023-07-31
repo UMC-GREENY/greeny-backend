@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +36,9 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
     }
 
     public void toggleStoreBookmark(String type, Long id, Member liker) {  // 타입에 따라 찜하기 or 취소
-
-        if(type.equals("s")) {  // 스토어 찜하기
+        if(type.equals("store")) {  // 스토어 찜하기
             toggleStoreBookmark(storeService.getStore(id), liker);
-        } else if(type.equals("p")) {  // 제품 찜하기
+        } else if(type.equals("product")) {  // 제품 찜하기
             toggleProductBookmark(productService.getProduct(id), liker);
         } else {
             throw new TypeDoesntExistsException();
@@ -46,31 +46,19 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
     }
 
     private void toggleStoreBookmark(Store store, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
-        List<StoreBookmark> foundStoreBookmarks = storeBookmarkRepository.findStoreBookmarksByLiker(liker);
-        Long storeIdToCheck = store.getId();
-
-        for(StoreBookmark storeBookmark : foundStoreBookmarks) {  // 이미 찜이 된 스토어라면 찜 취소 -> DB 에서 삭제
-            if(storeIdToCheck.equals(storeBookmark.getStore().getId())) {
-                storeBookmarkRepository.delete(storeBookmark);
-                return;
-            }
-        }
-
-        storeBookmarkRepository.save(toEntity(store, liker));  // 찜이 안된 상태라면 찜 하기 -> DB 에 저장
+        Optional<StoreBookmark> storeBookmark = storeBookmarkRepository.findByStoreIdAndLikerId(store.getId(), liker.getId());
+        if(storeBookmark.isPresent())
+            storeBookmarkRepository.delete(storeBookmark.get());
+        else
+            storeBookmarkRepository.save(toEntity(store, liker));
     }
 
     private void toggleProductBookmark(Product product, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
-        List<ProductBookmark> foundProductBookmarks = productBookmarkRepository.findProductBookmarksByLiker(liker);
-        Long productIdToCheck = product.getId();
-
-        for(ProductBookmark productBookmark : foundProductBookmarks) {
-            if(productIdToCheck.equals(productBookmark.getProduct().getId())) {
-                productBookmarkRepository.delete(productBookmark);
-                return;
-            }
-        }
-
-        productBookmarkRepository.save(toEntity(product, liker));
+        Optional<ProductBookmark> productBookmark = productBookmarkRepository.findByProductIdAndLikerId(product.getId(), liker.getId());
+        if(productBookmark.isPresent())
+            productBookmarkRepository.delete(productBookmark.get());
+        else
+            productBookmarkRepository.save(toEntity(product, liker));
     }
 
     private StoreBookmark toEntity(Store store, Member liker) {
