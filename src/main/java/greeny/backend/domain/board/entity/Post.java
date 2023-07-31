@@ -40,6 +40,7 @@ public class Post extends AuditEntity {
     @Column(nullable = false)
     private Integer hits;
     @Formula("(SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = post_id)")
+    // 테이블에는 만들어지지 않는 가상 속성. 게시글을 좋아요 순으로 정렬할 때 사용 (api 요청할때 sort=likes,desc)
     private Integer likes;
 
     public Boolean checkFileExist() {
