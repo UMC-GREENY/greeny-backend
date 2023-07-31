@@ -1,5 +1,6 @@
 package greeny.backend.domain.review.controller;
 
+import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
 import greeny.backend.domain.review.service.ReviewService;
@@ -86,13 +87,13 @@ public class ReviewController {
     @DeleteMapping()
     public Response deleteReview(@RequestParam String type,
                                  @RequestParam Long id) {
-
+        Member currentMember = memberService.getCurrentMember();
         if(type.equals("s")) {
-            reviewService.deleteStoreReview(id);
+            reviewService.deleteStoreReview(id,currentMember);
             return success(SUCCESS_TO_DELETE_STORE_REVIEW);
         }
         else if(type.equals("p")) {
-            reviewService.deleteProductReview(id);
+            reviewService.deleteProductReview(id,currentMember);
             return success(SUCCESS_TO_DELETE_PRODUCT_REVIEW);
         } else throw new TypeDoesntExistsException();
     }

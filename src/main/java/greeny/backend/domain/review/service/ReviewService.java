@@ -18,10 +18,7 @@ import greeny.backend.domain.reviewimage.repository.ProductReviewImageRepository
 import greeny.backend.domain.reviewimage.repository.StoreReviewImageRepository;
 import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.repository.StoreRepository;
-import greeny.backend.exception.situation.ProductNotFound;
-import greeny.backend.exception.situation.ReviewNotFound;
-import greeny.backend.exception.situation.StoreNotFound;
-import greeny.backend.exception.situation.TypeDoesntExistsException;
+import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -117,7 +114,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {  // TODO 다른 사용자의 리뷰 삭제를 방지하기 위해 현재 사용자와 리뷰 작성자 비교
+    public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
         StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
 
         List<String> urls = new ArrayList<>();
@@ -150,8 +147,11 @@ public class ReviewService {
 
 
     @Transactional
-    public void deleteStoreReview(Long reviewId) {
-        storeReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
+    public void deleteStoreReview(Long reviewId,Member currentMember) {  // TODO 다른 사용자의 리뷰 삭제를 방지하기 위해 현재 사용자와 리뷰 작성자 비교 : 완료
+        // 리뷰 존재 & 작성자 본인여부 검증
+        StoreReview storeReview = storeReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
+        if(!storeReview.getReviewer().getId().equals(currentMember.getId())) {throw new MemberNotEqualsException();}
+
         //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
         List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
         if(reviewImages!=null) {
@@ -162,8 +162,11 @@ public class ReviewService {
         storeReviewRepository.deleteById(reviewId);
     }
     @Transactional
-    public void deleteProductReview(Long reviewId) {
-        productReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
+    public void deleteProductReview(Long reviewId,Member currentMember) {
+        // 리뷰 존재 & 작성자 본인여부 검증
+        ProductReview productReview = productReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
+        if(!productReview.getReviewer().getId().equals(currentMember.getId())) {throw new MemberNotEqualsException();}
+
         //image 삭제 : s3에서 삭제 -> ProductReviewImage 삭제
         List<ProductReviewImage> reviewImages=productReviewImageRepository.findByProductReviewId(reviewId);
         if(reviewImages!=null) {

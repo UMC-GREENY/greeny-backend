@@ -13,6 +13,7 @@ import java.util.List;
 public interface ProductReviewRepository extends JpaRepository<ProductReview, Long> {
     Page<ProductReview> findProductReviewsByProduct(Pageable pageable,Product product);
     Page<ProductReview> findProductReviewsByReviewer(Pageable pageable,Member member);
+    Member findReviewerById(Long id);
     @NotNull
     Page<ProductReview> findAll(@NotNull Pageable pageable);
 }
