@@ -1,5 +1,6 @@
 package greeny.backend.domain.review.repository;
 
+import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.review.entity.ProductReview;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public interface ProductReviewRepository extends JpaRepository<ProductReview, Long> {
     Page<ProductReview> findProductReviewsByProduct(Pageable pageable,Product product);
+    Page<ProductReview> findProductReviewsByReviewer(Pageable pageable,Member member);
     @NotNull
     Page<ProductReview> findAll(@NotNull Pageable pageable);
 }

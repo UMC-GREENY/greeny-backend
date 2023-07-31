@@ -8,6 +8,7 @@ import greeny.backend.domain.review.dto.GetReviewListResponseDto;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
 import greeny.backend.domain.review.dto.GetReviewInfoResponseDto;
 import greeny.backend.domain.review.entity.ProductReview;
+import greeny.backend.domain.review.entity.ReviewComparator;
 import greeny.backend.domain.review.entity.StoreReview;
 import greeny.backend.domain.review.repository.ProductReviewRepository;
 import greeny.backend.domain.review.repository.StoreReviewRepository;
@@ -24,15 +25,22 @@ import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toProductReviewDTO;
+import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toStoreReviewDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -63,14 +71,35 @@ public class ReviewService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Page<Object> getMemberReviewList(Pageable pageable, Member member) {
+
+        List<StoreReview> storeList = storeReviewRepository.findStoreReviewsByReviewer(pageable,member).getContent();
+        List<ProductReview> productList = productReviewRepository.findProductReviewsByReviewer(pageable,member).getContent();
+
+        List<Object> combinedList = new ArrayList<>();
+        combinedList.addAll(storeList);
+        combinedList.addAll(productList);
+        //Collections.sort(combinedList, new ReviewComparator());
+        // or createdAt 변환해서 정렬?
+
+        Page<Object> resultPages =  PageableExecutionUtils.getPage(combinedList, pageable,()->{
+            long totalCount = Math.max(storeList.size(), productList.size());
+            return totalCount;
+        });
+        return resultPages.map(this::processObject);
+
+    }
+
+
     @Transactional(readOnly=true)
     public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
-            return getStoreMap(pages);
+            return pages.map(review -> toStoreReviewDTO(review));
         } else if(type.equals("p")) {
             Page<ProductReview> pages = productReviewRepository.findAll(pageable);
-            return getProductMap(pages);
+            return pages.map(review -> toProductReviewDTO(review));
         } else throw new TypeDoesntExistsException();
     }
 
@@ -79,11 +108,11 @@ public class ReviewService {
         if(type.equals("s")) {
             Store store = storeRepository.findById(id).orElseThrow(StoreNotFound::new);
             Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable, store);
-            return getStoreMap(pages);
+            return pages.map(review -> toStoreReviewDTO(review));
         } else if(type.equals("p")) {
             Product product = productRepository.findById(id).orElseThrow(ProductNotFound::new);
             Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable, product);
-            return getProductMap(pages);
+            return pages.map(review -> toProductReviewDTO(review));
         } else throw new TypeDoesntExistsException();
     }
 
@@ -156,6 +185,16 @@ public class ReviewService {
                 .build();
     }
 
+
+    private Object processObject(Object object) {
+        // Store or Product : 타입에 따라 처리
+        if (object instanceof StoreReview) {
+            return toStoreReviewDTO((StoreReview) object);
+        } else if (object instanceof ProductReview) {
+            return toProductReviewDTO((ProductReview) object);
+        } return null;
+    }
+
     @Transactional
     public void uploadFiles(List<MultipartFile> multipartFiles,StoreReview storeReview) {
         for(MultipartFile file:multipartFiles) {
@@ -172,28 +211,6 @@ public class ReviewService {
             productReview.getProductReviewImages().add(productReviewImage);
         }
     }
-    @NotNull
-    private Page<Object> getProductMap(Page<ProductReview> pages) {
-        return pages.map(review ->
-                GetReviewListResponseDto.builder()
-                        .id(review.getId())
-                        .createdAt(review.getCreatedAt())
-                        .writerEmail(review.getReviewer().getEmail())
-                        .star(review.getStar())
-                        .content(review.getContent())
-                        .existsFile(!review.getProductReviewImages().isEmpty())
-                        .build());
-    }
-    @NotNull
-    private Page<Object> getStoreMap(Page<StoreReview> pages) {
-        return pages.map(review ->
-                GetReviewListResponseDto.builder()
-                        .id(review.getId())
-                        .createdAt(review.getCreatedAt())
-                        .writerEmail(review.getReviewer().getEmail())
-                        .star(review.getStar())
-                        .content(review.getContent())
-                        .existsFile(!review.getStoreReviewImages().isEmpty())
-                        .build());
-    }
+
+
 }
