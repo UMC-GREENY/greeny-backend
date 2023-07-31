@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    @Query("select s from Store s left join fetch s.bookmarks left join fetch s.reviews")  // Collection fetch join -> DB 과부하 방지를 위해 batch size 설정, @Query 를 통해 메소드 네이밍 커스텀
-    @NotNull
-    List<Store> findStoresWithBookmarksAndReviews();
+    List<Store> findTop3ByOrderByIdDesc();  // Id 내림차순으로 3개의 store 조회
+    List<Store> findTop8ByOrderByBookmarksDesc();  // Bookmarks 내림차순으로 8개의 store 조회, 같을 경우에는 id 내림차순으로 조회
 }
