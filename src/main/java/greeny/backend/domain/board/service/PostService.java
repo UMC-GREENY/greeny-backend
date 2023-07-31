@@ -1,6 +1,7 @@
 package greeny.backend.domain.board.service;
 
 import greeny.backend.config.aws.S3Service;
+import greeny.backend.domain.board.entity.PostLike;
 import greeny.backend.domain.board.repository.PostLikeRepository;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.board.dto.WritePostRequestDto;
@@ -14,7 +15,6 @@ import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,6 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PostLikeRepository postLikeRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -60,7 +59,7 @@ public class PostService {
 
     @Transactional
     public GetPostInfoResponseDto getPostInfo(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFilesAndPostLikes(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
         return GetPostInfoResponseDto.from(post, false, false);
     }
@@ -68,7 +67,7 @@ public class PostService {
     // 인증된 사용자의 게시글 상세정보 조회
     @Transactional
     public GetPostInfoResponseDto getPostInfoWithAuthMember(Long postId, Member currentMember) {
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFilesAndPostLikes(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
         return GetPostInfoResponseDto.from(post,
                 isWriter(post, currentMember),
@@ -82,12 +81,15 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Boolean isLiked(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 좋아요를 눌렀는지 확인
-        return postLikeRepository.existsByPostIdAndLikerId(post.getId(), currentMember.getId());
+        for(PostLike postLike : post.getPostLikes()){
+            if(postLike.getLiker().getId().equals(currentMember.getId())) return true;
+        }
+        return false;
     }
 
     @Transactional
     public void deletePost(Long postId, Member currentMember) {
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFiles(postId).orElseThrow(PostNotFoundException::new);
 
         if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
@@ -102,7 +104,7 @@ public class PostService {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFiles(postId).orElseThrow(PostNotFoundException::new);
 
         if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
