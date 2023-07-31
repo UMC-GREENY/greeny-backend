@@ -21,8 +21,9 @@ public class GetPostInfoResponseDto {
     private List<String> fileUrls;
     private Boolean isWriter; // 화면에 수정,삭제 버튼 띄울지 판단할 때 필요
     private Integer likes; // 좋아요 수
+    private Boolean liked; // 요청자가 좋아요를 눌렀는지?
 
-    public static GetPostInfoResponseDto from(Post post, Boolean isWriter){
+    public static GetPostInfoResponseDto from(Post post, Boolean isWriter, Boolean liked){
         return GetPostInfoResponseDto.builder()
                 .id(post.getId())
                 .writerEmail(post.getWriter().getEmail())
@@ -33,6 +34,7 @@ public class GetPostInfoResponseDto {
                 .fileUrls(post.getFileUrls())
                 .isWriter(isWriter)
                 .likes(post.getPostLikes().size())
+                .liked(liked)
                 .build();
     }
 

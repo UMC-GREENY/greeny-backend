@@ -1,6 +1,7 @@
 package greeny.backend.domain.board.service;
 
 import greeny.backend.config.aws.S3Service;
+import greeny.backend.domain.board.repository.PostLikeRepository;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.board.dto.WritePostRequestDto;
 import greeny.backend.domain.board.dto.GetSimplePostInfosResponseDto;
@@ -27,6 +28,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -56,24 +58,31 @@ public class PostService {
                 .map(GetSimplePostInfosResponseDto::from);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public GetPostInfoResponseDto getPostInfo(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
-        return GetPostInfoResponseDto.from(post, false);
+        return GetPostInfoResponseDto.from(post, false, false);
     }
 
     // 인증된 사용자의 게시글 상세정보 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public GetPostInfoResponseDto getPostInfoWithAuthMember(Long postId, Member currentMember) {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.updateHits();
-        return GetPostInfoResponseDto.from(post, isWriter(post, currentMember));
+        return GetPostInfoResponseDto.from(post,
+                isWriter(post, currentMember),
+                isLiked(post, currentMember));
     }
 
     @Transactional(readOnly = true)
     public Boolean isWriter(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 작성자인지 확인
         return post.getWriter().getId().equals(currentMember.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isLiked(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 좋아요를 눌렀는지 확인
+        return postLikeRepository.existsByPostIdAndLikerId(post.getId(), currentMember.getId());
     }
 
     @Transactional
