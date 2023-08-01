@@ -4,11 +4,9 @@ import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.repository.ProductRepository;
-import greeny.backend.domain.review.dto.GetReviewListResponseDto;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
 import greeny.backend.domain.review.dto.GetReviewInfoResponseDto;
 import greeny.backend.domain.review.entity.ProductReview;
-import greeny.backend.domain.review.entity.ReviewComparator;
 import greeny.backend.domain.review.entity.StoreReview;
 import greeny.backend.domain.review.repository.ProductReviewRepository;
 import greeny.backend.domain.review.repository.StoreReviewRepository;
@@ -20,21 +18,16 @@ import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.repository.StoreRepository;
 import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toProductReviewDTO;
 import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toStoreReviewDTO;
@@ -83,7 +76,19 @@ public class ReviewService {
 
 
     @Transactional(readOnly=true)
-    public Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
+    public Page<Object> searchSimpleReviewInfos(String keyword, String type, Pageable pageable) {
+        if(!StringUtils.hasText(keyword)) { return getAllSimpleReviewInfos(type, pageable);    }
+        if(type.equals("s")) {
+            Page<StoreReview> pages =storeReviewRepository.findAllByContentContainingIgnoreCase(keyword,pageable);
+            return pages.map(review -> toStoreReviewDTO(review));
+        } else if(type.equals("p")) {
+            Page<ProductReview> pages =productReviewRepository.findAllByContentContainingIgnoreCase(keyword,pageable);
+            return pages.map(review -> toProductReviewDTO(review));
+        } else throw new TypeDoesntExistsException();
+    }
+
+    @Transactional(readOnly = true)
+    private Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
             return pages.map(review -> toStoreReviewDTO(review));
@@ -93,6 +98,7 @@ public class ReviewService {
         } else throw new TypeDoesntExistsException();
     }
 
+    //스토어&제품 ID로 review list 불러오기
     @Transactional(readOnly = true)
     public Page<Object> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
         if(type.equals("s")) {

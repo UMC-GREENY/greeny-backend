@@ -54,9 +54,10 @@ public class ReviewController {
     @Operation(summary = "get all simple review infos API", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/all")
-    public Response getAllSimpleReviewInfos(@RequestParam String type,
+    public Response getAllSimpleReviewInfos(@RequestParam(required = false) String keyword,
+                                            @RequestParam String type,
                                          @ParameterObject Pageable pageable) {
-        return success(SUCCESS_TO_GET_ALL_REVIEW_LIST,reviewService.getAllSimpleReviewInfos(type,pageable));
+        return success(SUCCESS_TO_GET_ALL_REVIEW_LIST,reviewService.searchSimpleReviewInfos(keyword,type,pageable));
     }
 
     @Operation(summary = "get simple review infos API", description="put review type and pageable object you want to get")
