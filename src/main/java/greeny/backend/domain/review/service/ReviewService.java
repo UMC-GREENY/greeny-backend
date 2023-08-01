@@ -68,26 +68,17 @@ public class ReviewService {
         }
     }
 
+
+
     @Transactional(readOnly = true)
-    public Page<Object> getMemberReviewList(Pageable pageable, Member member) {
-
-        List<StoreReview> storeList = storeReviewRepository.findStoreReviewsByReviewer(pageable,member).getContent();
-        List<ProductReview> productList = productReviewRepository.findProductReviewsByReviewer(pageable,member).getContent();
-
-        List<Object> combinedList = new ArrayList<>();
-        combinedList.addAll(storeList);
-        combinedList.addAll(productList);
-        //Collections.sort(combinedList, new ReviewComparator());
-        // or createdAt 변환해서 정렬?
-
-        //
-        Page<Object> resultPages =  PageableExecutionUtils.getPage(combinedList, pageable,()->{
-            long totalCount = Math.max(storeList.size(), productList.size());
-            return totalCount;
-        });
-        //Page<Object> result = new PageImpl<>(combinedList,pageable,combinedList.size());
-        return resultPages.map(this::processObject);
-
+    public Page<Object> getMemberReviewList(String type,Pageable pageable, Member member) {
+        if(type.equals("s")) {
+            Page<StoreReview> pages = storeReviewRepository.findAllByReviewer(pageable,member);
+            return pages.map(review -> toStoreReviewDTO(review));
+        } else if(type.equals("p")) {
+            Page<ProductReview> pages = productReviewRepository.findAllByReviewer(pageable,member);
+            return pages.map(review -> toProductReviewDTO(review));
+        } else throw new TypeDoesntExistsException();
     }
 
 

@@ -80,7 +80,7 @@ public class MemberController {
     @Operation(summary = "Get my review list api", description = "put page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
     @GetMapping("/review")
-    public Response getMyReviewList(@ParameterObject Pageable pageable) {
-        return Response.success(SUCCESS_TO_GET_REVIEW_LIST, reviewService.getMemberReviewList(pageable, memberService.getCurrentMember()));
+    public Response getMyReviewList(String type,@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_GET_REVIEW_LIST, reviewService.getMemberReviewList(type,pageable, memberService.getCurrentMember()));
     }
 }
