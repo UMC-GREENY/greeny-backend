@@ -68,6 +68,7 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_REVIEW_LIST,reviewService.getSimpleReviewInfos(type,id,pageable));
     }
 
+
     @Operation(summary = "Get review info API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping()
@@ -81,6 +82,20 @@ public class ReviewController {
             throw new TypeDoesntExistsException();
         }
     }
+    @Operation(summary = "Get review info with Auth API", description="put review type and reviewId you want to get")
+    @ResponseStatus(OK)
+    @GetMapping("/auth")
+    public Response getReviewInfoWithAuth(@RequestParam String type,
+                                          @RequestParam Long id) {
+        if(type.equals("s")){
+            return success(SUCCESS_TO_GET_STORE_REVIEW,reviewService.getStoreReviewInfoWithAuth(id,memberService.getCurrentMember()));
+        }else if(type.equals("p")){
+            return success(SUCCESS_TO_GET_PRODUCT_REVIEW,reviewService.getProductReviewInfoWithAuth(id,memberService.getCurrentMember()));
+        }else {
+            throw new TypeDoesntExistsException();
+        }
+    }
+
 
     @Operation(summary = "Delete review API", description = "put review type and object id you want to delete")
     @ResponseStatus(OK)

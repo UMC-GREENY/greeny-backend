@@ -80,10 +80,12 @@ public class ReviewService {
         //Collections.sort(combinedList, new ReviewComparator());
         // or createdAt 변환해서 정렬?
 
+        //
         Page<Object> resultPages =  PageableExecutionUtils.getPage(combinedList, pageable,()->{
             long totalCount = Math.max(storeList.size(), productList.size());
             return totalCount;
         });
+        //Page<Object> result = new PageImpl<>(combinedList,pageable,combinedList.size());
         return resultPages.map(this::processObject);
 
     }
@@ -113,10 +115,12 @@ public class ReviewService {
         } else throw new TypeDoesntExistsException();
     }
 
+
+
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
         StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
-
+        //이메일찾기 - 현재멤버 비교 -> dto에 일치여부 포함
         List<String> urls = new ArrayList<>();
         List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
         if(storeReviewImages!=null) {
@@ -126,7 +130,7 @@ public class ReviewService {
         }
         return buildReviewInfoResponseDto
                 (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
-                storeReview.getContent(),urls);
+                storeReview.getContent(),urls,false);
     }
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
@@ -141,7 +145,40 @@ public class ReviewService {
         }
         return buildReviewInfoResponseDto
                 (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
-                productReview.getContent(),urls);
+                productReview.getContent(),urls,false);
+    }
+
+    @Transactional(readOnly = true)
+    public GetReviewInfoResponseDto getStoreReviewInfoWithAuth(Long id,Member member) {
+        StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
+        //이메일찾기 - 현재멤버 비교 -> dto에 일치여부 포함
+        boolean isWriter = storeReview.getReviewer().getEmail().equals(member.getEmail());
+        List<String> urls = new ArrayList<>();
+        List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
+        if(storeReviewImages!=null) {
+            for (StoreReviewImage image : storeReview.getStoreReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+        return buildReviewInfoResponseDto
+                (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
+                        storeReview.getContent(),urls,isWriter);
+    }
+    @Transactional(readOnly = true)
+    public GetReviewInfoResponseDto getProductReviewInfoWithAuth(Long id,Member member) {
+        ProductReview productReview = productReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
+        boolean isWriter = productReview.getReviewer().getEmail().equals(member.getEmail());
+
+        List<String> urls = new ArrayList<>();
+        List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
+        if(productReviewImages!=null) {
+            for(ProductReviewImage image : productReview.getProductReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+        return buildReviewInfoResponseDto
+                (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
+                        productReview.getContent(),urls,isWriter);
     }
 
 
@@ -178,13 +215,14 @@ public class ReviewService {
     }
 
 
-    public GetReviewInfoResponseDto buildReviewInfoResponseDto(String email, String createdAt, Integer star, String content, List<String> urls) {
+    public GetReviewInfoResponseDto buildReviewInfoResponseDto(String email, String createdAt, Integer star, String content, List<String> urls,boolean isWriter) {
         return GetReviewInfoResponseDto.builder()
                 .writerEmail(email)
                 .createdAt(createdAt)
                 .star(star)
                 .content(content)
                 .fileUrls(urls)
+                .isWriter(isWriter)
                 .build();
     }
 
