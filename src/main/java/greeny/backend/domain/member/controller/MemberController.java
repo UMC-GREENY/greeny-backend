@@ -58,7 +58,7 @@ public class MemberController {
         return success(SUCCESS_TO_DELETE_MEMBER);
     }
 
-    // 사용자가 찜한 store or product 목록에서 삭제 API
+    // 사용자가 찜한 store or product 목록에서 삭제 API (Type -> store, product)
     @Operation(summary = "Delete store or product bookmark API", description = "put your store or product id what you want to delete.")
     @ResponseStatus(OK)
     @DeleteMapping("/bookmark")

@@ -1,8 +1,6 @@
 package greeny.backend.domain.member.service;
 
 
-import greeny.backend.domain.bookmark.entity.ProductBookmark;
-import greeny.backend.domain.bookmark.entity.StoreBookmark;
 import greeny.backend.domain.bookmark.repository.ProductBookmarkRepository;
 import greeny.backend.domain.bookmark.repository.StoreBookmarkRepository;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
@@ -85,23 +83,7 @@ public class MemberService {
     }
 
     public void cancelBookmark(String type, CancelBookmarkRequestDto cancelBookmarkRequestDto) {  // 현재 사용자가 찜한 store or product 목록에서 삭제
-
-        List<Long> idsToDelete = cancelBookmarkRequestDto.getIdsToDelete();
-        Member currentMember = getCurrentMember();
-
-        if(type.equals("s")) {  // 타입이 store 일 경우
-            cancelStoreBookmark(
-                    idsToDelete,
-                    storeBookmarkRepository.findStoreBookmarksByLiker(currentMember)
-            );
-        } else if(type.equals("p")) {  // 타입이 product 일 경우
-            cancelProductBookmark(
-                    idsToDelete,
-                    productBookmarkRepository.findProductBookmarksByLiker(currentMember)
-            );
-        } else {  // 타입이 존재하지 않을 경우
-            throw new TypeDoesntExistsException();
-        }
+        checkAndCancelBookmark(type, cancelBookmarkRequestDto.getIdsToDelete());
     }
 
     private MemberProfile getMemberProfile(Long memberId) {
@@ -128,24 +110,17 @@ public class MemberService {
         memberAgreementRepository.delete(getMemberAgreement(currentMemberId));
         memberRepository.delete(currentMember);
     }
-    private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {  // Store 찜 목록에서 삭제
-        for(Long id : idsToDelete) {
-            for(StoreBookmark storeBookmark : foundStoreBookmarks) {
-                if(id.equals(storeBookmark.getStore().getId())) {
-                    storeBookmarkRepository.delete(storeBookmark);
-                    break;
-                }
+    private void checkAndCancelBookmark(String type, List<Long> idsToDelete) {
+        if(type.equals("store")) {  // 타입이 store 일 경우
+            for(Long id : idsToDelete) {
+                storeBookmarkRepository.deleteById(id);
             }
-        }
-    }
-    private void cancelProductBookmark(List<Long> idsToDelete, List<ProductBookmark> foundProductBookmarks) {  // Product 찜 목록에서 삭제
-        for(Long id : idsToDelete) {
-            for(ProductBookmark productBookmark : foundProductBookmarks) {
-                if(id.equals(productBookmark.getProduct().getId())) {
-                    productBookmarkRepository.delete(productBookmark);
-                    break;
-                }
+        } else if(type.equals("product")) {  // 타입이 product 일 경우
+            for(Long id : idsToDelete) {
+                productBookmarkRepository.deleteById(id);
             }
+        } else {  // 타입이 존재하지 않을 경우
+            throw new TypeDoesntExistsException();
         }
     }
 }

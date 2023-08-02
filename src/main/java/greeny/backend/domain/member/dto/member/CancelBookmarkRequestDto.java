@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CancelBookmarkRequestDto {
-    @Schema(description = "삭제할 스토어 or 제품 id 리스트")
+    @Schema(description = "삭제할 스토어 or 제품 북마크 id 리스트")
     private List<Long> idsToDelete;
 }
