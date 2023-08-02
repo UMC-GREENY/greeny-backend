@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GetPostListResponseDto {
+public class GetSimplePostInfosResponseDto {
 
     private Long id;
     private String createdAt;
@@ -17,8 +17,8 @@ public class GetPostListResponseDto {
     private String title;
     private Boolean existsFile;
 
-    public static GetPostListResponseDto from(Post post){
-        return GetPostListResponseDto.builder()
+    public static GetSimplePostInfosResponseDto from(Post post){
+        return GetSimplePostInfosResponseDto.builder()
                 .id(post.getId())
                 .writerEmail(post.getWriter().getEmail())
                 .createdAt(post.getCreatedAt())

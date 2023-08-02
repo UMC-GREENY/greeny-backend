@@ -37,15 +37,16 @@ public class SecurityConfig {
     };
 
     private static final String[] AUTH_WHITELIST_WITH_GET_METHOD = {
-            "/api/stores/simple",
             "/api/stores",
-            "/api/products/simple",
+            "/api/stores/simple",
             "/api/products",
-            "/api/reviews/all",
-            "/api/reviews/simple",
+            "/api/products/simple",
             "/api/reviews",
-            "/api/posts/**",
-            "/api/comments/**"
+            "/api/reviews/simple",
+            "/api/reviews/all",
+            "/api/posts",
+            "/api/posts/search",
+            "/api/comments",
     };
 
     @Bean
