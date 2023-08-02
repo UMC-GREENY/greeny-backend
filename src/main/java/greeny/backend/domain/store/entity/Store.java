@@ -50,7 +50,7 @@ public class Store extends AuditEntity {
     private String runningTime;
 
     @Formula("(select count(1) from store_bookmark sb where sb.store_id = store_id)")
-    private int bookmarks;  // 찜 개수를 나타내는 가성 컬럼 (DB 에는 나타나지 x)
+    private int bookmarks;  // 찜 개수를 나타내는 가상 컬럼 (DB 에는 나타나지 x)
     @Formula("(select count(1) from store_review sr where sr.store_id = store_id)")
-    private int reviews;  // 리뷰 수를 나타내는 가성 컬럼 (DB 에는 나타나지 x)
+    private int reviews;  // 리뷰 수를 나타내는 가상 컬럼 (DB 에는 나타나지 x)
 }
