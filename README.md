@@ -47,7 +47,7 @@
 |분류|내용|
 |:---|:---|
 |통합 개발 환경|IntelliJ|
-|Java version|JDK 11.0.17|
+|Java version|11.0.20-amzn|
 |데이터베이스|AWS RDS (MySQL)|
 |프레임워크|Spring boot v2.7.13|
 |Project 빌드 관리 도구|Gradle|
