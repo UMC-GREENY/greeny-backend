@@ -77,6 +77,7 @@ public class MemberController {
         return Response.success(SUCCESS_TO_GET_POST_LIST, postService.getMemberPostList(pageable, memberService.getCurrentMember()));
     }
 
+    // 사용자 리뷰 작성 목록 가져오기 API
     @Operation(summary = "Get my review list api", description = "put page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
     @GetMapping("/review")

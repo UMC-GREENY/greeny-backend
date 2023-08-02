@@ -33,6 +33,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final MemberService memberService;
 
+    /* 리뷰 작성하기 API */
     @Operation(summary = "write review API", description="put review type & content and object type you want to write")
     @ResponseStatus(OK)
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
@@ -51,6 +52,7 @@ public class ReviewController {
         else throw new TypeDoesntExistsException();
     }
 
+    /* 검색 OR getAllSimpleReviewInfos API */
     @Operation(summary = "get all simple review infos API", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/all")
@@ -60,6 +62,7 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_ALL_REVIEW_LIST,reviewService.searchSimpleReviewInfos(keyword,type,pageable));
     }
 
+    /* 스토어&제품 ID로 review list 불러오기 API */
     @Operation(summary = "get simple review infos API", description="put review type and pageable object you want to get")
     @ResponseStatus(OK)
     @GetMapping("/simple")
@@ -70,6 +73,7 @@ public class ReviewController {
     }
 
 
+    /* 상세리뷰 불러오기 : 인증X API */
     @Operation(summary = "Get review info API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping()
@@ -83,6 +87,7 @@ public class ReviewController {
             throw new TypeDoesntExistsException();
         }
     }
+    /* 상세리뷰 불러오기 : 인증O API */
     @Operation(summary = "Get review info with Auth API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping("/auth")
@@ -97,7 +102,7 @@ public class ReviewController {
         }
     }
 
-
+    /* 리뷰 삭제 API */
     @Operation(summary = "Delete review API", description = "put review type and object id you want to delete")
     @ResponseStatus(OK)
     @DeleteMapping()

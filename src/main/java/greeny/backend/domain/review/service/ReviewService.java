@@ -18,6 +18,7 @@ import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.repository.StoreRepository;
 import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class ReviewService {
     private final StoreRepository storeRepository;
     private final S3Service s3Service;
 
+    /* 리뷰 작성하기 */
     @Transactional
     public void writeStoreReview(Long id, WriteReviewRequestDto writeReviewRequestDto, List<MultipartFile> multipartFiles, Member member) {
         //storeReview 저장
@@ -62,7 +64,7 @@ public class ReviewService {
     }
 
 
-
+    /* 내가 쓴 리뷰 불러오기 */
     @Transactional(readOnly = true)
     public Page<Object> getMemberReviewList(String type,Pageable pageable, Member member) {
         if(type.equals("s")) {
@@ -75,6 +77,7 @@ public class ReviewService {
     }
 
 
+    /* 검색 OR getAllSimpleReviewInfos */
     @Transactional(readOnly=true)
     public Page<Object> searchSimpleReviewInfos(String keyword, String type, Pageable pageable) {
         if(!StringUtils.hasText(keyword)) { return getAllSimpleReviewInfos(type, pageable);    }
@@ -87,6 +90,7 @@ public class ReviewService {
         } else throw new TypeDoesntExistsException();
     }
 
+    /* 스토어 OR 제품 전체 review list 불러오기 */
     @Transactional(readOnly = true)
     private Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
@@ -98,7 +102,7 @@ public class ReviewService {
         } else throw new TypeDoesntExistsException();
     }
 
-    //스토어&제품 ID로 review list 불러오기
+    /* 스토어&제품 ID로 review list 불러오기 */
     @Transactional(readOnly = true)
     public Page<Object> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
         if(type.equals("s")) {
@@ -113,50 +117,31 @@ public class ReviewService {
     }
 
 
-
+    /* 상세리뷰 불러오기 : 인증X */
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getStoreReviewInfo(Long id) {
         StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
         //이메일찾기 - 현재멤버 비교 -> dto에 일치여부 포함
-        List<String> urls = new ArrayList<>();
-        List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
-        if(storeReviewImages!=null) {
-            for (StoreReviewImage image : storeReview.getStoreReviewImages()) {
-                urls.add(image.getImageUrl());
-            }
-        }
-        return buildReviewInfoResponseDto
-                (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
+        List<String> urls = getStoreReviewImgUrls(storeReview);
+        return buildReviewInfoResponseDto(storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
                 storeReview.getContent(),urls,false);
     }
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getProductReviewInfo(Long id) {
         ProductReview productReview = productReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
 
-        List<String> urls = new ArrayList<>();
-        List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
-        if(productReviewImages!=null) {
-            for(ProductReviewImage image : productReview.getProductReviewImages()) {
-                urls.add(image.getImageUrl());
-            }
-        }
-        return buildReviewInfoResponseDto
-                (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
+        List<String> urls = getProductReviewImgUrls(productReview);
+        return buildReviewInfoResponseDto(productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
                 productReview.getContent(),urls,false);
     }
 
+    /* 상세리뷰 불러오기 : 인증O */
     @Transactional(readOnly = true)
     public GetReviewInfoResponseDto getStoreReviewInfoWithAuth(Long id,Member member) {
         StoreReview storeReview = storeReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
         //이메일찾기 - 현재멤버 비교 -> dto에 일치여부 포함
         boolean isWriter = storeReview.getReviewer().getEmail().equals(member.getEmail());
-        List<String> urls = new ArrayList<>();
-        List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
-        if(storeReviewImages!=null) {
-            for (StoreReviewImage image : storeReview.getStoreReviewImages()) {
-                urls.add(image.getImageUrl());
-            }
-        }
+        List<String> urls = getStoreReviewImgUrls(storeReview);
         return buildReviewInfoResponseDto
                 (storeReview.getReviewer().getEmail(),storeReview.getCreatedAt(),storeReview.getStar(),
                         storeReview.getContent(),urls,isWriter);
@@ -166,13 +151,7 @@ public class ReviewService {
         ProductReview productReview = productReviewRepository.findById(id).orElseThrow(ReviewNotFound::new);
         boolean isWriter = productReview.getReviewer().getEmail().equals(member.getEmail());
 
-        List<String> urls = new ArrayList<>();
-        List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
-        if(productReviewImages!=null) {
-            for(ProductReviewImage image : productReview.getProductReviewImages()) {
-                urls.add(image.getImageUrl());
-            }
-        }
+        List<String> urls = getProductReviewImgUrls(productReview);
         return buildReviewInfoResponseDto
                 (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
                         productReview.getContent(),urls,isWriter);
@@ -180,11 +159,12 @@ public class ReviewService {
 
 
 
+    /* 리뷰 삭제 */
     @Transactional
     public void deleteStoreReview(Long reviewId,Member currentMember) {  // TODO 다른 사용자의 리뷰 삭제를 방지하기 위해 현재 사용자와 리뷰 작성자 비교 : 완료
         // 리뷰 존재 & 작성자 본인여부 검증
         StoreReview storeReview = storeReviewRepository.findById(reviewId).orElseThrow(ReviewNotFound::new);
-        if(!storeReview.getReviewer().getId().equals(currentMember.getId())) {throw new MemberNotEqualsException();}
+        if(!storeReview.getReviewer().getEmail().equals(currentMember.getEmail())) {throw new MemberNotEqualsException();}
 
         //image 삭제 : s3에서 삭제 -> StoreReviewImage 삭제
         List<StoreReviewImage> reviewImages=storeReviewImageRepository.findByStoreReviewId(reviewId);
@@ -224,15 +204,6 @@ public class ReviewService {
     }
 
 
-    private Object processObject(Object object) {
-        // Store or Product : 타입에 따라 처리
-        if (object instanceof StoreReview) {
-            return toStoreReviewDTO((StoreReview) object);
-        } else if (object instanceof ProductReview) {
-            return toProductReviewDTO((ProductReview) object);
-        } return null;
-    }
-
     @Transactional
     public void uploadFiles(List<MultipartFile> multipartFiles,StoreReview storeReview) {
         for(MultipartFile file:multipartFiles) {
@@ -248,6 +219,30 @@ public class ReviewService {
                     getEntity(productReview,s3Service.uploadFile(file));
             productReview.getProductReviewImages().add(productReviewImage);
         }
+    }
+
+
+    @NotNull
+    private List<String> getProductReviewImgUrls(ProductReview productReview) {
+        List<String> urls = new ArrayList<>();
+        List<ProductReviewImage> productReviewImages = productReview.getProductReviewImages();
+        if(productReviewImages!=null) {
+            for(ProductReviewImage image : productReview.getProductReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+        return urls;
+    }
+    @NotNull
+    private List<String> getStoreReviewImgUrls(StoreReview storeReview) {
+        List<String> urls = new ArrayList<>();
+        List<StoreReviewImage> storeReviewImages = storeReview.getStoreReviewImages();
+        if(storeReviewImages!=null) {
+            for (StoreReviewImage image : storeReview.getStoreReviewImages()) {
+                urls.add(image.getImageUrl());
+            }
+        }
+        return urls;
     }
 
 
