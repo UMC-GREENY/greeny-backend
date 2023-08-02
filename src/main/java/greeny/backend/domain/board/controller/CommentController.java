@@ -26,7 +26,7 @@ public class CommentController {
     private final CommentService commentService;
     private final MemberService memberService;
 
-    @Operation(summary = "Write comment api", description = "put post id and comment info to write.")
+    @Operation(summary = "Write comment API", description = "put post id and comment info to write.")
     @ResponseStatus(OK)
     @PostMapping
     public Response writeComment(Long postId, @Valid @RequestBody WriteCommentRequestDto writeCommentRequestDto) {
@@ -34,18 +34,26 @@ public class CommentController {
         return success(SUCCESS_TO_WRITE_COMMENT);
     }
 
-    @Operation(summary = "Get comment list api", description = "put post id to get comment list.")
+    @Operation(summary = "Get simple comment infos API", description = "put post id to get comment list.")
     @ResponseStatus(OK)
     @GetMapping
-    public Response getCommentList(Long postId){
-        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getCommentList(postId));
+    public Response getSimpleCommentInfos(Long postId){
+        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getSimpleCommentInfos(postId));
     }
 
-    @Operation(summary = "Edit comment api", description = "put comment info to edit.")
+    // 인증된 사용자의 댓글 목록 조회 API
+    @Operation(summary = "Get simple comment infos with auth member API", description = "put post id to get comment list.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth")
+    public Response getSimpleCommentInfosWithAuthMember(Long postId){
+        return success(SUCCESS_TO_GET_COMMENT_LIST, commentService.getSimpleCommentInfosWithAuthMember(postId, memberService.getCurrentMember()));
+    }
+
+    @Operation(summary = "Edit comment info API", description = "put comment info to edit.")
     @ResponseStatus(OK)
     @PutMapping
-    public Response editComment(Long commentId, @Valid @RequestBody WriteCommentRequestDto editCommentRequestDto) {
-        commentService.editComment(commentId, editCommentRequestDto, memberService.getCurrentMember());
+    public Response editCommentInfo(Long commentId, @Valid @RequestBody WriteCommentRequestDto editCommentInfoRequestDto) {
+        commentService.editCommentInfo(commentId, editCommentInfoRequestDto, memberService.getCurrentMember());
         return success(SUCCESS_TO_EDIT_COMMENT);
     }
 

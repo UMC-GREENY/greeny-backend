@@ -69,12 +69,11 @@ public class MemberController {
         return success(SUCCESS_TO_CANCEL_BOOKMARK);
     }
 
-    // 사용자 게시글 작성 목록 가져오기 API
-    @Operation(summary = "Get my post list api", description = "put page info what you want. you can skip parameters.")
+    @Operation(summary = "Get my post simple infos API", description = "put page info what you want. you can skip parameters.")
     @ResponseStatus(OK)
     @GetMapping("/post")
-    public Response getMyPostList(@ParameterObject Pageable pageable) {
-        return Response.success(SUCCESS_TO_GET_POST_LIST, postService.getMemberPostList(pageable, memberService.getCurrentMember()));
+    public Response getMySimplePostInfos(@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_GET_POST_LIST, postService.getMySimplePostInfos(pageable, memberService.getCurrentMember()));
     }
 
     // 사용자 리뷰 작성 목록 가져오기 API
