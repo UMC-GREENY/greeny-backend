@@ -28,11 +28,26 @@ public class StoreController {
     private final MemberService memberService;
 
     // 모든 사용자의 스토어 목록 불러오기 API (new, best, all, search, sort by bookmarks & reviews)
-    @Operation(summary = "Get simple store infos by type API", description = "put keyword if you want to search and page info what you want to see.")
+    @Operation(summary = "Get simple store infos API", description = "put keyword if you want to search and page info what you want to see.")
     @ResponseStatus(OK)
     @GetMapping("/simple")
     public Response getSimpleStoreInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
         return success(SUCCESS_TO_GET_SIMPLE_STORE_INFOS, storeService.getSimpleStoreInfos(keyword, pageable));
+    }
+
+    // 인증된 사용자의 스토어 목록 불러오기 API (new, best, all, search, sort by bookmarks & reviews)
+    @Operation(summary = "Get simple store infos with auth member API", description = "put keyword if you want to search and page info what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth/simple")
+    public Response getSimpleStoreInfosWithAuthMember(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
+        return success(
+                SUCCESS_TO_GET_SIMPLE_STORE_INFOS,
+                storeService.getSimpleStoreInfoWithAuthMember(
+                        keyword,
+                        bookmarkService.getStoreBookmarks(memberService.getCurrentMember()),
+                        pageable
+                )
+        );
     }
 
     // 스토어 상세 정보 API

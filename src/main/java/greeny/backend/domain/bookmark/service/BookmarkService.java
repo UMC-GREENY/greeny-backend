@@ -37,7 +37,7 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
 
     public void toggleStoreBookmark(String type, Long id, Member liker) {  // 타입에 따라 찜하기 or 취소
         if(type.equals("store")) {  // 스토어 찜하기
-            toggleStoreBookmark(storeService.getStore(id), liker);
+            checkAndToggleStoreBookmarkBySituation(storeService.getStore(id), liker);
         } else if(type.equals("product")) {  // 제품 찜하기
             toggleProductBookmark(productService.getProduct(id), liker);
         } else {
@@ -45,7 +45,7 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
         }
     }
 
-    private void toggleStoreBookmark(Store store, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
+    private void checkAndToggleStoreBookmarkBySituation(Store store, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
         Optional<StoreBookmark> storeBookmark = storeBookmarkRepository.findByStoreIdAndLikerId(store.getId(), liker.getId());
         if(storeBookmark.isPresent())
             storeBookmarkRepository.delete(storeBookmark.get());
