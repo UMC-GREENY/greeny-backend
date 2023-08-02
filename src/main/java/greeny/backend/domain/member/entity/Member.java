@@ -1,8 +1,9 @@
 package greeny.backend.domain.member.entity;
 
 import greeny.backend.domain.AuditEntity;
-import greeny.backend.domain.community.entity.Comment;
-import greeny.backend.domain.community.entity.Post;
+import greeny.backend.domain.board.entity.Comment;
+import greeny.backend.domain.board.entity.Post;
+import greeny.backend.domain.board.entity.PostLike;
 import greeny.backend.domain.bookmark.entity.ProductBookmark;
 import greeny.backend.domain.bookmark.entity.StoreBookmark;
 import greeny.backend.domain.review.entity.ProductReview;
@@ -39,6 +40,8 @@ public class Member extends AuditEntity {
     private List<ProductBookmark> productBookmarks = new ArrayList<>();
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "liker", cascade = ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 

@@ -7,7 +7,6 @@ import greeny.backend.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @RequiredArgsConstructor
@@ -38,17 +37,17 @@ public class SecurityConfig {
             "/api/auth/reissue"
     };
     private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {  // Store or Product white list
-            "/api/stores",
+            "/api/stores/simple",
             "/api/products/simple",
             "/api/products"
     };
     private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {  // Review white list
-            "/api/reviews/all",
-            "/api/reviews/simple"
+            "/api/reviews"
     };
     private static final String[] AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD = {  // Community white list
-            "/api/posts/**",
-            "/api/comments/**"
+            "/api/posts",
+            "/api/posts/search",
+            "/api/comments"
     };
 
     @Bean

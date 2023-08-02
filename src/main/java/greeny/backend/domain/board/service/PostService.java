@@ -1,13 +1,24 @@
 package greeny.backend.domain.community.service;
 
 import greeny.backend.config.aws.S3Service;
+import greeny.backend.domain.board.entity.PostLike;
+import greeny.backend.domain.board.repository.PostLikeRepository;
 import greeny.backend.domain.member.entity.Member;
+<<<<<<< HEAD:src/main/java/greeny/backend/domain/community/service/PostService.java
 import greeny.backend.domain.community.dto.WritePostRequestDto;
 import greeny.backend.domain.community.dto.GetPostListResponseDto;
 import greeny.backend.domain.community.dto.GetPostResponseDto;
 import greeny.backend.domain.community.entity.Post;
 import greeny.backend.domain.community.entity.PostFile;
 import greeny.backend.domain.community.repository.PostRepository;
+=======
+import greeny.backend.domain.board.dto.WritePostRequestDto;
+import greeny.backend.domain.board.dto.GetSimplePostInfosResponseDto;
+import greeny.backend.domain.board.dto.GetPostInfoResponseDto;
+import greeny.backend.domain.board.entity.Post;
+import greeny.backend.domain.board.entity.PostFile;
+import greeny.backend.domain.board.repository.PostRepository;
+>>>>>>> master:src/main/java/greeny/backend/domain/board/service/PostService.java
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -43,30 +54,53 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> getPostList(Pageable pageable) {
+    public Page<GetSimplePostInfosResponseDto> getSimplePostInfos(Pageable pageable) {
         return postRepository.findAll(pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
     }
 
     @Transactional(readOnly = true)
-    public Page<GetPostListResponseDto> searchPostList(String keyword, Pageable pageable) {
-        if(!StringUtils.hasText(keyword)) return getPostList(pageable);
+    public Page<GetSimplePostInfosResponseDto> searchSimplePostInfos(String keyword, Pageable pageable) {
+        if(!StringUtils.hasText(keyword)) return getSimplePostInfos(pageable);
         return postRepository.findAllByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
+    }
+
+    @Transactional
+    public GetPostInfoResponseDto getPostInfo(Long postId) {
+        Post post = postRepository.findByIdWithWriterAndPostFilesAndPostLikes(postId).orElseThrow(PostNotFoundException::new);
+        post.updateHits();
+        return GetPostInfoResponseDto.from(post, false, false);
+    }
+
+    // 인증된 사용자의 게시글 상세정보 조회
+    @Transactional
+    public GetPostInfoResponseDto getPostInfoWithAuthMember(Long postId, Member currentMember) {
+        Post post = postRepository.findByIdWithWriterAndPostFilesAndPostLikes(postId).orElseThrow(PostNotFoundException::new);
+        post.updateHits();
+        return GetPostInfoResponseDto.from(post,
+                isWriter(post, currentMember),
+                isLiked(post, currentMember));
     }
 
     @Transactional(readOnly = true)
-    public GetPostResponseDto getPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-        post.updateHits();
-        return GetPostResponseDto.from(post);
+    public Boolean isWriter(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 작성자인지 확인
+        return post.getWriter().getId().equals(currentMember.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean isLiked(Post post, Member currentMember){ // 게시글을 조회하는 사용자가 좋아요를 눌렀는지 확인
+        for(PostLike postLike : post.getPostLikes()){
+            if(postLike.getLiker().getId().equals(currentMember.getId())) return true;
+        }
+        return false;
     }
 
     @Transactional
     public void deletePost(Long postId, Member currentMember) {
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFiles(postId).orElseThrow(PostNotFoundException::new);
 
-        if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
+        if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         List<String> fileUrls = new ArrayList<>();
         for(String fileUrl : post.getFileUrls()) fileUrls.add(fileUrl);
@@ -75,16 +109,16 @@ public class PostService {
     }
 
     @Transactional
-    public void editPost(Long postId, WritePostRequestDto editPostRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
+    public void editPostInfo(Long postId, WritePostRequestDto editPostInfoRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findByIdWithWriterAndPostFiles(postId).orElseThrow(PostNotFoundException::new);
 
-        if(post.getWriter().getId() != currentMember.getId()) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
+        if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
 
         //게시글의 제목과 내용 업데이트
-        post.update(editPostRequestDto.getTitle(), editPostRequestDto.getContent());
+        post.update(editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent());
 
         List<String> fileUrls = post.getFileUrls();
 
@@ -114,8 +148,8 @@ public class PostService {
     }
 
     @Transactional
-    public Page<GetPostListResponseDto> getMemberPostList(Pageable pageable, Member currentMember) {
+    public Page<GetSimplePostInfosResponseDto> getMySimplePostInfos(Pageable pageable, Member currentMember) {
         return postRepository.findAllByWriterId(currentMember.getId(), pageable)
-                .map(GetPostListResponseDto::from);
+                .map(GetSimplePostInfosResponseDto::from);
     }
 }
