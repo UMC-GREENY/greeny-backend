@@ -8,10 +8,7 @@ import greeny.backend.domain.bookmark.repository.StoreBookmarkRepository;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.dto.member.GetMemberInfoResponseDto;
-import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.member.entity.MemberGeneral;
-import greeny.backend.domain.member.entity.MemberProfile;
-import greeny.backend.domain.member.entity.MemberSocial;
+import greeny.backend.domain.member.entity.*;
 import greeny.backend.domain.member.repository.*;
 import greeny.backend.exception.situation.*;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +29,7 @@ public class MemberService {
     private final MemberGeneralRepository memberGeneralRepository;
     private final MemberSocialRepository memberSocialRepository;
     private final MemberProfileRepository memberProfileRepository;
+    private final MemberAgreementRepository memberAgreementRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final StoreBookmarkRepository storeBookmarkRepository;
@@ -70,7 +68,7 @@ public class MemberService {
             refreshTokenRepository.deleteById(key);
         }
 
-        memberRepository.delete(currentMember);
+        checkAndDeleteGeneralOrSocialMember(currentMember, currentMember.getId());  // 일반, 소셜 회원인지 확인 후 삭제
     }
 
     @Transactional
@@ -110,9 +108,25 @@ public class MemberService {
         return memberProfileRepository.findByMemberId(memberId)
                 .orElseThrow(MemberProfileNotFoundException::new);
     }
+
+    private MemberAgreement getMemberAgreement(Long memberId) {
+        return memberAgreementRepository.findByMemberId(memberId)
+                .orElseThrow(MemberAgreementNotFoundException::new);
+    }
     private MemberSocial getMemberSocial(Long memberId) {
         return memberSocialRepository.findByMemberId(memberId)
                 .orElseThrow(MemberSocialNotFoundException::new);
+    }
+    private void checkAndDeleteGeneralOrSocialMember(Member currentMember, Long currentMemberId) {  // 일반, 소셜 회원인지 확인 후 삭제
+        if(memberGeneralRepository.existsByMemberId(currentMemberId)) {  // 일반 회원일 경우
+            memberGeneralRepository.delete(authService.getMemberGeneral(currentMemberId));
+            memberProfileRepository.delete(getMemberProfile(currentMemberId));
+        } else {  // 소셜 회원일 경우
+            memberSocialRepository.delete(getMemberSocial(currentMemberId));
+        }
+
+        memberAgreementRepository.delete(getMemberAgreement(currentMemberId));
+        memberRepository.delete(currentMember);
     }
     private void cancelStoreBookmark(List<Long> idsToDelete, List<StoreBookmark> foundStoreBookmarks) {  // Store 찜 목록에서 삭제
         for(Long id : idsToDelete) {
