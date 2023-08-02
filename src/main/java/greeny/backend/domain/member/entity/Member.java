@@ -1,9 +1,9 @@
 package greeny.backend.domain.member.entity;
 
 import greeny.backend.domain.AuditEntity;
-import greeny.backend.domain.board.entity.Comment;
-import greeny.backend.domain.board.entity.Post;
-import greeny.backend.domain.board.entity.PostLike;
+import greeny.backend.domain.community.entity.Comment;
+import greeny.backend.domain.community.entity.Post;
+import greeny.backend.domain.community.entity.PostLike;
 import greeny.backend.domain.bookmark.entity.ProductBookmark;
 import greeny.backend.domain.bookmark.entity.StoreBookmark;
 import greeny.backend.domain.review.entity.ProductReview;

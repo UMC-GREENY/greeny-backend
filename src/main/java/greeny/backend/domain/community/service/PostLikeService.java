@@ -1,15 +1,14 @@
-package greeny.backend.domain.board.service;
+package greeny.backend.domain.community.service;
 
-import greeny.backend.domain.board.entity.Post;
-import greeny.backend.domain.board.entity.PostLike;
-import greeny.backend.domain.board.repository.PostLikeRepository;
-import greeny.backend.domain.board.repository.PostRepository;
+import greeny.backend.domain.community.entity.Post;
+import greeny.backend.domain.community.entity.PostLike;
+import greeny.backend.domain.community.repository.PostLikeRepository;
+import greeny.backend.domain.community.repository.PostRepository;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.exception.situation.PostNotFoundException;
 import greeny.backend.exception.situation.SelfLikeNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

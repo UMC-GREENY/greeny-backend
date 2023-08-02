@@ -1,8 +1,7 @@
 package greeny.backend.domain.community.service;
 
 import greeny.backend.config.aws.S3Service;
-import greeny.backend.domain.board.entity.PostLike;
-import greeny.backend.domain.board.repository.PostLikeRepository;
+import greeny.backend.domain.community.entity.PostLike;
 import greeny.backend.domain.member.entity.Member;
 <<<<<<< HEAD:src/main/java/greeny/backend/domain/community/service/PostService.java
 import greeny.backend.domain.community.dto.WritePostRequestDto;
@@ -12,12 +11,8 @@ import greeny.backend.domain.community.entity.Post;
 import greeny.backend.domain.community.entity.PostFile;
 import greeny.backend.domain.community.repository.PostRepository;
 =======
-import greeny.backend.domain.board.dto.WritePostRequestDto;
-import greeny.backend.domain.board.dto.GetSimplePostInfosResponseDto;
-import greeny.backend.domain.board.dto.GetPostInfoResponseDto;
-import greeny.backend.domain.board.entity.Post;
-import greeny.backend.domain.board.entity.PostFile;
-import greeny.backend.domain.board.repository.PostRepository;
+import greeny.backend.domain.community.dto.GetSimplePostInfosResponseDto;
+import greeny.backend.domain.community.dto.GetPostInfoResponseDto;
 >>>>>>> master:src/main/java/greeny/backend/domain/board/service/PostService.java
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.exception.situation.PostNotFoundException;

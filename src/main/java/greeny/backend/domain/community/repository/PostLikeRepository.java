@@ -1,9 +1,8 @@
-package greeny.backend.domain.board.repository;
+package greeny.backend.domain.community.repository;
 
-import greeny.backend.domain.board.entity.PostLike;
+import greeny.backend.domain.community.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public interface PostLikeRepository extends JpaRepository<PostLike, Long> {

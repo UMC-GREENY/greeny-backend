@@ -1,6 +1,6 @@
-package greeny.backend.domain.board.controller;
+package greeny.backend.domain.community.controller;
 
-import greeny.backend.domain.board.service.PostLikeService;
+import greeny.backend.domain.community.service.PostLikeService;
 import greeny.backend.domain.member.service.MemberService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;

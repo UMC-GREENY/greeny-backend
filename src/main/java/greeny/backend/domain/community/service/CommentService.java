@@ -8,19 +8,13 @@ import greeny.backend.domain.community.entity.Post;
 import greeny.backend.domain.community.repository.CommentRepository;
 import greeny.backend.domain.community.repository.PostRepository;
 =======
-import greeny.backend.domain.board.dto.WriteCommentRequestDto;
-import greeny.backend.domain.board.dto.GetSimpleCommentInfosResponseDto;
-import greeny.backend.domain.board.entity.Comment;
-import greeny.backend.domain.board.entity.Post;
-import greeny.backend.domain.board.repository.CommentRepository;
-import greeny.backend.domain.board.repository.PostRepository;
+import greeny.backend.domain.community.dto.GetSimpleCommentInfosResponseDto;
 >>>>>>> master:src/main/java/greeny/backend/domain/board/service/CommentService.java
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.exception.situation.CommentNotFoundException;
 import greeny.backend.exception.situation.MemberNotEqualsException;
 import greeny.backend.exception.situation.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 <<<<<<<< HEAD:src/main/java/greeny/backend/domain/community/dto/GetCommentListResponseDto.java
 import greeny.backend.domain.community.entity.Comment;
 ========
-import greeny.backend.domain.board.entity.Comment;
 >>>>>>>> master:src/main/java/greeny/backend/domain/community/dto/GetSimpleCommentInfosResponseDto.java
 import lombok.*;
 
