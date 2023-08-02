@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {  // 사용자 인증 white list
+    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {  // Member auth white list
             "/swagger-ui/**",
             "/api-docs/**",
             "/api",
