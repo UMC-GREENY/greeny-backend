@@ -38,7 +38,6 @@ public class SecurityConfig {
             "/api/auth/reissue"
     };
     private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {  // Store or Product white list
-            "/api/stores/new-best/simple",
             "/api/stores",
             "/api/products/simple",
             "/api/products"

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,9 +33,9 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
-    private List<StoreReview> reviews = new ArrayList<>();
+    private List<StoreReview> storeReviews = new ArrayList<>();
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
-    private Set<StoreBookmark> bookmarks = new HashSet<>();
+    private Set<StoreBookmark> storeBookmarks = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,4 +48,9 @@ public class Store extends AuditEntity {
     private String phone;
     private String imageUrl;
     private String runningTime;
+
+    @Formula("(select count(1) from store_bookmark sb where sb.store_id = store_id)")
+    private int bookmarks;  // 찜 개수를 나타내는 가성 컬럼 (DB 에는 나타나지 x)
+    @Formula("(select count(1) from store_review sr where sr.store_id = store_id)")
+    private int reviews;  // 리뷰 수를 나타내는 가성 컬럼 (DB 에는 나타나지 x)
 }
