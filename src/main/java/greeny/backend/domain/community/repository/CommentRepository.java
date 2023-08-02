@@ -1,10 +1,7 @@
 package greeny.backend.domain.community.repository;
 
-<<<<<<< HEAD:src/main/java/greeny/backend/domain/community/repository/CommentRepository.java
 import greeny.backend.domain.community.entity.Comment;
-=======
 import org.springframework.data.jpa.repository.EntityGraph;
->>>>>>> master:src/main/java/greeny/backend/domain/board/repository/CommentRepository.java
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

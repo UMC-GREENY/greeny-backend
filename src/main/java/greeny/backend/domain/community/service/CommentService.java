@@ -1,15 +1,11 @@
 package greeny.backend.domain.community.service;
 
-<<<<<<< HEAD:src/main/java/greeny/backend/domain/community/service/CommentService.java
 import greeny.backend.domain.community.dto.WriteCommentRequestDto;
-import greeny.backend.domain.community.dto.GetCommentListResponseDto;
 import greeny.backend.domain.community.entity.Comment;
 import greeny.backend.domain.community.entity.Post;
 import greeny.backend.domain.community.repository.CommentRepository;
 import greeny.backend.domain.community.repository.PostRepository;
-=======
 import greeny.backend.domain.community.dto.GetSimpleCommentInfosResponseDto;
->>>>>>> master:src/main/java/greeny/backend/domain/board/service/CommentService.java
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.exception.situation.CommentNotFoundException;
 import greeny.backend.exception.situation.MemberNotEqualsException;

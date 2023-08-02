@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
+    Page<Store> findStoresByNameContainingIgnoreCase(String keyword, Pageable pageable);  // 검색어를 포함하는 이름을 가진 스토어 목록 가져오기
 }

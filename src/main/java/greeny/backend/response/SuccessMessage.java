@@ -19,8 +19,7 @@ public class SuccessMessage {  // TODO 도메인 별로 성공 메시지 분할
     public static final String SUCCESS_TO_DELETE_MEMBER = "회원을 삭제하는데 성공했습니다.";
     public static final String SUCCESS_TO_CANCEL_BOOKMARK = "회원의 찜한 목록에서 삭제하는데 성공했습니다.";
 
-    public static final String SUCCESS_TO_GET_NEW_OR_BEST_SIMPLE_STORE_INFOS = "New or Best 스토어 목록을 불러오는데 성공했습니다.";
-    public static final String SUCCESS_TO_GET_SORTED_SIMPLE_STORE_INFOS = "정렬된 스토어 목록을 불러오는데 성공했습니다.";
+    public static final String SUCCESS_TO_GET_SIMPLE_STORE_INFOS = "스토어 목록을 불러오는데 성공했습니다.";
     public static final String SUCCESS_TO_GET_STORE_INFO = "스토어 상세 정보를 불러오는데 성공했습니다.";
 
     public static final String SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS = "제품 목록을 불러오는데 성공했습니다.";
