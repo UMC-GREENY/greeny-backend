@@ -146,6 +146,30 @@ public class ExceptionAdvice {
         return failure(NOT_FOUND, "요청한 일반 로그인 회원을 찾을 수 없습니다.");
     }
 
+    // 404 응답
+    // 요청한 소셜 로그인 회원을 찾을 수 없음
+    @ExceptionHandler(MemberSocialNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response memberSocialNotFoundException() {
+        return failure(NOT_FOUND, "요청한 소셜 로그인 회원을 찾을 수 없습니다.");
+    }
+
+    // 404 응답
+    // 요청한 회원 프로필 정보를 찾을 수 없음
+    @ExceptionHandler(MemberProfileNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response memberProfileNotFoundException() {
+        return failure(NOT_FOUND, "요청한 회원 프로필 정보를 찾을 수 없습니다.");
+    }
+
+    // 404 응답
+    // 요청한 회원의 동의 항목을 찾을 수 없음
+    @ExceptionHandler(MemberAgreementNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public Response memberAgreementNotFoundException() {
+        return failure(NOT_FOUND, "요청한 회원의 동의 항목을 찾을 수 없습니다.");
+    }
+
     // 400 응답
     // 소셜에서 제공한 토큰 정보가 비어있음
     @ExceptionHandler(EmptySocialTokenInfoException.class)

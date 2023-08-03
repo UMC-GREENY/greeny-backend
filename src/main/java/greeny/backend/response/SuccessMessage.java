@@ -3,7 +3,7 @@ package greeny.backend.response;
 import lombok.Getter;
 
 @Getter
-public class SuccessMessage {
+public class SuccessMessage {  // TODO 도메인 별로 성공 메시지 분할
     public static final String SUCCESS = "요청에 성공했습니다";
     public static final String SUCCESS_TO_SEND_EMAIL = "이메일을 전송하는데 성공했습니다.";
     public static final String SUCCESS_TO_SIGN_UP = "회원가입에 성공했습니다.";

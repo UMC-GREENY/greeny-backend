@@ -19,7 +19,7 @@ public class FindPasswordRequestDto {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상이어야 합니다.")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상
+    @Pattern(regexp = "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{8,15}$", message = "비밀번호는 영숫자, 특수문자가 필수이고 8자리 이상 15이내여야 합니다.")  // 영숫자, 특수문자 (!@#$%^&*) 필수 => 8자리 이상 15자 이내
     @Schema(description = "비밀번호", defaultValue = "test5678@")
     private String password;
 }

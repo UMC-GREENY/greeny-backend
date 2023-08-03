@@ -1,8 +1,8 @@
-package greeny.backend.domain.board.controller;
+package greeny.backend.domain.community.controller;
 
 import greeny.backend.domain.member.service.MemberService;
-import greeny.backend.domain.board.dto.WritePostRequestDto;
-import greeny.backend.domain.board.service.PostService;
+import greeny.backend.domain.community.dto.WritePostRequestDto;
+import greeny.backend.domain.community.service.PostService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

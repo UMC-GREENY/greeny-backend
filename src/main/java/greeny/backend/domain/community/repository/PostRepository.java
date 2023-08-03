@@ -1,6 +1,6 @@
-package greeny.backend.domain.board.repository;
+package greeny.backend.domain.community.repository;
 
-import greeny.backend.domain.board.entity.Post;
+import greeny.backend.domain.community.entity.Post;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

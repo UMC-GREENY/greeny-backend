@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query("select p from Product p left join fetch p.store left join fetch p.bookmarks left join fetch p.reviews")
+    @Query("select p from Product p left join fetch p.store left join fetch p.productBookmarks left join fetch p.productReviews")
     @NotNull
-    List<Product> findProductsWithStoreAndBookmarksAndReviews();
+    List<Product> findProductsWithStoreAndProductBookmarksAndProductReviews();
 
     @EntityGraph(attributePaths = {"store"})
     @NotNull

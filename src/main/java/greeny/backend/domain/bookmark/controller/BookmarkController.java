@@ -28,8 +28,8 @@ public class BookmarkController {
     private final MemberService memberService;
     private final BookmarkService bookmarkService;
 
-    // 스토어 or 제품 찜하기 or 취소 API
-    @Operation(summary = "Add store or product bookmark API", description = "put type info and store or product id what you want to bookmark.")
+    // 스토어 or 제품 찜하기 or 취소 API (Type -> store, product)
+    @Operation(summary = "Toggle store or product bookmark API", description = "put type info and store or product id what you want to toggle.")
     @ResponseStatus(OK)
     @PostMapping()
     public Response toggleBookmark(String type, Long id) {

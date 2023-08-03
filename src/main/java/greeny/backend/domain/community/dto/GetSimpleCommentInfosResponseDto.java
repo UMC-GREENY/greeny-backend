@@ -1,7 +1,7 @@
-package greeny.backend.domain.board.dto;
+package greeny.backend.domain.community.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import greeny.backend.domain.board.entity.Comment;
+import greeny.backend.domain.community.entity.Comment;
 import lombok.*;
 
 @Data

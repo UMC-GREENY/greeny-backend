@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Category {
     REFILL("리필샵"),
-    DAILY("친환경생필품점"),
+    DAILY("친환경생필품"),
     CAFE("카페"),
     RESTAURANT("식당"),
     ETC("기타");

@@ -2,6 +2,8 @@ package greeny.backend.domain.store.repository;
 
 import greeny.backend.domain.store.entity.Store;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +11,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    @Query("select s from Store s left join fetch s.bookmarks left join fetch s.reviews")  // Collection fetch join -> DB 과부하 방지를 위해 batch size 설정, @Query 를 통해 메소드 네이밍 커스텀
-    @NotNull
-    List<Store> findStoresWithBookmarksAndReviews();
+    Page<Store> findStoresByNameContainingIgnoreCase(String keyword, Pageable pageable);  // 검색어를 포함하는 이름을 가진 스토어 목록 가져오기
 }

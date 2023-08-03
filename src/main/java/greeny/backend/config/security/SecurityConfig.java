@@ -7,7 +7,6 @@ import greeny.backend.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
+
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {
+    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {  // Member auth white list
             "/swagger-ui/**",
             "/api-docs/**",
             "/api",
@@ -35,18 +36,18 @@ public class SecurityConfig {
             "/api/auth/password",
             "/api/auth/reissue"
     };
-
-    private static final String[] AUTH_WHITELIST_WITH_GET_METHOD = {
-            "/api/stores",
+    private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {  // Store or Product white list
             "/api/stores/simple",
-            "/api/products",
             "/api/products/simple",
-            "/api/reviews",
-            "/api/reviews/simple",
-            "/api/reviews/all",
+            "/api/products"
+    };
+    private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {  // Review white list
+            "/api/reviews"
+    };
+    private static final String[] AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD = {  // Community white list
             "/api/posts",
             "/api/posts/search",
-            "/api/comments",
+            "/api/comments"
     };
 
     @Bean
@@ -74,7 +75,11 @@ public class SecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(AUTH_WHITELIST_WITH_MEMBER_AUTH)
                         .permitAll()
-                        .antMatchers(HttpMethod.GET, AUTH_WHITELIST_WITH_GET_METHOD)  // 인증 없이 조회 가능한 API 목록
+                        .antMatchers(GET, AUTH_WHITELIST_WITH_ECO_GET_METHOD)
+                        .permitAll()
+                        .antMatchers(GET, AUTH_WHITELIST_WITH_REVIEW_GET_METHOD)
+                        .permitAll()
+                        .antMatchers(GET, AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD)
                         .permitAll()
                         .anyRequest()
                         .authenticated()

@@ -1,4 +1,4 @@
-package greeny.backend.domain.board.entity;
+package greeny.backend.domain.community.entity;
 
 import greeny.backend.domain.AuditEntity;
 import lombok.*;

@@ -24,13 +24,13 @@ public class ProductService {
 
     // 모든 사용자에게 제품 목록 보여주기
     public List<GetSimpleProductInfosResponseDto> getSimpleProductInfos() {
-        return productRepository.findProductsWithStoreAndBookmarksAndReviews().stream()
+        return productRepository.findProductsWithStoreAndProductBookmarksAndProductReviews().stream()
                 .map(product ->
                         GetSimpleProductInfosResponseDto.from(
                                 product,
                                 product.getStore().getName(),
-                                product.getBookmarks().size(),
-                                product.getReviews().size(),
+                                product.getProductBookmarks().size(),
+                                product.getProductReviews().size(),
                                 false
                         )
                 )
@@ -41,7 +41,7 @@ public class ProductService {
     public List<GetSimpleProductInfosResponseDto> getSimpleProductInfosWithAuthMember(List<ProductBookmark> productBookmarks){
 
         List<GetSimpleProductInfosResponseDto> simpleProductInfos = new ArrayList<>();
-        List<Product> foundProducts = productRepository.findProductsWithStoreAndBookmarksAndReviews();
+        List<Product> foundProducts = productRepository.findProductsWithStoreAndProductBookmarksAndProductReviews();
 
         for(Product product : foundProducts) {
 
@@ -54,8 +54,8 @@ public class ProductService {
                             GetSimpleProductInfosResponseDto.from(
                                     product,
                                     product.getStore().getName(),
-                                    product.getBookmarks().size(),
-                                    product.getReviews().size(),
+                                    product.getProductBookmarks().size(),
+                                    product.getProductReviews().size(),
                                     isBookmarked
                             )
                     );
@@ -68,8 +68,8 @@ public class ProductService {
                         GetSimpleProductInfosResponseDto.from(
                                 product,
                                 product.getStore().getName(),
-                                product.getBookmarks().size(),
-                                product.getReviews().size(),
+                                product.getProductBookmarks().size(),
+                                product.getProductReviews().size(),
                                 isBookmarked
                         )
                 );
