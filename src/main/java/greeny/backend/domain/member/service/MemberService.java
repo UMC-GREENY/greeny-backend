@@ -82,6 +82,7 @@ public class MemberService {
         currentGeneralMember.changePassword(passwordEncoder.encode(editMemberRequestDto.getPasswordToChange()));  // 맞으면 변경
     }
 
+    @Transactional
     public void cancelBookmark(String type, CancelBookmarkRequestDto cancelBookmarkRequestDto) {  // 현재 사용자가 찜한 store or product 목록에서 삭제
         checkAndCancelBookmark(type, cancelBookmarkRequestDto.getIdsToDelete());
     }
@@ -113,11 +114,11 @@ public class MemberService {
     private void checkAndCancelBookmark(String type, List<Long> idsToDelete) {
         if(type.equals("store")) {  // 타입이 store 일 경우
             for(Long id : idsToDelete) {
-                storeBookmarkRepository.deleteById(id);
+                storeBookmarkRepository.deleteStoreBookmarksByIds(idsToDelete);
             }
         } else if(type.equals("product")) {  // 타입이 product 일 경우
             for(Long id : idsToDelete) {
-                productBookmarkRepository.deleteById(id);
+                productBookmarkRepository.deleteProductBookmarksByIds(idsToDelete);
             }
         } else {  // 타입이 존재하지 않을 경우
             throw new TypeDoesntExistsException();
