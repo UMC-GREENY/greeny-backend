@@ -5,6 +5,7 @@ import greeny.backend.domain.community.service.PostService;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
 import greeny.backend.domain.member.service.MemberService;
+import greeny.backend.domain.review.service.ReviewService;
 import greeny.backend.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +30,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final PostService postService;
+    private final ReviewService reviewService;
 
     // 사용자 비밀번호 변경 API
     @Operation(summary = "Edit member info API", description = "put info what you want to change")
@@ -72,5 +74,13 @@ public class MemberController {
     @GetMapping("/post")
     public Response getMySimplePostInfos(@ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_GET_POST_LIST, postService.getMySimplePostInfos(pageable, memberService.getCurrentMember()));
+    }
+
+    // 사용자 리뷰 작성 목록 가져오기 API
+    @Operation(summary = "Get my review list api", description = "put page info what you want. you can skip parameters.")
+    @ResponseStatus(OK)
+    @GetMapping("/review")
+    public Response getMyReviewList(String type,@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_GET_REVIEW_LIST, reviewService.getMemberReviewList(type,pageable, memberService.getCurrentMember()));
     }
 }

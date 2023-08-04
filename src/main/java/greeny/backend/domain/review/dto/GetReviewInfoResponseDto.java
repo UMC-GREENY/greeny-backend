@@ -17,5 +17,6 @@ public class GetReviewInfoResponseDto {
     private Integer star;
     private String content;
     private List<String> fileUrls;
+    private boolean isWriter;
 
 }
