@@ -4,6 +4,7 @@ import greeny.backend.config.aws.S3Service;
 import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.repository.ProductRepository;
+import greeny.backend.domain.review.dto.GetReviewListResponseDto;
 import greeny.backend.domain.review.dto.WriteReviewRequestDto;
 import greeny.backend.domain.review.dto.GetReviewInfoResponseDto;
 import greeny.backend.domain.review.entity.ProductReview;
@@ -66,7 +67,7 @@ public class ReviewService {
 
     /* 내가 쓴 리뷰 불러오기 */
     @Transactional(readOnly = true)
-    public Page<Object> getMemberReviewList(String type,Pageable pageable, Member member) {
+    public Page<GetReviewListResponseDto> getMemberReviewList(String type, Pageable pageable, Member member) {
         if(type.equals("s")) {
             Page<StoreReview> pages = storeReviewRepository.findAllByReviewer(pageable,member);
             return pages.map(review -> toStoreReviewDTO(review));
@@ -79,7 +80,7 @@ public class ReviewService {
 
     /* 검색 OR getAllSimpleReviewInfos */
     @Transactional(readOnly=true)
-    public Page<Object> searchSimpleReviewInfos(String keyword, String type, Pageable pageable) {
+    public Page<GetReviewListResponseDto> searchSimpleReviewInfos(String keyword, String type, Pageable pageable) {
         if(!StringUtils.hasText(keyword)) { return getAllSimpleReviewInfos(type, pageable);    }
         if(type.equals("s")) {
             Page<StoreReview> pages =storeReviewRepository.findAllByContentContainingIgnoreCase(keyword,pageable);
@@ -92,7 +93,7 @@ public class ReviewService {
 
     /* 스토어 OR 제품 전체 review list 불러오기 */
     @Transactional(readOnly = true)
-    private Page<Object> getAllSimpleReviewInfos(String type, Pageable pageable) {
+    private Page<GetReviewListResponseDto> getAllSimpleReviewInfos(String type, Pageable pageable) {
         if(type.equals("s")) {
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
             return pages.map(review -> toStoreReviewDTO(review));
@@ -104,7 +105,7 @@ public class ReviewService {
 
     /* 스토어&제품 ID로 review list 불러오기 */
     @Transactional(readOnly = true)
-    public Page<Object> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
+    public Page<GetReviewListResponseDto> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
         if(type.equals("s")) {
             Store store = storeRepository.findById(id).orElseThrow(StoreNotFound::new);
             Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable, store);
