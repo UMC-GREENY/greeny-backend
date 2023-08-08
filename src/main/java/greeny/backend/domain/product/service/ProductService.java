@@ -1,19 +1,23 @@
 package greeny.backend.domain.product.service;
 
+
 import greeny.backend.domain.bookmark.entity.ProductBookmark;
 import greeny.backend.domain.product.dto.GetProductInfoResponseDto;
 import greeny.backend.domain.product.dto.GetSimpleProductInfosResponseDto;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.repository.ProductRepository;
-import greeny.backend.domain.store.entity.Store;
 import greeny.backend.exception.situation.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,72 +26,69 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    // 모든 사용자에게 제품 목록 보여주기
-    public List<GetSimpleProductInfosResponseDto> getSimpleProductInfos() {
-        return productRepository.findProductsWithStoreAndProductBookmarksAndProductReviews().stream()
-                .map(product ->
-                        GetSimpleProductInfosResponseDto.from(
-                                product,
-                                product.getStore().getName(),
-                                product.getProductBookmarks().size(),
-                                product.getProductReviews().size(),
-                                false
-                        )
-                )
-                .collect(Collectors.toList());
-    }
 
-    // 인증된 사용자의 제품 목록 가져오기
-    public List<GetSimpleProductInfosResponseDto> getSimpleProductInfosWithAuthMember(List<ProductBookmark> productBookmarks){
+    // 모든 사용자에 대한 제품 목록 조회
+    @Transactional
+    public Page<GetSimpleProductInfosResponseDto> getSimpleProductInfos(String keyword, Pageable pageable) {
 
-        List<GetSimpleProductInfosResponseDto> simpleProductInfos = new ArrayList<>();
-        List<Product> foundProducts = productRepository.findProductsWithStoreAndProductBookmarksAndProductReviews();
-
-        for(Product product : foundProducts) {
-
-            boolean isBookmarked = false;
-
-            for(ProductBookmark productBookmark : productBookmarks) {
-                if(productBookmark.getProduct().getId().equals(product.getId())) {
-                    isBookmarked = true;
-                    simpleProductInfos.add(
-                            GetSimpleProductInfosResponseDto.from(
-                                    product,
-                                    product.getStore().getName(),
-                                    product.getProductBookmarks().size(),
-                                    product.getProductReviews().size(),
-                                    isBookmarked
-                            )
-                    );
-                    break;
-                }
-            }
-
-            if(!isBookmarked) {
-                simpleProductInfos.add(
-                        GetSimpleProductInfosResponseDto.from(
-                                product,
-                                product.getStore().getName(),
-                                product.getProductBookmarks().size(),
-                                product.getProductReviews().size(),
-                                isBookmarked
-                        )
-                );
-            }
+        if (StringUtils.hasText(keyword)){
+            return productRepository.findProductsByNameContainingIgnoreCase(keyword,pageable)
+                    .map(product -> GetSimpleProductInfosResponseDto.from(product,false));
         }
 
-        return simpleProductInfos;
+        return productRepository.findAll(pageable)
+                .map(product -> GetSimpleProductInfosResponseDto.from(product,false));
     }
 
-    // 제품 상세목록 가져오기
+    // 인증된 사용자에 대한 제품 목록 조회
+    @Transactional
+    public Page<GetSimpleProductInfosResponseDto> getSimpleProductInfosWithAuthMember(String keyword,List<ProductBookmark> productBookmarks, Pageable pageable){
+
+        List<GetSimpleProductInfosResponseDto> simpleProductInfos = new ArrayList<>();
+
+        if(StringUtils.hasText(keyword)){
+            return checkBookmarkedProduct(
+                    productRepository.findProductsByNameContainingIgnoreCase(keyword,pageable).getContent(),
+                    productBookmarks,
+                    pageable
+            );
+        }
+        return checkBookmarkedProduct(productRepository.findAll(pageable).getContent(),productBookmarks,pageable);
+    }
+
+    // 제품 상세정보 조회
     public GetProductInfoResponseDto getProductInfo(Long productId){
         Product foundProduct = getProduct(productId);
-        Store store = foundProduct.getStore();
-        return GetProductInfoResponseDto.from(foundProduct, store.getName(), store.getWebUrl());
+        return GetProductInfoResponseDto.from(foundProduct);
     }
 
     public Product getProduct(Long productId) {
         return productRepository.findProductById(productId)
                 .orElseThrow(ProductNotFoundException::new);
+    }
+
+    private Page<GetSimpleProductInfosResponseDto> checkBookmarkedProduct(List<Product> products, List<ProductBookmark> productBookmarks, Pageable pageable){
+        List<GetSimpleProductInfosResponseDto> simpleProducts = new ArrayList<>();
+
+        for (Product product: products) {
+            boolean isBookmarked =false;
+
+            for (ProductBookmark productBookmark: productBookmarks){
+                if(productBookmark.getProduct().getId().equals(product.getId())){
+                    isBookmarked =true;
+                    simpleProducts.add(GetSimpleProductInfosResponseDto.from(product,isBookmarked));
+                    productBookmarks.remove(productBookmark);
+                    break;
+                }
+            }
+            if(!isBookmarked){
+                simpleProducts.add(GetSimpleProductInfosResponseDto.from(product,isBookmarked));
+            }
+        }
+        return new PageImpl<>(
+                simpleProducts,
+                pageable,
+                simpleProducts.size()
+        );
     }
 }
