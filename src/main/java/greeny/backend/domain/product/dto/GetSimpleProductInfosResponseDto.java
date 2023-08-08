@@ -16,19 +16,16 @@ public class GetSimpleProductInfosResponseDto {
     private String imageUrl;
     private String storeName;
     private Integer price;
-    private Integer bookmarks;
-    private Integer reviews;
-    private Boolean isBookmarked;
+    private boolean isBookmarked;
 
-    public static GetSimpleProductInfosResponseDto from (Product product, String storeName, int bookmarks, int reviews, boolean isBookmarked){
+
+    public static GetSimpleProductInfosResponseDto from (Product product,boolean isBookmarked){
         return GetSimpleProductInfosResponseDto.builder()
                 .id(product.getId())
                 .productName(product.getName())
                 .imageUrl(product.getImageUrl())
-                .storeName(storeName)
+                .storeName(product.getStore().getName())
                 .price(product.getPrice())
-                .bookmarks(bookmarks)
-                .reviews(reviews)
                 .isBookmarked(isBookmarked)
                 .build();
     }
