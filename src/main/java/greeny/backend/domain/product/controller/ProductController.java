@@ -8,16 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
 import static greeny.backend.response.Response.success;
-import static greeny.backend.response.SuccessMessage.SUCCESS_TO_GET_PRODUCT_INFO;
-import static greeny.backend.response.SuccessMessage.SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS;
+import static greeny.backend.response.SuccessMessage.*;
 import static org.springframework.http.HttpStatus.OK;
-
 
 @Slf4j
 @RestController
@@ -34,22 +31,26 @@ public class ProductController {
     @Operation(summary = "Get simple product infos API", description = "please get product store infos.")
     @ResponseStatus(OK)
     @GetMapping("/simple")
-    public Response getSimpleProductInfos(){
-        return success(SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS, productService.getSimpleProductInfos());
+    public Response getSimpleProductInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable){
+        return success(SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS, productService.getSimpleProductInfos(keyword, pageable));
     }
 
     // 인증된 사용자의 제품 목록 조회 API
     @Operation(summary = "Get simple product infos with auth member API", description = "please get product store infos.")
     @ResponseStatus(OK)
     @GetMapping("/auth/simple")
-    public Response getSimpleProductInfosWithAuthMember(){
+    public Response getSimpleProductInfosWithAuthMember(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable){
         return success(
                 SUCCESS_TO_GET_SIMPLE_PRODUCT_INFOS,
-                productService.getSimpleProductInfosWithAuthMember(bookmarkService.getProductBookmarks(memberService.getCurrentMember()))
+                productService.getSimpleProductInfosWithAuthMember(
+                        keyword,
+                        bookmarkService.getProductBookmarks(memberService.getCurrentMember()),
+                        pageable
+                )
         );
     }
 
-    // 제품 상세 목록 조회 PI
+    // 제품 상세 조회 API
     @Operation(summary = "Get product info API", description = "put product id what you want to see.")
     @ResponseStatus(OK)
     @GetMapping()
