@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 
@@ -45,4 +46,9 @@ public class Product extends AuditEntity {
     private int deliveryFee;
     @Column(nullable = false)
     private int price;
+
+    @Formula("(select count(*) from product_bookmark pb where pb.product_id = product_id)")
+    private int bookmarks;
+    @Formula("(select count(*) from product_review pr where pr.product_id = product_id)")
+    private int reviews;
 }
