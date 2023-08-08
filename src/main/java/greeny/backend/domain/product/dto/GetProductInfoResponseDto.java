@@ -19,13 +19,13 @@ public class GetProductInfoResponseDto {
     private Integer price;
     private Integer deliveryFee;
 
-    public static GetProductInfoResponseDto from(Product product, String storeName, String webUrl){
+    public static GetProductInfoResponseDto from(Product product){
         return GetProductInfoResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .imageUrl(product.getImageUrl())
-                .storeName(storeName)
-                .webUrl(webUrl)
+                .storeName(product.getStore().getName())
+                .webUrl(product.getStore().getWebUrl())
                 .price(product.getPrice())
                 .deliveryFee(product.getDeliveryFee())
                 .build();
