@@ -1,6 +1,7 @@
 package greeny.backend.domain.member.controller;
 
 
+import greeny.backend.domain.bookmark.service.BookmarkService;
 import greeny.backend.domain.community.service.PostService;
 import greeny.backend.domain.member.dto.member.CancelBookmarkRequestDto;
 import greeny.backend.domain.member.dto.member.EditMemberInfoRequestDto;
@@ -31,6 +32,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final ReviewService reviewService;
+    private final BookmarkService bookmarkService;
 
     // 사용자 비밀번호 변경 API
     @Operation(summary = "Edit member info API", description = "put info what you want to change")
@@ -83,4 +85,21 @@ public class MemberController {
     public Response getMyReviewList(String type,@ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_GET_REVIEW_LIST, reviewService.getMemberReviewList(type,pageable, memberService.getCurrentMember()));
     }
+
+    //사용자 찜한 스토어 목록 가져오기 API
+    @Operation(summary = "Get my store-bookmark list api")
+    @ResponseStatus(OK)
+    @GetMapping("/simple/store-bookmark")
+    public Response getSimpleStoreBookmarkInfos(@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_GET_STORE_BOOKMARK , bookmarkService.getSimpleStoreBookmarksInfo(pageable , memberService.getCurrentMember()));
+    }
+
+    //사용자 찜한 제품 목록 가져오기 API
+    @Operation(summary = "Get my product-bookmark list api")
+    @ResponseStatus(OK)
+    @GetMapping("/simple/product-bookmark")
+    public Response getSimpleProductBookmarkInfos(@ParameterObject Pageable pageable) {
+        return Response.success(SUCCESS_TO_GET_PRODUCT_BOOKMARK, bookmarkService.getSimpleProductBookmarksInfo(pageable , memberService.getCurrentMember()));
+    }
+
 }

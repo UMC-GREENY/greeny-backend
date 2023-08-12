@@ -5,17 +5,29 @@ import greeny.backend.domain.bookmark.entity.StoreBookmark;
 import greeny.backend.domain.bookmark.repository.ProductBookmarkRepository;
 import greeny.backend.domain.bookmark.repository.StoreBookmarkRepository;
 import greeny.backend.domain.member.entity.Member;
+import greeny.backend.domain.product.dto.GetSimpleProductInfosResponseDto;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.service.ProductService;
+import greeny.backend.domain.review.entity.ProductReview;
+import greeny.backend.domain.review.entity.StoreReview;
+import greeny.backend.domain.store.dto.GetSimpleStoreInfosResponseDto;
 import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.service.StoreService;
+import greeny.backend.exception.situation.ProductNotFound;
+import greeny.backend.exception.situation.StoreNotFound;
 import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toProductReviewDTO;
+import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toStoreReviewDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +45,21 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
 
     public List<ProductBookmark> getProductBookmarks(Member liker){
         return productBookmarkRepository.findProductBookmarksByLiker(liker);
+    }
+
+    //찜한 스토어 목록 불러오기
+    @Transactional(readOnly = true)
+    public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreBookmarksInfo(Pageable pageable , Member liker){
+            return storeBookmarkRepository.findStoreBookmarksByLiker(pageable , liker)
+                    .map(storeBookmark -> GetSimpleStoreInfosResponseDto.from(storeBookmark.getStore() , true));
+    }
+
+    //찜한 제품 목록 불러오기
+    @Transactional(readOnly = true)
+    public Page<GetSimpleProductInfosResponseDto> getSimpleProductBookmarksInfo(Pageable pageable  , Member liker){
+        
+        return productBookmarkRepository.findProductBookmarksByLiker(pageable, liker)
+                .map(productBookmark -> GetSimpleProductInfosResponseDto.from(productBookmark.getProduct(),true));
     }
 
     public void toggleStoreBookmark(String type, Long id, Member liker) {  // 타입에 따라 찜하기 or 취소
