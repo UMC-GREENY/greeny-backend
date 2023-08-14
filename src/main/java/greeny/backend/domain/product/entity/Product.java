@@ -46,6 +46,7 @@ public class Product extends AuditEntity {
     private int deliveryFee;
     @Column(nullable = false)
     private int price;
+    private String contentUrl;
 
     @Formula("(select count(*) from product_bookmark pb where pb.product_id = product_id)")
     private int bookmarks;

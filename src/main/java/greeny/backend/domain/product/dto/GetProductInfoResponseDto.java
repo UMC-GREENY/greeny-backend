@@ -18,6 +18,7 @@ public class GetProductInfoResponseDto {
     private String webUrl;
     private Integer price;
     private Integer deliveryFee;
+    private String contentUrl;
 
     public static GetProductInfoResponseDto from(Product product){
         return GetProductInfoResponseDto.builder()
@@ -28,6 +29,7 @@ public class GetProductInfoResponseDto {
                 .webUrl(product.getStore().getWebUrl())
                 .price(product.getPrice())
                 .deliveryFee(product.getDeliveryFee())
+                .contentUrl(product.getContentUrl())
                 .build();
     }
 }
