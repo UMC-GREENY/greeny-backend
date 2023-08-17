@@ -85,8 +85,16 @@ public class AuthService {
         if(memberRepository.existsByEmail(email)) {  // 소셜 로그인 이용이 최초가 아닌 경우
 
             Long validatedMemberId = validateSignUpInfoWithSocial(email);  // DB에 이미 존재하는 이메일일 때, 일반 로그인 이메일인지 검증
-            TokenResponseDto authorizedToken = authorize(email, validatedMemberId.toString());  // 토큰 발행
+            Long foundMemberId = getMember(email).getId();
 
+            if(!memberAgreementRepository.existsByMemberId(foundMemberId)) {
+
+                memberAgreementRepository.save(
+                        toMemberAgreement(foundMemberId, false, false)
+                );
+            }
+
+            TokenResponseDto authorizedToken = authorize(email, validatedMemberId.toString());  // 토큰 발행
             return TokenResponseDto.from(authorizedToken.getAccessToken(), authorizedToken.getRefreshToken());
         }
 
@@ -160,7 +168,7 @@ public class AuthService {
 
     private void saveMemberAgreement(Long memberId, AgreementRequestDto agreementRequestDto) {  // 일반 회원가입 or 최초 소셜 로그인 시 동의 항목 여부 DB에 저장
         memberAgreementRepository.save(
-                agreementRequestDto.toMemberAgreement(
+                toMemberAgreement(
                         memberId,
                         agreementRequestDto.getPersonalInfo(),
                         agreementRequestDto.getThirdParty()
@@ -196,6 +204,14 @@ public class AuthService {
                 .name(name)
                 .phone(phone)
                 .birth(birth)
+                .build();
+    }
+
+    private MemberAgreement toMemberAgreement(Long memberId, boolean personalInfo, boolean thirdParty) {  // MemberAgreement 객체로 변환
+        return MemberAgreement.builder()
+                .memberId(memberId)
+                .personalInfo(personalInfo)
+                .thirdParty(thirdParty)
                 .build();
     }
 
