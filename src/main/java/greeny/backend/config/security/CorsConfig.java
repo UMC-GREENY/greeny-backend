@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://www.greeny.r-e.kr");  // Server base url
+        config.addAllowedOrigin("https://www.greeny.r-e.kr");  // Server base url
         config.addAllowedOrigin("http://localhost:3000");  // 프론트 개발 환경 (3000번 포트)
         config.addAllowedOrigin("https://www.greeny.n-e.kr");  // 프론트 base url
         config.addAllowedHeader("*");
