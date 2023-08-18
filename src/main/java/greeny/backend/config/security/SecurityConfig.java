@@ -42,6 +42,8 @@ public class SecurityConfig {
             "/api/products"
     };
     private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {  // Review white list
+            "/api/reviews/all",
+            "/api/reviews/simple",
             "/api/reviews"
     };
     private static final String[] AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD = {  // Community white list

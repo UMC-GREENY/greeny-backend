@@ -41,11 +41,11 @@ public class ReviewController {
                                 @RequestParam Long id,
                                 @Valid @RequestPart(name="body") WriteReviewRequestDto writeReviewRequestDto,
                                 @RequestPart(name="file", required = false)List<MultipartFile> multipartFiles) {
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             reviewService.writeStoreReview(id,writeReviewRequestDto,multipartFiles,memberService.getCurrentMember());
             return success(SUCCESS_TO_WRITE_STORE_REVIEW);
         }
-        else if(type.equals("p")) {
+        else if(type.equals("product")) {
             reviewService.writeProductReview(id,writeReviewRequestDto,multipartFiles,memberService.getCurrentMember());
             return success(SUCCESS_TO_WRITE_PRODUCT_REVIEW);
         }
@@ -72,30 +72,30 @@ public class ReviewController {
         return success(SUCCESS_TO_GET_REVIEW_LIST,reviewService.getSimpleReviewInfos(type,id,pageable));
     }
 
-
     /* 상세리뷰 불러오기 : 인증X API */
     @Operation(summary = "Get review info API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping()
     public Response getReviewInfo(@RequestParam String type,
                                     @RequestParam Long id) {
-        if(type.equals("s")){
+        if(type.equals("store")){
             return success(SUCCESS_TO_GET_STORE_REVIEW,reviewService.getStoreReviewInfo(id));
-        }else if(type.equals("p")){
+        }else if(type.equals("product")){
             return success(SUCCESS_TO_GET_PRODUCT_REVIEW,reviewService.getProductReviewInfo(id));
         }else {
             throw new TypeDoesntExistsException();
         }
     }
+
     /* 상세리뷰 불러오기 : 인증O API */
     @Operation(summary = "Get review info with Auth API", description="put review type and reviewId you want to get")
     @ResponseStatus(OK)
     @GetMapping("/auth")
     public Response getReviewInfoWithAuth(@RequestParam String type,
                                           @RequestParam Long id) {
-        if(type.equals("s")){
+        if(type.equals("store")){
             return success(SUCCESS_TO_GET_STORE_REVIEW,reviewService.getStoreReviewInfoWithAuth(id,memberService.getCurrentMember()));
-        }else if(type.equals("p")){
+        }else if(type.equals("product")){
             return success(SUCCESS_TO_GET_PRODUCT_REVIEW,reviewService.getProductReviewInfoWithAuth(id,memberService.getCurrentMember()));
         }else {
             throw new TypeDoesntExistsException();
@@ -109,11 +109,11 @@ public class ReviewController {
     public Response deleteReview(@RequestParam String type,
                                  @RequestParam Long id) {
         Member currentMember = memberService.getCurrentMember();
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             reviewService.deleteStoreReview(id,currentMember);
             return success(SUCCESS_TO_DELETE_STORE_REVIEW);
         }
-        else if(type.equals("p")) {
+        else if(type.equals("product")) {
             reviewService.deleteProductReview(id,currentMember);
             return success(SUCCESS_TO_DELETE_PRODUCT_REVIEW);
         } else throw new TypeDoesntExistsException();

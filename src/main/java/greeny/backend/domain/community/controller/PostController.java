@@ -48,7 +48,6 @@ public class PostController {
     @GetMapping("/search")
     public Response searchSimplePostInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
         return Response.success(SUCCESS_TO_SEARCH_POST_LIST, postService.searchSimplePostInfos(keyword, pageable));
-
     }
 
     @Operation(summary = "Get post info API", description = "put post id what you want to see.")
@@ -83,5 +82,4 @@ public class PostController {
         postService.editPostInfo(postId, editPostInfoRequestDto, multipartFiles, memberService.getCurrentMember());
         return Response.success(SUCCESS_TO_EDIT_POST);
     }
-    
 }

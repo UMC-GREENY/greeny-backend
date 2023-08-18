@@ -68,12 +68,12 @@ public class ReviewService {
     /* 내가 쓴 리뷰 불러오기 */
     @Transactional(readOnly = true)
     public Page<GetReviewListResponseDto> getMemberReviewList(String type, Pageable pageable, Member member) {
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             Page<StoreReview> pages = storeReviewRepository.findAllByReviewer(pageable,member);
-            return pages.map(review -> toStoreReviewDTO(review));
-        } else if(type.equals("p")) {
+            return pages.map(GetReviewListResponseDto::toStoreReviewDTO);
+        } else if(type.equals("product")) {
             Page<ProductReview> pages = productReviewRepository.findAllByReviewer(pageable,member);
-            return pages.map(review -> toProductReviewDTO(review));
+            return pages.map(GetReviewListResponseDto::toProductReviewDTO);
         } else throw new TypeDoesntExistsException();
     }
 
@@ -82,38 +82,38 @@ public class ReviewService {
     @Transactional(readOnly=true)
     public Page<GetReviewListResponseDto> searchSimpleReviewInfos(String keyword, String type, Pageable pageable) {
         if(!StringUtils.hasText(keyword)) { return getAllSimpleReviewInfos(type, pageable);    }
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             Page<StoreReview> pages =storeReviewRepository.findAllByContentContainingIgnoreCase(keyword,pageable);
-            return pages.map(review -> toStoreReviewDTO(review));
-        } else if(type.equals("p")) {
+            return pages.map(GetReviewListResponseDto::toStoreReviewDTO);
+        } else if(type.equals("product")) {
             Page<ProductReview> pages =productReviewRepository.findAllByContentContainingIgnoreCase(keyword,pageable);
-            return pages.map(review -> toProductReviewDTO(review));
+            return pages.map(GetReviewListResponseDto::toProductReviewDTO);
         } else throw new TypeDoesntExistsException();
     }
 
     /* 스토어 OR 제품 전체 review list 불러오기 */
-    @Transactional(readOnly = true)
     private Page<GetReviewListResponseDto> getAllSimpleReviewInfos(String type, Pageable pageable) {
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             Page<StoreReview> pages = storeReviewRepository.findAll(pageable);
-            return pages.map(review -> toStoreReviewDTO(review));
-        } else if(type.equals("p")) {
+            return pages.map(GetReviewListResponseDto::toStoreReviewDTO);
+        } else if(type.equals("product")) {
             Page<ProductReview> pages = productReviewRepository.findAll(pageable);
-            return pages.map(review -> toProductReviewDTO(review));
-        } else throw new TypeDoesntExistsException();
+            return pages.map(GetReviewListResponseDto::toProductReviewDTO);
+        } else
+            throw new TypeDoesntExistsException();
     }
 
     /* 스토어&제품 ID로 review list 불러오기 */
     @Transactional(readOnly = true)
     public Page<GetReviewListResponseDto> getSimpleReviewInfos(String type,Long id,Pageable pageable) {
-        if(type.equals("s")) {
+        if(type.equals("store")) {
             Store store = storeRepository.findById(id).orElseThrow(StoreNotFound::new);
             Page<StoreReview> pages = storeReviewRepository.findStoreReviewsByStore(pageable, store);
-            return pages.map(review -> toStoreReviewDTO(review));
-        } else if(type.equals("p")) {
+            return pages.map(GetReviewListResponseDto::toStoreReviewDTO);
+        } else if(type.equals("product")) {
             Product product = productRepository.findById(id).orElseThrow(ProductNotFound::new);
             Page<ProductReview> pages = productReviewRepository.findProductReviewsByProduct(pageable, product);
-            return pages.map(review -> toProductReviewDTO(review));
+            return pages.map(GetReviewListResponseDto::toProductReviewDTO);
         } else throw new TypeDoesntExistsException();
     }
 
@@ -157,8 +157,6 @@ public class ReviewService {
                 (productReview.getReviewer().getEmail(),productReview.getCreatedAt(),productReview.getStar(),
                         productReview.getContent(),urls,isWriter);
     }
-
-
 
     /* 리뷰 삭제 */
     @Transactional
@@ -245,6 +243,4 @@ public class ReviewService {
         }
         return urls;
     }
-
-
 }
