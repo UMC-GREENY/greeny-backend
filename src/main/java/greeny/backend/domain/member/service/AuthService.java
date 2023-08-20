@@ -72,6 +72,10 @@ public class AuthService {
         String email = loginRequestDto.getEmail();
         Long foundMemberId = getMember(email).getId();
 
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(), getMemberGeneral(foundMemberId).getPassword())) {
+            throw new LoginFailureException();
+        }
+
         MemberGeneral foundMemberGeneral = getMemberGeneral(foundMemberId);
         boolean foundIsAuto = foundMemberGeneral.isAuto();
 
@@ -150,7 +154,7 @@ public class AuthService {
 
     private void saveGeneralMember(SignUpRequestDto signUpRequestDto) {  // 일반 회원 DB에 저장
         Long savedMemberId = memberRepository.save(toMember(signUpRequestDto.getEmail())).getId();
-        memberGeneralRepository.save(toMemberGeneral(savedMemberId, signUpRequestDto.getPassword(), passwordEncoder));
+        memberGeneralRepository.save(toMemberGeneral(savedMemberId, signUpRequestDto.getPassword()));
         memberProfileRepository.save(
                 toMemberProfile(
                         savedMemberId,
@@ -183,7 +187,7 @@ public class AuthService {
                 .build();
     }
 
-    private MemberGeneral toMemberGeneral(Long memberId, String password, PasswordEncoder passwordEncoder) {  // MemberGeneral 객체로 변환
+    private MemberGeneral toMemberGeneral(Long memberId, String password) {  // MemberGeneral 객체로 변환
         return MemberGeneral.builder()
                 .memberId(memberId)
                 .password(passwordEncoder.encode(password))
