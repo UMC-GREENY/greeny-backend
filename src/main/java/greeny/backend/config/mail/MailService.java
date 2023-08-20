@@ -1,6 +1,6 @@
 package greeny.backend.config.mail;
 
-import greeny.backend.domain.member.dto.sign.general.GetEmailAuthTokenResponseDto;
+import greeny.backend.domain.member.dto.sign.general.GetEmailAuthInfoResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -25,7 +25,7 @@ public class MailService {
     private String username;
 
     // 이메일 전송
-    public GetEmailAuthTokenResponseDto sendSimpleMessage(String to, String authorizationUrl) throws MessagingException, UnsupportedEncodingException {
+    public GetEmailAuthInfoResponseDto sendSimpleMessage(String to, String authorizationUrl) throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage message = createMessage(to, authorizationUrl);
 
@@ -36,7 +36,7 @@ public class MailService {
             throw new IllegalArgumentException();
         }
 
-        return new GetEmailAuthTokenResponseDto(token);
+        return new GetEmailAuthInfoResponseDto(to, token);
     }
 
     // 랜덤한 토큰 생성
