@@ -9,6 +9,7 @@ import greeny.backend.exception.situation.PostNotFoundException;
 import greeny.backend.exception.situation.SelfLikeNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,6 +22,8 @@ public class PostLikeService {
     private final PostRepository postRepository;
 
     // 좋아요 or 취소
+
+    @Transactional
     public void togglePostLike(Long postId, Member liker) {
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndLikerId(postId, liker.getId());
         // 이미 좋아요 눌렀는지 확인
