@@ -11,6 +11,9 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Builder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"post_id", "liker_id"})  // 동시성 문제로 인한 DB 중복 저장 방지
+})
 public class PostLike extends AuditEntity {
 
     @Id
