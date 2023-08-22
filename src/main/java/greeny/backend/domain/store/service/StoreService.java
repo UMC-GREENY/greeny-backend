@@ -67,7 +67,7 @@ public class StoreService {
     }
 
     // 인증된 사용자에 대한 스토어 목록 조회
-    public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfoWithAuthMember(String keyword, List<StoreBookmark> storeBookmarks, Pageable pageable) {
+    public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfoWithAuthMember(String keyword, String location, String category, List<StoreBookmark> storeBookmarks, Pageable pageable) {
 
         if(StringUtils.hasText(keyword)) {
             return checkBookmarkedStore(
@@ -77,7 +77,67 @@ public class StoreService {
             );
         }
 
-        return checkBookmarkedStore(storeRepository.findAll(pageable).getContent(), storeBookmarks, pageable);
+        if (StringUtils.hasText(keyword) && !StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithKeyword(keyword, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(!StringUtils.hasText(keyword) && StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithLocation(location, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(!StringUtils.hasText(keyword) && !StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithCategory(category, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(StringUtils.hasText(keyword) && StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithKeywordAndLocation(keyword, location, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(StringUtils.hasText(keyword) && !StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithKeywordAndCategory(keyword, category, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(!StringUtils.hasText(keyword) && StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithLocationAndCategory(location, category, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        if(StringUtils.hasText(keyword) && StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return checkBookmarkedStore(
+                    getStoresWithKeywordAndLocationAndCategory(keyword, location, category, pageable).getContent(),
+                    storeBookmarks,
+                    pageable
+            );
+        }
+
+        return checkBookmarkedStore(
+                getStores(pageable).getContent(),
+                storeBookmarks,
+                pageable
+        );
     }
 
     public GetStoreInfoResponseDto getStoreInfo(Long storeId) {  // Store 상세 정보 가져오기

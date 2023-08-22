@@ -54,6 +54,8 @@ public class StoreController {
                 SUCCESS_TO_GET_SIMPLE_STORE_INFOS,
                 storeService.getSimpleStoreInfoWithAuthMember(
                         keyword,
+                        location,
+                        category,
                         bookmarkService.getStoreBookmarks(memberService.getCurrentMember()),
                         pageable
                 )
