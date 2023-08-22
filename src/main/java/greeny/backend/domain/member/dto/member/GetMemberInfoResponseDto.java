@@ -30,8 +30,9 @@ public class GetMemberInfoResponseDto {
                 .build();
     }
 
-    public static GetMemberInfoResponseDto toSocialMemberDto(String loginType) {
+    public static GetMemberInfoResponseDto toSocialMemberDto(String email, String loginType) {
         return GetMemberInfoResponseDto.builder()
+                .email(email)
                 .loginType(loginType)
                 .build();
     }

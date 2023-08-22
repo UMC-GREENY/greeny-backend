@@ -54,7 +54,7 @@ public class MemberService {
             );
         }
 
-        return GetMemberInfoResponseDto.toSocialMemberDto(getMemberSocial(currentMemberId).getProvider().getName());
+        return GetMemberInfoResponseDto.toSocialMemberDto(currentMember.getEmail(), getMemberSocial(currentMemberId).getProvider().getName());
     }
 
     public void deleteMember() {
