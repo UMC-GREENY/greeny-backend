@@ -39,6 +39,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {  // Store or Product white list
             "/api/stores/simple",
             "/api/products/simple",
+            "/api/stores",
             "/api/products"
     };
     private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {  // Review white list
