@@ -25,14 +25,44 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
 
-    public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos(String keyword, Pageable pageable) {  // 모든 사용자에 대한 스토어 목록 조회
+    public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos(String keyword, String location, String category, Pageable pageable) {  // 모든 사용자에 대한 스토어 목록 조회
 
-        if (StringUtils.hasText(keyword)) {  // 키워드가 존재할 경우
-            return storeRepository.findStoresByNameContainingIgnoreCase(keyword, pageable)
+        if (StringUtils.hasText(keyword) && !StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return getStoresWithKeyword(keyword, pageable)
                     .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
         }
 
-        return storeRepository.findAll(pageable)
+        if(!StringUtils.hasText(keyword) && StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return getStoresWithLocation(location, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        if(!StringUtils.hasText(keyword) && !StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return getStoresWithCategory(category, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        if(StringUtils.hasText(keyword) && StringUtils.hasText(location) && !StringUtils.hasText(category)) {
+            return getStoresWithKeywordAndLocation(keyword, location, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        if(StringUtils.hasText(keyword) && !StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return getStoresWithKeywordAndCategory(keyword, category, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        if(!StringUtils.hasText(keyword) && StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return getStoresWithLocationAndCategory(location, category, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        if(StringUtils.hasText(keyword) && StringUtils.hasText(location) && StringUtils.hasText(category)) {
+            return getStoresWithKeywordAndLocationAndCategory(keyword, location, category, pageable)
+                    .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
+        }
+
+        return getStores(pageable)
                 .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
     }
 
@@ -57,6 +87,38 @@ public class StoreService {
     public Store getStore(Long storeId) {  // Id 값을 통해 Store 객체 가져오기
         return storeRepository.findById(storeId)
                 .orElseThrow(StoreNotFoundException::new);
+    }
+
+    private Page<Store> getStoresWithKeyword(String keyword, Pageable pageable) {
+        return storeRepository.findStoresByNameContainingIgnoreCase(keyword, pageable);
+    }
+
+    private Page<Store> getStoresWithLocation(String location, Pageable pageable) {
+        return storeRepository.findStoresByLocationContainingIgnoreCase(location, pageable);
+    }
+
+    private Page<Store> getStoresWithCategory(String category, Pageable pageable) {
+        return storeRepository.findStoresByCategoryContainingIgnoreCase(category, pageable);
+    }
+
+    private Page<Store> getStoresWithKeywordAndLocation(String keyword, String location, Pageable pageable) {
+        return storeRepository.findStoresByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(keyword, location, pageable);
+    }
+
+    private Page<Store> getStoresWithKeywordAndCategory(String keyword, String category, Pageable pageable) {
+        return storeRepository.findStoresByNameContainingIgnoreCaseAndCategoryContainingIgnoreCase(keyword, category, pageable);
+    }
+
+    private Page<Store> getStoresWithLocationAndCategory(String location, String category, Pageable pageable) {
+        return storeRepository.findStoresByLocationContainingIgnoreCaseAndCategoryContainingIgnoreCase(location, category, pageable);
+    }
+
+    private Page<Store> getStoresWithKeywordAndLocationAndCategory(String keyword, String location, String category, Pageable pageable) {
+        return storeRepository.findStoresByNameContainingIgnoreCaseAndLocationContainingIgnoreCaseAndCategoryContainingIgnoreCase(keyword, location, category, pageable);
+    }
+
+    private Page<Store> getStores(Pageable pageable) {
+        return storeRepository.findAll(pageable);
     }
 
     // 페이지네이션으로 불러온 스토어 목록과 인증된 사용자의 찜한 스토어 목록을 비교하여 찜 표시

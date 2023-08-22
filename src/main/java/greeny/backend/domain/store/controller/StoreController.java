@@ -31,15 +31,25 @@ public class StoreController {
     @Operation(summary = "Get simple store infos API", description = "put keyword if you want to search and page info what you want to see.")
     @ResponseStatus(OK)
     @GetMapping("/simple")
-    public Response getSimpleStoreInfos(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
-        return success(SUCCESS_TO_GET_SIMPLE_STORE_INFOS, storeService.getSimpleStoreInfos(keyword, pageable));
+    public Response getSimpleStoreInfos(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String category,
+            @ParameterObject Pageable pageable
+    ) {
+        return success(SUCCESS_TO_GET_SIMPLE_STORE_INFOS, storeService.getSimpleStoreInfos(keyword, location, category, pageable));
     }
 
     // 인증된 사용자의 스토어 목록 불러오기 API (new, best, all, search, sort by bookmarks & reviews)
     @Operation(summary = "Get simple store infos with auth member API", description = "put keyword if you want to search and page info what you want to see.")
     @ResponseStatus(OK)
     @GetMapping("/auth/simple")
-    public Response getSimpleStoreInfosWithAuthMember(@RequestParam(required = false) String keyword, @ParameterObject Pageable pageable) {
+    public Response getSimpleStoreInfosWithAuthMember(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String category,
+            @ParameterObject Pageable pageable
+    ) {
         return success(
                 SUCCESS_TO_GET_SIMPLE_STORE_INFOS,
                 storeService.getSimpleStoreInfoWithAuthMember(
