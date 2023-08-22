@@ -5,8 +5,8 @@ spring:
     username: greeny
     password: 1234
 
-  flyway:
-    enabled: false
+#  flyway:
+#    enabled: false
 
 #  flyway:
 #    locations: classpath:/db/migration

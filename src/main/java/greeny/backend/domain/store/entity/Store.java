@@ -37,9 +37,8 @@ public class Store extends AuditEntity {
     @OneToMany(mappedBy = "store", cascade = ALL, orphanRemoval = true)
     private Set<StoreBookmark> storeBookmarks = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private String category;
     @Column(nullable = false)
     private String name;
     private String webUrl;

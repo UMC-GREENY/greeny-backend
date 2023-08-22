@@ -22,7 +22,7 @@ public class GetStoreInfoResponseDto {  // 스토어 상세 정보
     public static GetStoreInfoResponseDto from(Store store) {
         return GetStoreInfoResponseDto.builder()
                 .id(store.getId())
-                .category(store.getCategory().getName())
+                .category(store.getCategory())
                 .name(store.getName())
                 .webUrl(store.getWebUrl())
                 .imageUrl(store.getImageUrl())

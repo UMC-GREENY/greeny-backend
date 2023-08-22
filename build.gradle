@@ -40,8 +40,8 @@ dependencies {
 	implementation 'io.awspring.cloud:spring-cloud-aws-core:2.4.4'
 
 	// Flyway
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
+//	implementation 'org.flywaydb:flyway-core'
+//	implementation 'org.flywaydb:flyway-mysql'
 
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
