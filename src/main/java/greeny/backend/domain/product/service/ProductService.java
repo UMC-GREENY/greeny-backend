@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,15 @@ public class ProductService {
     // 제품 상세정보 조회
     public GetProductInfoResponseDto getProductInfo(Long productId){
         Product foundProduct = getProduct(productId);
-        return GetProductInfoResponseDto.from(foundProduct);
+        return GetProductInfoResponseDto.from(foundProduct, false);
+    }
+
+    public GetProductInfoResponseDto getProductInfoWithAuthMember(Long productId, Optional<ProductBookmark> optionalProductBookmark) {
+
+        if(optionalProductBookmark.isPresent())
+            return GetProductInfoResponseDto.from(getProduct(productId), true);
+
+        return GetProductInfoResponseDto.from(getProduct(productId), false);
     }
 
     public Product getProduct(Long productId) {

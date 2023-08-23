@@ -57,4 +57,18 @@ public class ProductController {
     public Response getProductInfo(Long productId){
         return success(SUCCESS_TO_GET_PRODUCT_INFO, productService.getProductInfo(productId));
     }
+
+    // 인증된 사용자에 대한 제품 상세 조회 API
+    @Operation(summary = "Get product info with auth member API", description = "put product id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth")
+    public Response getProductInfoWithAuthMember(Long productId){
+        return success(
+                SUCCESS_TO_GET_PRODUCT_INFO,
+                productService.getProductInfoWithAuthMember(
+                        productId,
+                        bookmarkService.getOptionalProductBookmark(productId, memberService.getCurrentMember().getId())
+                )
+        );
+    }
 }

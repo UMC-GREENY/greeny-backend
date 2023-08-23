@@ -20,8 +20,9 @@ public class GetProductInfoResponseDto {
     private Integer deliveryFee;
     private String contentUrl;
     private String phone;
+    private Boolean isBookmarked;
 
-    public static GetProductInfoResponseDto from(Product product) {
+    public static GetProductInfoResponseDto from(Product product, boolean isBookmarked) {
         return GetProductInfoResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -32,6 +33,7 @@ public class GetProductInfoResponseDto {
                 .deliveryFee(product.getDeliveryFee())
                 .contentUrl(product.getContentUrl())
                 .phone(product.getStore().getPhone())
+                .isBookmarked(isBookmarked)
                 .build();
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,15 @@ public class StoreService {
         );
     }
     public GetStoreInfoResponseDto getStoreInfo(Long storeId) {  // Store 상세 정보 가져오기
-        return GetStoreInfoResponseDto.from(getStore(storeId));
+        return GetStoreInfoResponseDto.from(getStore(storeId), false);
+    }
+
+    public GetStoreInfoResponseDto getStoreInfoWithAuthMember(Long storeId, Optional<StoreBookmark> optionalStoreBookmark) {
+
+        if(optionalStoreBookmark.isPresent())
+            return GetStoreInfoResponseDto.from(getStore(storeId), true);
+
+        return GetStoreInfoResponseDto.from(getStore(storeId), false);
     }
 
     public Store getStore(Long storeId) {  // Id 값을 통해 Store 객체 가져오기

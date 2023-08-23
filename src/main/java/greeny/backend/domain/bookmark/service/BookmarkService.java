@@ -8,13 +8,9 @@ import greeny.backend.domain.member.entity.Member;
 import greeny.backend.domain.product.dto.GetSimpleProductInfosResponseDto;
 import greeny.backend.domain.product.entity.Product;
 import greeny.backend.domain.product.service.ProductService;
-import greeny.backend.domain.review.entity.ProductReview;
-import greeny.backend.domain.review.entity.StoreReview;
 import greeny.backend.domain.store.dto.GetSimpleStoreInfosResponseDto;
 import greeny.backend.domain.store.entity.Store;
 import greeny.backend.domain.store.service.StoreService;
-import greeny.backend.exception.situation.ProductNotFound;
-import greeny.backend.exception.situation.StoreNotFound;
 import greeny.backend.exception.situation.TypeDoesntExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
-import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toProductReviewDTO;
-import static greeny.backend.domain.review.dto.GetReviewListResponseDto.toStoreReviewDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +66,8 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
     }
 
     private void checkAndToggleStoreBookmarkBySituation(Store store, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
-        Optional<StoreBookmark> storeBookmark = storeBookmarkRepository.findByStoreIdAndLikerId(store.getId(), liker.getId());
+        Optional<StoreBookmark> storeBookmark = getOptionalStoreBookmark(store.getId(), liker.getId());
+
         if(storeBookmark.isPresent())
             storeBookmarkRepository.delete(storeBookmark.get());
         else
@@ -81,7 +75,8 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
     }
 
     private void toggleProductBookmark(Product product, Member liker) {  // 찜한 정보 DB에 저장 or 취소 시 DB 에서 삭제
-        Optional<ProductBookmark> productBookmark = productBookmarkRepository.findByProductIdAndLikerId(product.getId(), liker.getId());
+        Optional<ProductBookmark> productBookmark = getOptionalProductBookmark(product.getId(), liker.getId());
+
         if(productBookmark.isPresent())
             productBookmarkRepository.delete(productBookmark.get());
         else
@@ -100,5 +95,13 @@ public class BookmarkService {  // Controller -> Service 의존성을 유지하�
                 .product(product)
                 .liker(liker)
                 .build();
+    }
+
+    public Optional<StoreBookmark> getOptionalStoreBookmark(Long storeId, Long likerId) {
+        return storeBookmarkRepository.findByStoreIdAndLikerId(storeId, likerId);
+    }
+
+    public Optional<ProductBookmark> getOptionalProductBookmark(Long productId, Long likerId) {
+        return productBookmarkRepository.findByProductIdAndLikerId(productId, likerId);
     }
 }

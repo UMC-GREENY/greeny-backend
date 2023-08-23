@@ -69,4 +69,18 @@ public class StoreController {
     public Response getStoreInfo(Long storeId) {
         return success(SUCCESS_TO_GET_STORE_INFO, storeService.getStoreInfo(storeId));
     }
+
+    // 인증된 사용자에 대한 스토어 상세 정보 API
+    @Operation(summary = "Get store info with auth member API", description = "put store id what you want to see.")
+    @ResponseStatus(OK)
+    @GetMapping("/auth")
+    public Response getStoreInfoWithAuthMember(Long storeId) {
+        return success(
+                SUCCESS_TO_GET_STORE_INFO,
+                storeService.getStoreInfoWithAuthMember(
+                        storeId,
+                        bookmarkService.getOptionalStoreBookmark(storeId, memberService.getCurrentMember().getId())
+                )
+        );
+    }
 }
