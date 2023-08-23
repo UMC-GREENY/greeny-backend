@@ -52,7 +52,7 @@ public class StoreController {
     ) {
         return success(
                 SUCCESS_TO_GET_SIMPLE_STORE_INFOS,
-                storeService.getSimpleStoreInfoWithAuthMember(
+                storeService.getSimpleStoreInfosWithAuthMember(
                         keyword,
                         location,
                         category,
