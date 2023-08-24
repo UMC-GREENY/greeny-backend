@@ -18,6 +18,7 @@ public class GetStoreInfoResponseDto {  // 스토어 상세 정보
     private String imageUrl;
     private String location;
     private String phone;
+    private String runningTime;
     private Boolean isBookmarked;
 
     public static GetStoreInfoResponseDto from(Store store, boolean isBookmarked) {
@@ -29,6 +30,7 @@ public class GetStoreInfoResponseDto {  // 스토어 상세 정보
                 .imageUrl(store.getImageUrl())
                 .location(store.getLocation())
                 .phone(store.getPhone())
+                .runningTime(store.getRunningTime())
                 .isBookmarked(isBookmarked)
                 .build();
     }
