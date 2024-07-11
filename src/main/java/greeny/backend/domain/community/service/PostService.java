@@ -124,7 +124,7 @@ public class PostService {
     }
 
     @Transactional
-    protected void uploadPostFileList(List<MultipartFile> multipartFiles, Post post) {
+    public void uploadPostFileList(List<MultipartFile> multipartFiles, Post post) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 

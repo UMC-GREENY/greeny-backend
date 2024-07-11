@@ -32,7 +32,7 @@ public class PostLikeController {
     @ResponseStatus(OK)
     @PostMapping()
     public Response togglePostLike(Long postId) {
-        postLikeService.togglePostLike(postId, memberService.getCurrentMember());
+        postLikeService.like(postId, memberService.getCurrentMember());
         return success(SUCCESS_TO_TOGGLE_POST_LIKE);
     }
 
