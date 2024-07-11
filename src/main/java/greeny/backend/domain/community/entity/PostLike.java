@@ -22,6 +22,4 @@ public class PostLike extends AuditEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liker_id", nullable = false)
     private Member liker;
-    @Version
-    private int version;
 }
