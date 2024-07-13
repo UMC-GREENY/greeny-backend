@@ -30,14 +30,14 @@ public class PostService {
     private final S3Service s3Service;
 
     @Transactional
-    public void writePost(WritePostRequestDto writePostRequestDto, List<MultipartFile> multipartFiles, Member writer) {
+    public void writePost(WritePostRequestDto writePostRequestDto, List<MultipartFile> postFiles, Member writer) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
-        if(checkEmptyPostFiles(multipartFiles)){
+        if(checkEmptyPostFiles(postFiles)){
             save(writePostRequestDto.toEntity(writer, false));
             return;
         }
-        uploadPostFileList(multipartFiles, save(writePostRequestDto.toEntity(writer, true)));
+        uploadPostFiles(postFiles, save(writePostRequestDto.toEntity(writer, true)));
     }
 
     @Transactional(readOnly = true)
@@ -91,41 +91,37 @@ public class PostService {
 
         List<String> fileUrls = new ArrayList<>();
         for(String fileUrl : post.getFileUrls()) fileUrls.add(fileUrl);
-        postRepository.delete(post); //
+        postRepository.delete(post);
         for(String fileUrl : fileUrls) s3Service.deleteFile(fileUrl);
     }
 
     @Transactional
-    public void editPostInfo(Long postId, WritePostRequestDto editPostInfoRequestDto, List<MultipartFile> multipartFiles, Member currentMember) {
+    public void editPostInfo(Long postId, WritePostRequestDto editPostInfoRequestDto, List<MultipartFile> postFiles, Member currentMember) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
-
         Post post = postRepository.findByIdWithWriterAndPostFiles(postId).orElseThrow(PostNotFoundException::new);
-
-        if(!post.getWriter().getId().equals(currentMember.getId())) throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
-
-        //게시글의 제목과 내용 업데이트
-        post.update(editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent());
-
+        if(!post.getWriter().getId().equals(currentMember.getId()))
+            throw new MemberNotEqualsException(); // 글쓴이 본인인지 확인
         List<String> fileUrls = post.getFileUrls();
-
         post.getPostFiles().clear(); // 1. db에서 게시글의 기존 post_file을 모두 삭제
-        //파일을 첨부한 경우
-        if(multipartFiles != null){
-            // 2. s3에 파일을 저장하고, db에도 post_file을 저장
-            uploadPostFileList(multipartFiles, post);
+        if (checkEmptyPostFiles(postFiles))
+            update(post, editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent(), false);
+        if (!checkEmptyPostFiles(postFiles)) {
+            update(post, editPostInfoRequestDto.getTitle(), editPostInfoRequestDto.getContent(), true);
+            uploadPostFiles(postFiles, post);
         }
         // 3. 1번에서 db에서 삭제했던 post_file에 해당하는 s3의 파일을 모두 삭제
         //    (s3는 트랜잭션 롤백이 안되기 때문에 삭제는 무조건 마지막에 해야함)
-        for(String fileUrl : fileUrls) s3Service.deleteFile(fileUrl);
+        for(String fileUrl : fileUrls)
+            s3Service.deleteFile(fileUrl);
     }
 
-    public void uploadPostFileList(List<MultipartFile> multipartFiles, Post post) {
+    public void uploadPostFiles(List<MultipartFile> postFiles, Post post) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
 
         // s3에 첨부파일을 저장하고, mysql에도 post_file을 저장
-        for(MultipartFile multipartFile : multipartFiles){
+        for(MultipartFile multipartFile : postFiles){
             PostFile postFile = PostFile.builder()
                     .fileUrl(s3Service.uploadFile(multipartFile))
                     .post(post).build();
@@ -145,5 +141,9 @@ public class PostService {
 
     private Post save(Post post) {
         return postRepository.save(post);
+    }
+
+    public void update(Post post, String updatedTitle, String updatedContent, Boolean hasPostFile) {
+        post.update(updatedTitle, updatedContent, hasPostFile);
     }
 }

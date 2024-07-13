@@ -56,8 +56,9 @@ public class Post extends AuditEntity {
         this.hits += 1;
     }
 
-    public void update(String title, String content){
+    public void update(String title, String content, Boolean hasPostFile){
         this.title = title;
         this.content = content;
+        this.hasPostFile = hasPostFile;
     }
 }
