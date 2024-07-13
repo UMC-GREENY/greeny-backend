@@ -24,12 +24,13 @@ public class WritePostRequestDto {
     @Schema(description = "글 내용", defaultValue = "빨리 가을이 왔으면 좋겠어요.")
     private String content;
 
-    public Post toEntity(Member writer){
+    public Post toEntity(Member writer, Boolean hasPostFile){
         return Post.builder()
                 .writer(writer)
                 .title(this.title)
                 .content(this.content)
                 .hits(0)
+                .hasPostFile(hasPostFile)
                 .build();
     }
 }

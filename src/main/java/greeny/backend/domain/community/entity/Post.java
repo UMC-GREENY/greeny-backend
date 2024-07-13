@@ -39,14 +39,10 @@ public class Post extends AuditEntity {
     private String content;
     @Column(nullable = false)
     private Integer hits;
-    private boolean hasPostFile;
+    @Column(nullable = false)
+    private Boolean hasPostFile;
     @Formula("(SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = post_id)")  // 테이블에는 만들어지지 않는 가상 속성. 게시글을 좋아요 순으로 정렬할 때 사용 (api 요청할때 sort=likes,desc)
     private Integer likes;
-
-    public Boolean checkFileExist() {
-        if(this.postFiles.isEmpty()) return false;
-        return true;
-    }
 
     public List<String> getFileUrls(){
         List<String> fileUrls = new ArrayList<>();

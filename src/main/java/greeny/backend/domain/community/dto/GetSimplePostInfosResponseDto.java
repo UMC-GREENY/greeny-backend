@@ -15,7 +15,7 @@ public class GetSimplePostInfosResponseDto {
     private String createdAt;
     private String writerEmail;
     private String title;
-    private Boolean existsFile;
+    private Boolean hasPostFile;
 
     public static GetSimplePostInfosResponseDto from(Post post){
         return GetSimplePostInfosResponseDto.builder()
@@ -23,8 +23,7 @@ public class GetSimplePostInfosResponseDto {
                 .writerEmail(post.getWriter().getEmail())
                 .createdAt(post.getCreatedAt())
                 .title(post.getTitle())
-                .existsFile(post.checkFileExist())
+                .hasPostFile(post.getHasPostFile())
                 .build();
     }
-
 }

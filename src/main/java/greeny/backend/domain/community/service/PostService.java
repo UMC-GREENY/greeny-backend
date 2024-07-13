@@ -33,14 +33,11 @@ public class PostService {
     public void writePost(WritePostRequestDto writePostRequestDto, List<MultipartFile> multipartFiles, Member writer) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
-
-        // post를 먼저 저장
-        Post post = postRepository.save(writePostRequestDto.toEntity(writer));
-        //파일을 첨부한 경우
-        if(multipartFiles != null){
-            // s3에 첨부파일을 저장하고, db에도 post_file을 저장
-            uploadPostFileList(multipartFiles, post);
+        if(checkEmptyPostFiles(multipartFiles)){
+            save(writePostRequestDto.toEntity(writer, false));
+            return;
         }
+        uploadPostFileList(multipartFiles, save(writePostRequestDto.toEntity(writer, true)));
     }
 
     @Transactional(readOnly = true)
@@ -123,7 +120,6 @@ public class PostService {
         for(String fileUrl : fileUrls) s3Service.deleteFile(fileUrl);
     }
 
-    @Transactional
     public void uploadPostFileList(List<MultipartFile> multipartFiles, Post post) {
         // s3에 파일을 업로드 한 뒤 예외가 발생하면 db는 롤백이 되지만,
         // 이미 s3에 저장된 이미지는 삭제되지 않는 문제가 있음.
@@ -141,5 +137,13 @@ public class PostService {
     public Page<GetSimplePostInfosResponseDto> getMySimplePostInfos(Pageable pageable, Member currentMember) {
         return postRepository.findAllByWriterId(currentMember.getId(), pageable)
                 .map(GetSimplePostInfosResponseDto::from);
+    }
+
+    private boolean checkEmptyPostFiles(List<MultipartFile> postFiles) {
+        return postFiles.isEmpty();
+    }
+
+    private Post save(Post post) {
+        return postRepository.save(post);
     }
 }
