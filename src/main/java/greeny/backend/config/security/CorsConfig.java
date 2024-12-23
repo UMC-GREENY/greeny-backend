@@ -1,6 +1,5 @@
 package greeny.backend.config.security;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -9,7 +8,6 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class CorsConfig {
-
     @Bean
     public CorsFilter corsFilter() {
 
@@ -17,9 +15,9 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://www.greeny.r-e.kr");  // Server base url
-        config.addAllowedOrigin("http://localhost:3000");  // 프론트 개발 환경 (3000번 포트)
-        config.addAllowedOrigin("https://www.greeny.n-e.kr");  // 프론트 base url
+        config.addAllowedOrigin("https://www.greeny.r-e.kr");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://www.greeny.n-e.kr");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

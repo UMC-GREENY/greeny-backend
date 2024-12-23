@@ -19,12 +19,15 @@ spring:
             enable: true
           auth: true
 
+  thymeleaf:
+    check-template-location: false
+
 oauth:
   kakao:
-    client-id: ${kakao.client-id}  # Kakao 로그인 API 사용을 위한 client-id
+    client-id: ${kakao.client-id}
   naver:
-    client-id: ${naver.client-id}  # Naver 로그인 API 사용을 위한 client-id
-    secret: ${naver.client-secret}  # Naver 로그인 API 사용을 위한 client-secret
+    client-id: ${naver.client-id}
+    secret: ${naver.client-secret}
 
 cloud:
   aws:

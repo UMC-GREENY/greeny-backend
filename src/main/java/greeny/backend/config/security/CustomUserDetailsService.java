@@ -1,12 +1,8 @@
 package greeny.backend.config.security;
 
 import greeny.backend.domain.member.entity.Member;
-import greeny.backend.domain.member.repository.MemberGeneralRepository;
-import greeny.backend.domain.member.repository.MemberRepository;
-import greeny.backend.domain.member.repository.MemberSocialRepository;
-import greeny.backend.exception.situation.MemberGeneralNotFoundException;
+import greeny.backend.domain.member.entity.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

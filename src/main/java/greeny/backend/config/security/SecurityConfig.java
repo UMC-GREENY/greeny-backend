@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
-
 import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
@@ -25,8 +24,7 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {  // Member auth white list
+    private static final String[] AUTH_WHITELIST_WITH_MEMBER_AUTH = {
             "/swagger-ui/**",
             "/api-docs/**",
             "/api",
@@ -36,18 +34,18 @@ public class SecurityConfig {
             "/api/auth/password",
             "/api/auth/reissue"
     };
-    private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {  // Store or Product white list
+    private static final String[] AUTH_WHITELIST_WITH_ECO_GET_METHOD = {
             "/api/stores/simple",
             "/api/products/simple",
             "/api/stores",
             "/api/products"
     };
-    private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {  // Review white list
+    private static final String[] AUTH_WHITELIST_WITH_REVIEW_GET_METHOD = {
             "/api/reviews/all",
             "/api/reviews/simple",
             "/api/reviews"
     };
-    private static final String[] AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD = {  // Community white list
+    private static final String[] AUTH_WHITELIST_WITH_COMMUNITY_GET_METHOD = {
             "/api/posts",
             "/api/posts/search",
             "/api/comments"
@@ -62,10 +60,8 @@ public class SecurityConfig {
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
-
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
@@ -86,8 +82,6 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest()
                         .authenticated()
-                )
-
-                .build();
+                ).build();
     }
 }
