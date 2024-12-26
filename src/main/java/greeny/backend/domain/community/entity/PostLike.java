@@ -10,6 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
+@Table(uniqueConstraints = @UniqueConstraint(name = "UniquePostAndLiker", columnNames = {"post_id", "liker_id"}))
 public class PostLike extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

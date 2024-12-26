@@ -44,8 +44,11 @@ class PostLikeServiceTest {
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThread);
         for (int i = 0; i < numberOfThread; i++) {
             executorService.submit(() -> {
-                postLikeService.like(savedPost.getId(), savedLiker);
-                countDownLatch.countDown();
+                try {
+                    postLikeService.like(savedPost.getId(), savedLiker);  // 실패 시 ConstraintViolationException 발생
+                } finally {
+                    countDownLatch.countDown();
+                }
             });
         }
         countDownLatch.await();
@@ -70,6 +73,7 @@ class PostLikeServiceTest {
                 .title("안녕")
                 .content("반가워!")
                 .hits(0)
+                .hasPostFile(false)
                 .build();
     }
 }
