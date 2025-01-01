@@ -12,9 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +25,13 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfos(String keyword, String location, String category, Pageable pageable) {
-        return getStoresWithSpec(keyword, location, category, pageable)
+        return getStoresBySpec(keyword, location, category, pageable)
                 .map(store -> GetSimpleStoreInfosResponseDto.from(store, false));
     }
 
     public Page<GetSimpleStoreInfosResponseDto> getSimpleStoreInfosWithAuthMember(String keyword, String location, String category, List<StoreBookmark> storeBookmarks, Pageable pageable) {
         return checkBookmarkedStore(
-                getStoresWithSpec(keyword, location, category, pageable).getContent(),
+                getStoresBySpec(keyword, location, category, pageable).getContent(),
                 storeBookmarks,
                 pageable
         );
@@ -56,20 +54,10 @@ public class StoreService {
                 .orElseThrow(StoreNotFoundException::new);
     }
 
-    private Page<Store> getStoresWithSpec(String keyword, String location, String category, Pageable pageable) {
-
-        Specification<Store> spec = (root, query, criteriaBuilder) -> null;
-
-        if(StringUtils.hasText(keyword))
-            spec = spec.and(StoreSpecification.hasKeyword(keyword));
-
-        if(StringUtils.hasText(location))
-            spec = spec.and(StoreSpecification.hasLocation(location));
-
-        if(StringUtils.hasText(category))
-            spec = spec.and(StoreSpecification.equalCategory(category));
-
-        return storeRepository.findAll(spec, pageable);
+    private Page<Store> getStoresBySpec(String keyword, String location, String category, Pageable pageable) {
+        return storeRepository.findAll(
+                StoreSpecification.create((root, query, criteriaBuilder) -> null, keyword, location, category), pageable
+        );
     }
 
     private Page<GetSimpleStoreInfosResponseDto> checkBookmarkedStore(List<Store> stores, List<StoreBookmark> storeBookmarks, Pageable pageable) {
